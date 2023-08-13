@@ -30,8 +30,9 @@ const postProduct = (req, res) => {
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getProduct = (req, res) => {
-  Product.find()
-    .select("name price url description -_id")
+  // {AUTHORIZATION} //
+  Product.find({ userId: req.user._id }) // Chỉ lấy các product có userId trùng với id của user hiện tại, nếu không có thì không cho hiển thị
+    .select("name price url description _id")
     .exec() // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
     .then((products) => {
       res.render("./admin/products", {
@@ -52,6 +53,11 @@ const getEditProduct = (req, res) => {
   const ID = req.params.productID; // // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
   Product.findById(ID)
     .then((product) => {
+      // {AUTHORIZATION} //
+      if (product.userId.toString() !== req.user._id.toString()) {
+        // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không
+        return res.redirect("/admin/product"); // Nếu không phải thì redirect về trang chủ
+      }
       res.render("./admin/editProduct", {
         title: "Edit Product",
         path: "/admin/add-product",
@@ -68,6 +74,11 @@ const postEditProduct = (req, res) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   Product.findById(ID)
     .then((product) => {
+      // {AUTHORIZATION} //
+      if (product.userId.toString() !== req.user._id.toString()) {
+        // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không
+        return res.redirect("/"); // Nếu không phải thì redirect về trang chủ
+      }
       // Cập nhật lại các giá trị của product theo req.body
       product.name = data.name;
       product.price = data.price;
@@ -87,7 +98,9 @@ const postEditProduct = (req, res) => {
 
 // {DELETE PRODUCT BY MONGOOSE} //
 const deleteProduct = (req, res) => {
-  Product.findByIdAndRemove(ID)
+  const ID = req.body.id;
+  // {AUTHORIZATION} //
+  Product.deleteOne({ _id: ID, userId: req.user._id }) // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không (userId: req.user._id)
     .then(() => {
       res.redirect("/admin/product");
     })
