@@ -1,0 +1,46 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+
+<body>
+   <%- include('../includes/nav.ejs') %>
+
+    <main>
+        <!-- FLASH MESSAGE -->
+        <% if(errorUsername) { %> 
+            <div class="message message--error">
+                <%= errorUsername %>
+            </div>
+        <% } else if (errorEmail) { %>
+            <div class="message message--error">
+                <%= errorEmail %>
+            </div>
+        <% } else if (errorRePassword) { %>
+            <div class="message message--error">
+                <%= errorRePassword %>
+            </div>
+        <% } %>
+        <form class="login-form" action="/signup" method="POST">
+            <div class="form-control">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div class="form-control">
+                <label for="email">E-Mail</label>
+                <input type="email" name="email" id="email">
+            </div>
+            <div class="form-control">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password">
+            </div>
+            <div class="form-control">
+                <label for="password">Re-Password</label>
+                <input type="password" name="re_password" id="re_password">
+            </div>
+            <!-- TOKEN CSRF -->
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <button class="btn" type="submit">SignUp</button>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>

@@ -1,0 +1,42 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+    <%- include('../includes/nav.ejs') %>
+    <main>
+        <!-- FLASH MESSAGE -->
+        <% if(successLogin) { %>
+            <div class="message message--success">
+                <%= successLogin %>
+            </div>
+        <% } %>
+        <% if (items.length > 0) { %>
+            <div class="grid">
+                <% items.forEach((item) => { %>
+                <article class="card product-item">
+                    <header class="card__header">
+                        <h1 class="product__title"><%= item.name %></h1>
+                    </header>
+                    <div class="card__image">
+                        <img src="https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png" alt="A Book">
+                    </div>
+                    <div class="card__content">
+                        <h2 class="product__price">$<%= item.price %></h2>
+                        <p class="product__description"><%= item.description %></p>
+                    </div>
+                    <div class="card__actions">
+                        <!-- POST CART  -->
+                        <% if(authenticate) { %>
+                            <%- include('../includes/addCart.ejs', {item: item}) %>
+                            <!-- Thêm object {item: item} để thẻ chỉ xác định duy nhất 1 item trong vòng lặp có nhiều items -->
+                        <% } %> 
+                    </div>
+                </article>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty">
+                <h1>The item is empty</h1>
+            </div>
+        <% } %>
+    </main>
+<%- include('../includes/end.ejs') %>

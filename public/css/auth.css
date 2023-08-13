@@ -1,0 +1,21 @@
+.login-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+}
+.logout {
+    background: none!important;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.logout__mobile {
+    background: none!important;
+    border: none;
+    color: #000;
+    font-size: 24px;
+    cursor: pointer;
+}

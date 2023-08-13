@@ -1,0 +1,38 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+    <%- include('../includes/nav.ejs') %>
+    <main>
+        <% if(items.length > 0){ %>
+            <div class="center">
+                <h1>Total Price: <b>$<%=totalPrice%></b></h1> 
+            </div>
+            <form class="center" action="/add-order" method="POST">
+                <!-- TOKEN CSRF -->
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <button class="btn" type="submit">ORDER ALL</button>
+            </form>
+            <ul class="cart__item-list">
+                <% items.forEach((item) => { %>
+                    <li class="cart__item">
+                        <h1><%=item.productId.name%></h1>
+                        <h2>Quantity: <%=item.quantity%></h2>
+                        <div class="card__actions">
+                            <form action="/delete-cart" method="POST">
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <input type="hidden" name="id" value="<%=item.productId._id%>">
+                                <button class="btn danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                <% }) %>
+        </ul>
+        <%}else{%>
+            <div class="empty">
+                <h1>There is nothing here</h1>
+            </div>
+        <%}%>
+    </main>
+<%- include('../includes/end.ejs') %>
