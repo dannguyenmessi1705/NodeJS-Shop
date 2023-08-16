@@ -205,7 +205,7 @@ const postReset = (req, res, next) => {
               from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
               to: email, // Địa chỉ email của người nhận
               subject: "Reset Password", // Tiêu đề mail
-              html: `<h2>Click this <a href="http://www.didan.id.vn/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
+              html: `<h2>Click this <a href="https://shop.didan.id.vn/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
             }; // Tạo 1 mail
             transporter
               .sendMail(data) // Gửi mail
