@@ -1,6 +1,8 @@
+// {ADDING VALIDATION} // Nhập module validationResult dùng để xác thực dữ liệu đầu vào
+const { validationResult } = require("express-validator");
+
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
-
 // {SENDING EMAIL AFTER SIGNUP} //
 const nodemailer = require("nodemailer"); // Nhập module nodemailer
 // Tạo transporter để gửi mail
@@ -19,16 +21,29 @@ const path = require("path"); // Nhập module path
 
 const User = require("../models/users");
 const bcrypt = require("bcrypt");
+
+
 // {SESSION + COOKIES} // Đối với Session, phải tạo Session trước khi tạo Cookie
 const postAuth = (req, res, next) => {
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
+  // {VALIDATION INPUT} //
+  const errorValidation = validationResult(req)
+  if (!errorValidation.isEmpty()) {
+    console.log(errorValidation.array())
+    const [errorMessage] = errorValidation.array()
+    return res.status(422).render("./auth/login", {
+      title: "Login",
+      path: "/login",
+      error: errorMessage.msg
+    })
+  }
   User.findOne({ email: email }) // Tìm user có email = email
     .then((user) => {
       if (!user) {
         // Nếu không tìm thấy user
         // {FLASH MESSAGE} // Nếu password không trùng khớp
-        req.flash("errorLogin", "Email or Password does not match!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
+        req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
         return res.redirect("/login"); // Chuyển hướng về trang login
       }
       bcrypt
@@ -47,7 +62,7 @@ const postAuth = (req, res, next) => {
             });
           } else {
             // {FLASH MESSAGE} // Nếu password không trùng khớp
-            req.flash("errorLogin", "Email or Password does not match!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
+            req.flash("errorLogin", "Incorrect username or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
             return res.redirect("/login"); // Chuyển hướng về trang login
           }
         })
@@ -57,14 +72,15 @@ const postAuth = (req, res, next) => {
 };
 
 const getAuth = (req, res, next) => {
-  const [errorMessage] = req.flash("errorLogin"); // Lấy giá trị flash message có tên là "error"
+  const [errorLogin] = req.flash("errorLogin"); // Lấy giá trị flash message có tên là "error"
   const [successSignup] = req.flash("successSignup"); // Lấy giá trị flash message có tên là "successSigup"
   const [updatePassword] = req.flash("updatePassword");
   res.render("./auth/login", {
     title: "Login",
     path: "/login",
     successSignup: successSignup, // Truyền giá trị flash message có tên là "success" vào biến successSigup
-    errorMessage: errorMessage, // Truyền giá trị flash message có tên là "error" vào biến errorMessage
+    errorLogin: errorLogin,
+    error: undefined, // Truyền giá trị flash message có tên là "error" vào biến errorMessage
     updatePassword: updatePassword,
   });
 };
@@ -83,95 +99,80 @@ const postSignup = (req, res, next) => {
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
   const re_password = req.body.re_password; // Lấy giá trị re_password từ form
-  if (username && email && password && re_password) {
-    // Nếu tất cả các giá trị đều tồn tại
-    return User.findOne({ username: username }) // Tìm kiếm 1 user trong collection có username là username
-      .then((name) => {
-        if (name) {
-          // Nếu tìm thấy => username đã tồn tại
-          // {FLASH MESSAGE} // Nếu username đã tồn tại
-          req.flash("errorUsername", "Username is existed"); // Tạo flash message có tên là "error", giá trị là "Username is existed"
-          return res.redirect("/signup"); // Chuyển hướng sang trang đăng ký
-        }
-        User.findOne({ email: email }) // Tìm kiếm 1 user trong collection có email là email
-          .then((userEmail) => {
-            if (userEmail) {
-              // Nếu tìm thấy => email đã tồn tại
-              // {FLASH MESSAGE} // Nếu email đã tồn tại
-              req.flash("errorEmail", "Email is existed"); // Tạo flash message có tên là "error", giá trị là "Email is existed"
-              return res.redirect("/signup"); // Chuyển hướng sang trang đăng ký
-            } else if (password !== re_password) {
-              // Nếu password và re_password không trùng khớp
-              // {FLASH MESSAGE} // Nếu password không trùng khớp
-              req.flash(
-                "errorRePassword",
-                "Password and Re-Password does not match"
-              ); // Tạo flash message có tên là "error", giá trị là "Password does not match"
-              return res.redirect("/signup"); // Chuyển hướng sang trang đăng ký
-            }
-            bcrypt
-              .hash(password, 12) // Nếu không tìm thấy => Mã hóa password với số lần lặp là 12
-              .then((hashPassword) => {
-                const user = new User({
-                  // Tạo 1 user mới
-                  username: username,
-                  email: email,
-                  password: hashPassword,
-                  cart: {
-                    items: [],
-                  },
-                });
-                return user.save().then(() => {
-                  // {FLASH MESSAGE} // Nếu user mới tạo thành công
-                  req.flash("successSignup", "Sign up successfully"); // Tạo flash message có tên là "success", giá trị là "Sign up successfully"
-                  // Lưu user mới tạo
-                  res.redirect("/login"); // Chuyển hướng sang trang đăng nhập
-
-                  // {SEND MAIL} //
-                  const pathImg = path.join(
-                    rootPath,
-                    "public",
-                    "img",
-                    "signup.png"
-                  ); // Đường dẫn đến file hình ảnh
-                  // Dùng transporter vừa tạo để gửi mail
-                  transporter
-                    .sendMail({
-                      // Tạo 1 mail
-                      from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
-                      to: email, // Địa chỉ email của người nhận
-                      subject: "Signup Successfully", // Tiêu đề mail
-                      html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
-                      attachments: [
-                        // File đính kèm
-                        {
-                          filename: "signup.png", // Tên file đính kèm
-                          content: fs.createReadStream(pathImg), // Nội dung file đính kèm
-                        },
-                      ],
-                    })
-                    .then((res) => console.log(res)) // Nếu gửi mail thành công
-                    .catch((err) => console.log(err)); // Nếu gửi mail thất bại
-                });
-              });
-          });
-      })
-      .catch((err) => console.log(err));
+  // {Thêm phần nhập request vào hàm validationResult để kiểm tra với hàm check bên routes/auth} //
+  const errorValidation = validationResult(req);
+  // Nếu tồn tại lỗi trong việc xác thực giá trị nhập vào (email không hợp lệ, pass ko đủ độ dài và không == vs rePass)
+  // {VALIDATION} //
+  if (!errorValidation.isEmpty()) {
+    console.log(errorValidation.array());
+    const [error] = errorValidation.array(); // Lấy phần tử đầu tiên của mảng
+    return res.status(422).render("./auth/signup", {
+      title: "Sign Up",
+      path: "/signup",
+      error: error.msg, // Nếu có lỗi thì giá trị sẽ được tìm thấy ở thuộc tính "msg"
+    });
+    // Nếu lỗi email nhập vào không phải là email hợp lệ (VD: qqq)
+    /*
+        [
+          {
+            type: 'field',
+            value: 'qqq',
+            msg: 'Invalid value',
+            path: 'email',
+            location: 'body'
+          }
+        ]
+      */
   }
-  return res.redirect("/signup");
+  // Nếu tất cả đều OK
+  return bcrypt
+    .hash(password, 12) // Nếu không tìm thấy => Mã hóa password với số lần lặp là 12
+    .then((hashPassword) => {
+      const user = new User({
+        // Tạo 1 user mới
+        username: username,
+        email: email,
+        password: hashPassword,
+        cart: {
+          items: [],
+        },
+      });
+      return user.save().then(() => {
+        // {FLASH MESSAGE} // Nếu user mới tạo thành công
+        req.flash("successSignup", "Sign up successfully"); // Tạo flash message có tên là "success", giá trị là "Sign up successfully"
+        // Lưu user mới tạo
+        res.redirect("/login"); // Chuyển hướng sang trang đăng nhập
+
+        // {SEND MAIL} //
+        const pathImg = path.join(rootPath, "public", "img", "signup.png"); // Đường dẫn đến file hình ảnh
+        // Dùng transporter vừa tạo để gửi mail
+        transporter
+          .sendMail({
+            // Tạo 1 mail
+            from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
+            to: email, // Địa chỉ email của người nhận
+            subject: "Signup Successfully", // Tiêu đề mail
+            html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
+            attachments: [
+              // File đính kèm
+              {
+                filename: "signup.png", // Tên file đính kèm
+                content: fs.createReadStream(pathImg), // Nội dung file đính kèm
+              },
+            ],
+          })
+          .then((res) => console.log(res)) // Nếu gửi mail thành công
+          .catch((err) => console.log(err)); // Nếu gửi mail thất bại
+      });
+    });
 };
 
 // {SIGNUP} //
 const getSignup = (req, res, next) => {
-  const [errorUsername] = req.flash("errorUsername"); // Lấy giá trị flash message có tên là "errorUsername"
-  const [errorEmail] = req.flash("errorEmail"); // Lấy giá trị flash message có tên là "errorEmail"
-  const [errorRePassword] = req.flash("errorRePassword"); // Lấy giá trị flash message có tên là "errorRePassword"
   res.render("./auth/signup", {
-    title: "SignUp",
+    title: "Sign Up",
     path: "/signup",
-    errorUsername: errorUsername,
-    errorEmail: errorEmail,
-    errorRePassword: errorRePassword,
+    error: false,
   });
 };
 
@@ -204,7 +205,7 @@ const postReset = (req, res, next) => {
               from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
               to: email, // Địa chỉ email của người nhận
               subject: "Reset Password", // Tiêu đề mail
-              html: `<h2>Click this <a href="https://shop-9h0m.onrender.com/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
+              html: `<h2>Click this <a href="http://www.didan.id.vn/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
             }; // Tạo 1 mail
             transporter
               .sendMail(data) // Gửi mail
@@ -234,39 +235,41 @@ const getReset = (req, res, next) => {
 
 // {UPDATE PASSWORD} //
 const getUpdatePassword = (req, res, next) => {
-  const token = req.params.tokenReset;
+  const token = req.params.tokenReset; // Lấy token từ route đến trang update password (http://localhost:3000/reset/:tokenReset)
   User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() },
+    resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
+    resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
   })
     .then((user) => {
+      // Nếu tìm thấy
       res.render("./auth/updatePassword", {
         path: "/update-password",
         title: "Update Password",
         passwordToken: token,
         userId: user._id.toString(),
-      });
+      }); // Render ra trang update password
     })
     .catch((err) => console.log(err));
 };
 const postUpdatePassword = (req, res, next) => {
-  const ID = req.body.userId;
-  const token = req.body.passwordToken;
-  let resetUser;
+  const ID = req.body.userId; // Lấy giá trị userId từ form
+  const token = req.body.passwordToken; // Lấy giá trị passwordToken từ form
+  let resetUser; // Khai báo 1 biến để lưu user
   User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() },
-    _id: ID,
+    resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
+    resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
+    _id: ID, // Và _id = ID
   })
     .then((user) => {
-      const password = req.body.password;
-      resetUser = user;
-      return bcrypt.hash(password, 12);
+      // Nếu tìm thấy
+      const password = req.body.password; // Lấy giá trị password từ form
+      resetUser = user; // Lưu user vào biến resetUser
+      return bcrypt.hash(password, 12); // Hash password
     })
     .then((hashPassword) => {
-      resetUser.password = hashPassword;
-      resetUser.resetPasswordToken = null;
-      resetUser.resetPasswordExpires = null;
+      resetUser.password = hashPassword; // Lưu password đã hash vào user
+      resetUser.resetPasswordToken = null; // Xóa resetPasswordToken
+      resetUser.resetPasswordExpires = null; // Xóa resetPasswordExpires
       return resetUser.save();
     })
     .then(() => {

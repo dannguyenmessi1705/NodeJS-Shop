@@ -7,20 +7,13 @@
    <%- include('../includes/nav.ejs') %>
 
     <main>
-        <!-- FLASH MESSAGE -->
-        <% if(errorUsername) { %> 
+        <!-- VALIDATION INPUT -->
+        <% if(error) { %> 
             <div class="message message--error">
-                <%= errorUsername %>
-            </div>
-        <% } else if (errorEmail) { %>
-            <div class="message message--error">
-                <%= errorEmail %>
-            </div>
-        <% } else if (errorRePassword) { %>
-            <div class="message message--error">
-                <%= errorRePassword %>
+                <%= error %>
             </div>
         <% } %>
+        <!--  -->
         <form class="login-form" action="/signup" method="POST">
             <div class="form-control">
                 <label for="username">Username</label>

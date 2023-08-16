@@ -85,10 +85,10 @@ app.use((req, res, next) => {
 });
 
 // {LOGIN ROUTE} //
-const loginRoute = require("./Routes/auth");
-const adminRoute = require("./Routes/admin");
-const personRoute = require("./Routes/user");
-const notFoundRoute = require("./Routes/notFound");
+const loginRoute = require("./routes/auth");
+const adminRoute = require("./routes/admin");
+const personRoute = require("./routes/user");
+const notFoundRoute = require("./routes/notFound");
 
 const path = require("path");
 const rootDir = require("./util/path.js");

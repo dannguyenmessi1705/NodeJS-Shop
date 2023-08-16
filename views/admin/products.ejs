@@ -22,8 +22,8 @@
                         <form action="/admin/delete-product" method="POST">
                             <!-- TOKEN CSRF -->
                             <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                            <button class="btn danger">Delete</button>
                             <input type="hidden" name="id" id="id" value="<%=item._id%>">
+                            <button class="btn danger">Delete</button>
                         </form>
                     </div>
                 </article>

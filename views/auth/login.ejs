@@ -8,9 +8,13 @@
 
     <main>
         <!-- FLASH MESSAGE -->
-        <% if(errorMessage) { %> 
+        <% if(error) { %> 
             <div class="message message--error">
-                <%= errorMessage %>
+                <%= error %>
+            </div>
+        <% } else if(errorLogin) { %>
+            <div class="message message--error">
+                <%= errorLogin %>
             </div>
         <% } else if(successSignup) { %>
             <div class="message message--success">
