@@ -16,15 +16,16 @@
                 <h2>An email has sent, please check inbox to reset password</h2>
             </div>
         <% } else { %>
-            <% if(errorEmail) { %> 
+            <% if(error) { %> 
                 <div class="message message--error">
-                    <%= errorEmail %>
+                    <%=error%>
                 </div>
             <% } %>
             <form class="login-form" action="/reset" method="POST">
                 <div class="form-control">
                     <label for="email">E-Mail</label>
-                    <input type="email" name="email" id="email">
+                    <input type="email" name="email" id="email" value="<%=oldInput%>"
+                        class="<%=errorType === 'email' ? 'invalid' : ''%>">
                 </div>
                 <!-- TOKEN CSRF -->
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">

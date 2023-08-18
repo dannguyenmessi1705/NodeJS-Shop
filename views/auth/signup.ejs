@@ -15,21 +15,26 @@
         <% } %>
         <!--  -->
         <form class="login-form" action="/signup" method="POST">
+            <!-- LOAD OLD DATA WHEN VALIDATION FAILED -->
             <div class="form-control">
                 <label for="username">Username</label>
-                <input type="text" name="username" id="username">
+                <input type="text" name="username" id="username" value="<%=oldInput.username%>"
+                    class="<%=errorType === 'username' ? 'invalid' : ''%>">
             </div>
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email">
+                <input type="email" name="email" id="email" value="<%=oldInput.email%>"
+                    class="<%=errorType === 'email' ? 'invalid' : ''%>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input type="password" name="password" id="password" value="<%=oldInput.password%>"
+                    class="<%=errorType === 'password' ? 'invalid' : ''%>">
             </div>
             <div class="form-control">
                 <label for="password">Re-Password</label>
-                <input type="password" name="re_password" id="re_password">
+                <input type="password" name="re_password" id="re_password" value="<%=oldInput.re_password%>"
+                    class="<%=errorType === 're_password' ? 'invalid' : ''%>">
             </div>
             <!-- TOKEN CSRF -->
             <input type="hidden" name="_csrf" value="<%=csrfToken%>">

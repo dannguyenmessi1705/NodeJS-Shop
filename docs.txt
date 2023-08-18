@@ -26,8 +26,21 @@ Folder 17. Validation nói về việc xác thực dữ liệu nhập vào từ 
 
 2, Kiểm tra dữ liệu nhập vào từ người dùng khi đăng nhập ("routes/auth.js"), ("controllers/auth.js")
 
+3, Kiểm tra dữ liệu nhập vào từ người dùng khi sửa thông tin, thêm sản phẩm ("routes/admin.js"), ("controllers/admin.js")
 
-   
+4, Kiểm tra dữ liệu nhập vào từ người dùng khi quên mật khẩu ("routes/auth.js"), ("controllers/auth.js")
+
+5, Kiểm tra dữ liệu nhập vào từ người dùng khi đặt lại mật khẩu ("routes/auth.js"), ("controllers/auth.js")
+
+6, Chuẩn hoá dữ liệu nhập vào từ người dùng ("routes/admin.js"), ("controllers/admin.js"), ("routes/auth.js"), ("controllers/auth.js")
+-> Sử dụng hàm trim() để xóa khoảng trắng ở đầu và cuối chuỗi, 
+-> Sử dụng hàm normalizeEmail() để chuẩn hóa email (ví dụ: chữ hoa thành chữ thường, xóa khoảng trắng,...)
+
+7, Lưu lại giá trị cũ của các ô input khi nhập sai ("routes/admin.js"), ("controllers/admin.js"), ("routes/auth.js"), ("controllers/auth.js")
+-> Giúp người dùng đỡ phải nhập lại các ô input khi nhập sai
+-> Khi có ô nào nhập sai thì bôi viền đỏ cho ô đó
+-> Lưu lại tất cả lỗi vào biến errors rồi truyền vào views để xác định lỗi
+
 *** Các thuộc tính của hàm check:
    -> isEmail() : kiểm tra email có đúng định dạng hay không (có @, có domain,...)
    -> isLength({min: 6}) : kiểm tra độ dài của password có đủ 6 ký tự hay không
