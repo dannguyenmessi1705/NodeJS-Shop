@@ -1,7 +1,7 @@
 const Order = require("../models/orders");
 const Product = require("../models/products");
 // {GET ALL PRODUCTS BY MONGOOSE} //
-const getIndex = (req, res) => {
+const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
   Product.find()
     .then((products) => {
@@ -12,11 +12,16 @@ const getIndex = (req, res) => {
         successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
-const getProduct = (req, res) => {
+const getProduct = (req, res, next) => {
   Product.find()
     .then((products) => {
       res.render("./user/productList", {
@@ -25,11 +30,16 @@ const getProduct = (req, res) => {
         path: "/product",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET PRODUCT DETAIL BY MONGOOSE} //
-const getDetail = (req, res) => {
+const getDetail = (req, res, next) => {
   const ID = req.params.productID; // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
   Product.findById(ID)
     .then((product) => {
@@ -39,11 +49,16 @@ const getDetail = (req, res) => {
         item: product,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {POST CART USER BY MONGOOSE} //
-const postCart = (req, res) => {
+const postCart = (req, res, next) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   Product.findById(ID) // Tìm product có _id = ID
     .then((product) => {
@@ -52,13 +67,21 @@ const postCart = (req, res) => {
         .then(() => {
           return res.redirect("/cart");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          res.redirect("/500-maintenance");
+        });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET CART USER BY MONGOOSE} //
-const getCart = (req, res) => {
+const getCart = (req, res, next) => {
   req.user
     .populate("cart.items.productId") // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
     .then((user) => {
@@ -78,11 +101,16 @@ const getCart = (req, res) => {
         totalPrice: totalPrice,
       }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {DELETE CART USER BY MONGOOSE} //
-const deleteCart = (req, res) => {
+const deleteCart = (req, res, next) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   Product.findById(ID) // Tìm product có _id = ID
     .then((product) => {
@@ -91,13 +119,21 @@ const deleteCart = (req, res) => {
         .then((result) => {
           return res.redirect("/cart");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          res.redirect("/500-maintenance");
+        });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {POST ORDER BY USER IN MONGOOSE}
-const postOrder = (req, res) => {
+const postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId") // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
     .then((user) => {
@@ -127,11 +163,16 @@ const postOrder = (req, res) => {
       return req.user.clearCart(); // Xoá cart của user
     })
     .then(() => res.redirect("/order"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET ORDER BY USER IN MONGOOSE} //
-const getOrder = (req, res) => {
+const getOrder = (req, res, next) => {
   Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
     .then((orders) => {
       // orders = [{ {products: {}, quantity}, user{}}, {}]
@@ -141,7 +182,12 @@ const getOrder = (req, res) => {
         orders: orders,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 module.exports = {

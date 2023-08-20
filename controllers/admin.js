@@ -5,7 +5,7 @@ const Product = require("../models/products");
 const { validationResult } = require("express-validator");
 
 // {ADD PRODUCT PAGE} //
-const addProduct = (req, res) => {
+const addProduct = (req, res, next) => {
   res.render("./admin/editProduct", {
     title: "Add Product",
     path: "/admin/add-product",
@@ -16,13 +16,13 @@ const addProduct = (req, res) => {
       name: "",
       price: "",
       url: "",
-      description: ""
+      description: "",
     }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
   });
 };
 
 // {CREAT PRODUCT BY MONGOOSE} //
-const postProduct = (req, res) => {
+const postProduct = (req, res, next) => {
   const data = JSON.parse(JSON.stringify(req.body));
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
@@ -39,8 +39,8 @@ const postProduct = (req, res) => {
         name: data.name,
         price: data.price,
         url: data.url,
-        description: data.description
-      }, // Lưu lại các giá trị vừa nhập 
+        description: data.description,
+      }, // Lưu lại các giá trị vừa nhập
     });
   }
   const product = new Product({
@@ -56,11 +56,16 @@ const postProduct = (req, res) => {
       console.log("Created Product");
       res.redirect("/admin/product");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
-const getProduct = (req, res) => {
+const getProduct = (req, res, next) => {
   // {AUTHORIZATION} //
   Product.find({ userId: req.user._id }) // Chỉ lấy các product có userId trùng với id của user hiện tại, nếu không có thì không cho hiển thị
     .select("name price url description _id")
@@ -72,11 +77,16 @@ const getProduct = (req, res) => {
         path: "/admin/product",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {GET EDIT PRODUCT BY MONGOOSE} //
-const getEditProduct = (req, res) => {
+const getEditProduct = (req, res, next) => {
   const isEdit = req.query.edit;
   if (!isEdit) {
     return res.redirect("/");
@@ -100,15 +110,20 @@ const getEditProduct = (req, res) => {
           name: "",
           price: "",
           url: "",
-          description: ""
+          description: "",
         }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 
 // {UPDATE PRODUCT BY MONGOOSE} //
-const postEditProduct = (req, res) => {
+const postEditProduct = (req, res, next) => {
   const data = req.body;
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   // VALIDATION INPUT
@@ -135,8 +150,8 @@ const postEditProduct = (req, res) => {
             name: data.name,
             price: data.price,
             url: data.url,
-            description: data.description
-          }, // Lưu lại các giá trị vừa nhập 
+            description: data.description,
+          }, // Lưu lại các giá trị vừa nhập
         });
       }
       // Cập nhật lại các giá trị của product theo req.body
@@ -151,21 +166,34 @@ const postEditProduct = (req, res) => {
           res.redirect("/admin/product");
           console.log("Updated!");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          res.redirect("/500-maintenance");
+        });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
   // Muốn nhanh hơn thì dùng method findByIdAndUpdate, ruy nhiên dùng save() có thể dùng được với middleware
 };
 
 // {DELETE PRODUCT BY MONGOOSE} //
-const deleteProduct = (req, res) => {
+const deleteProduct = (req, res, next) => {
   const ID = req.body.id;
   // {AUTHORIZATION} //
   Product.deleteOne({ _id: ID, userId: req.user._id }) // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không (userId: req.user._id)
     .then(() => {
       res.redirect("/admin/product");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      // {ERROR MIDDLEWARE} //
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(err);
+    });
 };
 module.exports = {
   addProduct,
