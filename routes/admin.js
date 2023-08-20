@@ -15,7 +15,6 @@ route.post(
   [
     check("name", "Invallid name").trim().isString().notEmpty(),
     check("price", "Invalid price").isFloat().notEmpty(),
-    check("url", "Invalid URL").trim().isURL(),
     check("description", "Please don't leave the blank description")
       .trim()
       .notEmpty(),
@@ -41,7 +40,6 @@ route.post(
   [
     check("name", "Invallid name").trim().isString().notEmpty(),
     check("price", "Invalid price").isFloat().notEmpty(),
-    check("url", "Invalid URL").trim().isURL(),
     check("description", "Please don't leave the blank description")
       .trim()
       .notEmpty(),

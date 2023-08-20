@@ -12,7 +12,7 @@
             </div>
         <%}%>
         <!-- Nếu editing = true => Edit, ngược lại là ADD -->
-        <form class="product-form" action="/admin/<%if(editing){%>edit-product<%}else{%>add-product<%}%>" method="POST">
+        <form class="product-form" action="/admin/<%if(editing){%>edit-product<%}else{%>add-product<%}%>" method="POST" enctype="multipart/form-data">
             <!-- TOKEN CSRF -->
             <input type="hidden" name="_csrf" value="<%=csrfToken%>">
             <div class="form-control">
@@ -25,10 +25,14 @@
                 <input type="number" name="price" id="price" step="0.01" value="<%if(editing){%><%=item.price%><%}else{%><%=oldInput.price%><%}%>"
                     class="<%=errorType === 'price' ? 'invalid' : ''%>">
             </div>
-            <div class="form-control">
+            <!-- <div class="form-control">
                 <label for="url">URL</label>
                 <input type="text" name="url" id="url" rows="5" value="<%if(editing){%><%=item.url%><%}else{%><%=oldInput.url%><%}%>"
                     class="<%=errorType === 'url' ? 'invalid' : ''%>">
+            </div> -->
+            <div class="form-control">
+                <label for="image">Image File</label>
+                <input type="file" name="image" id="image">
             </div>
             <div class="form-control">
                 <label for="description">Description</label>

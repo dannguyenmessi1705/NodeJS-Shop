@@ -1,5 +1,6 @@
 const products = require("../models/products");
 const Product = require("../models/products");
+const fs = require("fs");
 
 // {VALIDATION INPUT} //
 const { validationResult } = require("express-validator");
@@ -15,7 +16,6 @@ const addProduct = (req, res, next) => {
     oldInput: {
       name: "",
       price: "",
-      url: "",
       description: "",
     }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
   });
@@ -23,7 +23,26 @@ const addProduct = (req, res, next) => {
 
 // {CREAT PRODUCT BY MONGOOSE} //
 const postProduct = (req, res, next) => {
-  const data = JSON.parse(JSON.stringify(req.body));
+  const name = req.body.name;
+  const price = req.body.price;
+  const image = req.file; // Lấy file từ multer
+  if (!image) {
+    // Nếu không có file thì trả về trang add-product với thông báo lỗi
+    return res.status(422).render("./admin/editProduct", {
+      title: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      error: error.msg,
+      errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
+      oldInput: {
+        name: req.body.name,
+        price: req.body.price,
+        description: req.body.description,
+      }, // Lưu lại các giá trị vừa nhập
+    });
+  }
+  const description = req.body.description;
+  const userId = req.user._id;
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
   if (!errorValidation.isEmpty()) {
@@ -36,19 +55,18 @@ const postProduct = (req, res, next) => {
       error: error.msg,
       errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
       oldInput: {
-        name: data.name,
-        price: data.price,
-        url: data.url,
-        description: data.description,
+        name: req.body.name,
+        price: req.body.price,
+        description: req.body.description,
       }, // Lưu lại các giá trị vừa nhập
     });
   }
   const product = new Product({
-    name: data.name,
-    price: data.price,
-    url: data.url,
-    description: data.description,
-    userId: req.user._id,
+    name,
+    price,
+    url: image.path, // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
+    description,
+    userId,
   });
   return product
     .save()
@@ -60,7 +78,7 @@ const postProduct = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -81,7 +99,7 @@ const getProduct = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -109,7 +127,6 @@ const getEditProduct = (req, res, next) => {
         oldInput: {
           name: "",
           price: "",
-          url: "",
           description: "",
         }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
       });
@@ -118,13 +135,21 @@ const getEditProduct = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
 // {UPDATE PRODUCT BY MONGOOSE} //
 const postEditProduct = (req, res, next) => {
-  const data = req.body;
+  const name = req.body.name;
+  const price = req.body.price;
+  const image = req.file; // Lấy file từ multer
+  let url = undefined; // Khai báo biến url để lưu đường dẫn của file
+  if (image) {
+    // Nếu có file thì lưu đường dẫn của file vào biến url
+    url = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
+  }
+  const description = req.body.description;
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
@@ -147,18 +172,28 @@ const postEditProduct = (req, res, next) => {
           error: error.msg,
           errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
           oldInput: {
-            name: data.name,
-            price: data.price,
-            url: data.url,
-            description: data.description,
+            name,
+            price,
+            description,
           }, // Lưu lại các giá trị vừa nhập
         });
       }
       // Cập nhật lại các giá trị của product theo req.body
-      product.name = data.name;
-      product.price = data.price;
-      product.url = data.url;
-      product.description = data.description;
+      product.name = name;
+      product.price = price;
+      if (url) {
+        // Nếu có file thì lưu đường dẫn của file vào biến url
+        fs.unlink(product.url, (err) => {
+          // Xóa file cũ
+          if (err) {
+            // Nếu có lỗi thì in ra lỗi
+            console.log(err);
+            next(new Error(err));
+          }
+        });
+        product.url = url; // Lưu đường dẫn của file mới
+      }
+      product.description = description;
       // Lưu lại vào database
       return product
         .save()
@@ -175,7 +210,7 @@ const postEditProduct = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
   // Muốn nhanh hơn thì dùng method findByIdAndUpdate, ruy nhiên dùng save() có thể dùng được với middleware
 };
@@ -183,16 +218,36 @@ const postEditProduct = (req, res, next) => {
 // {DELETE PRODUCT BY MONGOOSE} //
 const deleteProduct = (req, res, next) => {
   const ID = req.body.id;
-  // {AUTHORIZATION} //
-  Product.deleteOne({ _id: ID, userId: req.user._id }) // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không (userId: req.user._id)
-    .then(() => {
-      res.redirect("/admin/product");
+  // Xoá sản phẩm trong database thì phải xoá file ảnh trong folder images (tiết kiệm ổ cứng)
+  let urlDelete; // Khai báo biến url để lưu đường dẫn của file
+  Product.findById(ID)
+    .then((product) => {
+      urlDelete = product.url; // Lưu đường dẫn của file vào biến urlDelete
+      // {AUTHORIZATION} //
+      Product.deleteOne({ _id: ID, userId: req.user._id }) // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không (userId: req.user._id)
+        .then(() => {
+          fs.unlink(urlDelete, (err) => {
+            // Xóa file cũ
+            if (err) {
+              // Nếu có lỗi thì in ra lỗi
+              console.log(err);
+              next(new Error(err));
+            }
+          });
+          console.log("Deleted!");
+          res.redirect("/admin/product");
+        })
+        .catch((err) => {
+          // {ERROR MIDDLEWARE} //
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          next(error);
+        });
     })
     .catch((err) => {
-      // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 module.exports = {

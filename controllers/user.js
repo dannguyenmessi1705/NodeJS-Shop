@@ -16,7 +16,7 @@ const getIndex = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -34,7 +34,7 @@ const getProduct = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -53,7 +53,7 @@ const getDetail = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -76,7 +76,7 @@ const postCart = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -105,7 +105,7 @@ const getCart = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -128,7 +128,7 @@ const deleteCart = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -167,7 +167,7 @@ const postOrder = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 
@@ -186,7 +186,7 @@ const getOrder = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 

@@ -75,7 +75,7 @@ const postAuth = (req, res, next) => {
           // {ERROR MIDDLEWARE} //
           const error = new Error(err);
           error.httpStatusCode = 500;
-          next(err);
+          next(error);
         });
     })
     .catch((err) => {
@@ -186,7 +186,7 @@ const postSignup = (req, res, next) => {
             // {ERROR MIDDLEWARE} //
             const error = new Error(err);
             error.httpStatusCode = 500;
-            next(err);
+            next(error);
           }); // Nếu gửi mail thất bại
       });
     });
@@ -257,14 +257,14 @@ const postReset = (req, res, next) => {
                   // {ERROR MIDDLEWARE} //
                   const error = new Error(err);
                   error.httpStatusCode = 500;
-                  next(err);
+                  next(error);
                 });
             })
             .catch((err) => {
               // {ERROR MIDDLEWARE} //
               const error = new Error(err);
               error.httpStatusCode = 500;
-              next(err);
+              next(error);
             });
         });
         req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
@@ -274,7 +274,7 @@ const postReset = (req, res, next) => {
         // {ERROR MIDDLEWARE} //
         const error = new Error(err);
         error.httpStatusCode = 500;
-        next(err);
+        next(error);
       });
   }
 };
@@ -314,7 +314,7 @@ const getUpdatePassword = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 const postUpdatePassword = (req, res, next) => {
@@ -346,7 +346,7 @@ const postUpdatePassword = (req, res, next) => {
         // {ERROR MIDDLEWARE} //
         const error = new Error(err);
         error.httpStatusCode = 500;
-        next(err);
+        next(error);
       });
   }
   User.findOne({
@@ -376,7 +376,7 @@ const postUpdatePassword = (req, res, next) => {
       // {ERROR MIDDLEWARE} //
       const error = new Error(err);
       error.httpStatusCode = 500;
-      next(err);
+      next(error);
     });
 };
 module.exports = {
