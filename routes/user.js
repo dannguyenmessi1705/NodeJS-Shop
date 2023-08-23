@@ -2,6 +2,7 @@ const express = require("express");
 const route = express.Router();
 
 const userController = require("../controllers/user");
+const ProtectRoute = require("../middleware/auth")
 
 route.get("/", userController.getIndex);
 
@@ -19,6 +20,9 @@ route.post("/delete-cart", userController.deleteCart)
 // {GET, ADD PRODUCT FROM CART TO ORDER} //
 route.get("/order", userController.getOrder);
 route.post("/add-order", userController.postOrder);
+
+// {GET INVOICE} //
+route.get("/order/:orderId", ProtectRoute, userController.getInvoice)
 
 
 module.exports = route;

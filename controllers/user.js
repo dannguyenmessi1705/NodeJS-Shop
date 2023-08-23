@@ -1,5 +1,12 @@
 const Order = require("../models/orders");
 const Product = require("../models/products");
+
+// {PDFKIT FOR CREATE PDF TO PRINT, DOWNLOAD THE INCVOICE} //
+const pdfkit = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+const rootDir = require("../util/path");
+
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
@@ -190,6 +197,100 @@ const getOrder = (req, res, next) => {
     });
 };
 
+// {DOWNLOAD THE INVOICE} //
+// {GET INVOICE} // http:.../order/orderID
+const getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId; // Lấy route động :orderId bên routes (URL) - VD: http://localhost:3000/order/5f9b7b3b3b3b3b3b3b3b3b3b => orderId = 5f9b7b3b3b3b3b3b3b3b3b3b
+  Order.findById(orderId) // Tìm order có _id = orderId
+    .then((order) => {
+      // order = {products: [{product: {}, quantity}], user: {}}
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        // Kiểm tra xem user hiện tại có phải là người đặt hàng hay không
+        return next(new Error("Not Authorized")); // Nếu không phải thì trả về lỗi
+      }
+      const nameInvoice = "Invoice-" + orderId + ".pdf"; // Tạo tên file invoice
+      res.setHeader("Content-Type", "application/pdf"); // Set header cho file pdf là application/pdf để trình duyệt hiểu đây là file pdf
+      res.setHeader(
+        // Set header cho file pdf
+        "Content-Disposition", // Content-Disposition là thuộc tính của header, nó cho phép chúng ta đặt tên cho file pdf khi download về máy
+        "inline; filename='" + nameInvoice + "'" // inline: hiển thị file pdf trên trình duyệt, filename: đặt tên cho file pdf
+      );
+      const pdfDoc = new pdfkit(); // Tạo file pdf mới bằng pdfkit
+      pdfDoc.pipe(
+        // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
+        fs.createWriteStream(path.join(rootDir, "data", nameInvoice)) // Tạo file pdf mới trong thư mục data
+      );
+      pdfDoc.pipe(res); // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
+      pdfDoc.fontSize(36).text("SHOP DIDAN", {
+        // Tạo tiêu đề cho file pdf
+        align: "center", // Căn giữa
+        underline: "true", // Gạch chân
+      });
+      pdfDoc.fontSize(22).text("Invoice", {
+        // Tạo tiêu đề cho file pdf
+        align: "center", // Căn giữa
+        lineGap: 16, // Khoảng cách giữa các dòng
+      });
+      pdfDoc.fontSize(16).text(`Customer's Name: ${order.user.username}`); // Tạo tên khách hàng
+      pdfDoc.fontSize(16).text(`Invoice ID: ${order._id}`, {
+        // Tạo ID cho file pdf
+        lineGap: 16, // Khoảng cách giữa các dòng
+      });
+      let data = [["ID", "NAME", "QUANTITY", "PRICE"]]; // Tạo mảng chứa các dữ liệu của sản phẩm
+      let numth = 0; // Biến đếm số thứ tự
+      let totalPrice = 0; // Biến tính tổng tiền
+      order.products.forEach((prod) => {
+        // Lặp qua tất cả các sản phẩm trong order
+        numth++; // Tăng biến đếm số thứ tự
+        totalPrice += prod.product.price * prod.quantity; // Tính tổng tiền
+        data = data.concat([
+          [
+            numth,
+            prod.product.name,
+            prod.quantity,
+            "$" + prod.product.price * prod.quantity,
+          ],
+        ]); // Thêm dữ liệu của sản phẩm vào mảng data
+      });
+      data.push([
+        "#",
+        "SUM",
+        order.products.length > 1
+          ? order.products.length + " Items"
+          : order.products.length + " Item",
+        "$" + totalPrice,
+      ]); // Thêm tổng tiền vào mảng data
+      const startX = -40; // Tọa độ x trong file pdf
+      const startY = 210; // Tọa độ y trong file pdf
+      const rowHeight = 30; // Chiều cao của mỗi dòng
+      const colWidth = 170; // Chiều rộng của mỗi cột
+      pdfDoc.font("Helvetica"); // Set font cho file pdf
+      pdfDoc.fontSize(16); // Set font size cho file pdf
+      data.forEach((row, rowIndex) => {
+        // Lặp qua tất cả các mảng(hàng) trong mảng data
+        row.forEach((cell, colIndex) => {
+          // Lặp qua tất cả các cột(phần tử) trong mảng row
+          const x = startX + colWidth * colIndex; // Tọa độ x của mỗi cột
+          const y = startY + rowHeight * rowIndex; // Tọa độ y của mỗi hàng
+          pdfDoc.rect(x, y - 10, colWidth, rowHeight).stroke(); // Tạo khung cho mỗi cột
+          pdfDoc.text(cell, x, y, {
+            // Tạo dữ liệu cho mỗi cột
+            width: colWidth, // Chiều rộng của mỗi cột
+            height: rowHeight, // Chiều cao của mỗi cột
+            align: "center", // Căn giữa
+            lineGap: 5, // Khoảng cách giữa các dòng
+          });
+        });
+      });
+      pdfDoc.end(); // Kết thúc file pdf
+    })
+    .catch((err) => {
+      const error = new Error(err); // Nếu có lỗi thì trả về lỗi
+      error.httpStatusCode = 422; // 422 là lỗi do người dùng nhập sai dữ liệu
+      next(error); // Trả về lỗi
+    });
+};
+
 module.exports = {
   getIndex,
   getProduct,
@@ -199,4 +300,5 @@ module.exports = {
   deleteCart,
   postOrder,
   getOrder,
+  getInvoice,
 };
