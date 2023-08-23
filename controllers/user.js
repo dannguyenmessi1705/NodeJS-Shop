@@ -252,7 +252,12 @@ const getInvoice = (req, res, next) => {
           ],
         ]); // Thêm dữ liệu của sản phẩm vào mảng data
       });
-      data.push(["", "", "Total Price", "$" + totalPrice]); // Thêm hàng tính tổng tiền
+      data.push([
+        "",
+        "",
+        "Total Price",
+        "$" + totalPrice,
+      ]); // Thêm hàng tính tổng tiền
       const startX = -40; // Tọa độ x trong file pdf
       const startY = 210; // Tọa độ y trong file pdf
       const rowHeight = 30; // Chiều cao của mỗi dòng
