@@ -218,7 +218,7 @@ const getInvoice = (req, res, next) => {
       const pdfDoc = new pdfkit(); // Tạo file pdf mới bằng pdfkit
       pdfDoc.pipe(
         // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
-        fs.createWriteStream(path.join(rootDir, "data", nameInvoice)) // Tạo file pdf mới trong thư mục data
+        fs.createWriteStream(path.join(rootDir, "data", "invoice", nameInvoice)) // Tạo file pdf mới trong thư mục data
       );
       pdfDoc.pipe(res); // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
       pdfDoc.fontSize(36).text("SHOP DIDAN", {
@@ -252,14 +252,7 @@ const getInvoice = (req, res, next) => {
           ],
         ]); // Thêm dữ liệu của sản phẩm vào mảng data
       });
-      data.push([
-        "#",
-        "SUM",
-        order.products.length > 1
-          ? order.products.length + " Items"
-          : order.products.length + " Item",
-        "$" + totalPrice,
-      ]); // Thêm tổng tiền vào mảng data
+      data.push(["", "", "Total Price", "$" + totalPrice]); // Thêm hàng tính tổng tiền
       const startX = -40; // Tọa độ x trong file pdf
       const startY = 210; // Tọa độ y trong file pdf
       const rowHeight = 30; // Chiều cao của mỗi dòng
