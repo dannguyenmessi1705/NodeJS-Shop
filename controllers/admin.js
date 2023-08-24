@@ -2,6 +2,9 @@ const products = require("../models/products");
 const Product = require("../models/products");
 const fs = require("fs");
 
+// {DEFINE THE NUMBER OF PER PAGE} //
+const productOfPage = 6;
+
 // {VALIDATION INPUT} //
 const { validationResult } = require("express-validator");
 
@@ -24,7 +27,11 @@ const addProduct = (req, res, next) => {
 // {CREAT PRODUCT BY MONGOOSE} //
 const postProduct = (req, res, next) => {
   const name = req.body.name;
-  const price = req.body.price;
+  let price = req.body.price;
+  if (price.includes(",")) {
+    // Nếu giá trị nhập vào có dấu "," thì thay thế bằng "."
+    price = price.replace(",", ".");
+  }
   const image = req.file; // Lấy file từ multer
   if (!image) {
     // Nếu không có file thì trả về trang add-product với thông báo lỗi
@@ -84,16 +91,39 @@ const postProduct = (req, res, next) => {
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getProduct = (req, res, next) => {
+  /// {PAGINATION} ///
+  const curPage = +req.query.page || 1; // Lấy giá trị của query 'page' từ URL, nếu không có thì mặc định là 1
+  let numProducts; // Khai báo biến để lưu số lượng sản phẩm
   // {AUTHORIZATION} //
-  Product.find({ userId: req.user._id }) // Chỉ lấy các product có userId trùng với id của user hiện tại, nếu không có thì không cho hiển thị
-    .select("name price url description _id")
-    .exec() // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
-    .then((products) => {
-      res.render("./admin/products", {
-        title: "Admin Product",
-        items: products,
-        path: "/admin/product",
-      });
+  Product.countDocuments({ userId: req.user._id }) // Đếm số lượng sản phẩm trong database (userId: req.user._id) - Chỉ đếm số lượng sản phẩm của user đang đăng nhập
+    .then((numOfProducts) => {
+      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
+      // {AUTHORIZATION} //
+      Product.find({ userId: req.user._id }) // Tìm tất cả sản phẩm trong database (userId: req.user._id) - Chỉ tìm sản phẩm của user đang đăng nhập
+        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
+        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
+        .select("name price url description _id") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+        .exec() // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+        .then((products) => {
+          res.render("./admin/products", {
+            title: "Admin Product",
+            items: products,
+            path: "/admin/product",
+            // {PAGINATION} //
+            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
+            curPage: curPage, // Trang hiện tại
+            nextPage: curPage + 1, // Trang tiếp theo
+            prevPage: curPage - 1, // Trang trước
+            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước hay không
+            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
+          });
+        })
+        .catch((err) => {
+          // {ERROR MIDDLEWARE} //
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          next(error);
+        });
     })
     .catch((err) => {
       // {ERROR MIDDLEWARE} //
@@ -142,7 +172,11 @@ const getEditProduct = (req, res, next) => {
 // {UPDATE PRODUCT BY MONGOOSE} //
 const postEditProduct = (req, res, next) => {
   const name = req.body.name;
-  const price = req.body.price;
+  let price = req.body.price;
+  if (price.includes(",")) {
+    // Nếu giá trị nhập vào có dấu "," thì thay thế bằng "."
+    price = price.replace(",", ".");
+  }
   const image = req.file; // Lấy file từ multer
   let url = undefined; // Khai báo biến url để lưu đường dẫn của file
   if (image) {

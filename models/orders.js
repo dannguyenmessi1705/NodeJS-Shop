@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const Order = new Schema({
   products: {
-    type: SchemaTypes.Object
+    type: SchemaTypes.Object,
   },
   user: {
     username: {
@@ -20,6 +20,7 @@ const Order = new Schema({
       required: true,
     },
   },
+  date: SchemaTypes.String,
 });
 
 module.exports = mongoose.model("orders", Order);

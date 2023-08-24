@@ -6,18 +6,45 @@ const pdfkit = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
 const rootDir = require("../util/path");
+const products = require("../models/products");
+
+// {DEFINE THE NUMBER OF PER PAGE} //
+const productOfPage = 6;
+const itemOfOrder = 10;
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
-  Product.find()
-    .then((products) => {
-      res.render("./user/index", {
-        title: "Home",
-        items: products,
-        path: "/",
-        successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
-      });
+  /// {PAGINATION} ///
+  const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
+  let numProducts; // Tạo biến để lưu số lượng sản phẩm
+  Product.countDocuments() // Đếm số có trong collection products
+    .then((numOfProducts) => {  
+      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts 
+      Product.find() // Tìm tất cả các sản phẩm
+        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm đầu tiên của trang hiện tại
+        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
+        .then((products) => { // Trả về kết quả
+          res.render("./user/index", { // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
+            title: "Home",
+            items: products,
+            path: "/",
+            successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
+            // {PAGINATION} //
+            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
+            curPage: curPage, // Trang hiện tại
+            nextPage: curPage + 1, // Trang tiếp theo
+            prevPage: curPage - 1, // Trang trước đó
+            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
+            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
+          });
+        })
+        .catch((err) => {
+          // {ERROR MIDDLEWARE} //
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          next(error);
+        });
     })
     .catch((err) => {
       // {ERROR MIDDLEWARE} //
@@ -29,13 +56,33 @@ const getIndex = (req, res, next) => {
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getProduct = (req, res, next) => {
-  Product.find()
-    .then((products) => {
-      res.render("./user/productList", {
-        title: "Product",
-        items: products,
-        path: "/product",
-      });
+  const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
+  let numProducts; // Tạo biến để lưu số lượng sản phẩm
+  Product.countDocuments() // Đếm số có trong collection products
+    .then((numOfProducts) => {
+      numProducts = numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
+      Product.find() // Tìm tất cả các sản phẩm
+        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm đầu tiên của trang hiện tại
+        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
+        .then((products) => {
+          res.render("./user/productList", {
+            title: "Product",
+            items: products,
+            path: "/product",
+            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
+            curPage: curPage, // Trang hiện tại
+            nextPage: curPage + 1, // Trang tiếp theo
+            prevPage: curPage - 1, // Trang trước đó
+            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
+            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
+          });
+        })
+        .catch((err) => {
+          // {ERROR MIDDLEWARE} //
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          next(error);
+        });
     })
     .catch((err) => {
       // {ERROR MIDDLEWARE} //
@@ -163,6 +210,7 @@ const postOrder = (req, res, next) => {
           email: req.user.email,
           userId: req.user._id,
         },
+        date: new Date().toLocaleString(),
       });
       return order.save(); // Lưu order vào database
     })
@@ -180,14 +228,34 @@ const postOrder = (req, res, next) => {
 
 // {GET ORDER BY USER IN MONGOOSE} //
 const getOrder = (req, res, next) => {
-  Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
-    .then((orders) => {
-      // orders = [{ {products: {}, quantity}, user{}}, {}]
-      res.render("./user/order", {
-        title: "Order",
-        path: "/order",
-        orders: orders,
-      });
+  const curPage = req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
+  let numProducts; // Tạo biến để lưu số lượng sản phẩm 
+  Order.countDocuments({ "user.userId": req.user._id }) // Đếm số lượng order có userId = userId của user hiện tại
+    .then((numOfProducts) => {
+      numProducts = numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
+      Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
+        .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
+        .limit(itemOfOrder) // Giới hạn số lượng order trên 1 trang
+        .then((orders) => { 
+          // orders = [{ {products: {}, quantity}, user{}}, {}]
+          res.render("./user/order", {
+            title: "Order",
+            path: "/order",
+            orders: orders,
+            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
+            curPage: curPage, // Trang hiện tại
+            nextPage: curPage + 1, // Trang tiếp theo
+            prevPage: curPage - 1, // Trang trước đó
+            hasPrevPage: curPage > 1,   // Kiểm tra xem có trang trước đó hay không
+            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
+          });
+        })
+        .catch((err) => {
+          // {ERROR MIDDLEWARE} //
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          next(error);
+        });
     })
     .catch((err) => {
       // {ERROR MIDDLEWARE} //
@@ -208,7 +276,9 @@ const getInvoice = (req, res, next) => {
         // Kiểm tra xem user hiện tại có phải là người đặt hàng hay không
         return next(new Error("Not Authorized")); // Nếu không phải thì trả về lỗi
       }
+      const fontPath = path.join(rootDir, "public", "font", "fontvn.ttf"); // Thêm font utf-8 unicode vào để hiển thị dấu
       const nameInvoice = "Invoice-" + orderId + ".pdf"; // Tạo tên file invoice
+      const dateOrder = order.date; // Thêm ngày order hàng
       res.setHeader("Content-Type", "application/pdf"); // Set header cho file pdf là application/pdf để trình duyệt hiểu đây là file pdf
       res.setHeader(
         // Set header cho file pdf
@@ -221,12 +291,13 @@ const getInvoice = (req, res, next) => {
         fs.createWriteStream(path.join(rootDir, "data", "invoice", nameInvoice)) // Tạo file pdf mới trong thư mục data
       );
       pdfDoc.pipe(res); // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
+      pdfDoc.font(fontPath);
       pdfDoc.fontSize(36).text("SHOP DIDAN", {
         // Tạo tiêu đề cho file pdf
         align: "center", // Căn giữa
         underline: "true", // Gạch chân
       });
-      pdfDoc.fontSize(22).text("Invoice", {
+      pdfDoc.fontSize(22).text("Invoice " + dateOrder, {
         // Tạo tiêu đề cho file pdf
         align: "center", // Căn giữa
         lineGap: 16, // Khoảng cách giữa các dòng
@@ -252,17 +323,12 @@ const getInvoice = (req, res, next) => {
           ],
         ]); // Thêm dữ liệu của sản phẩm vào mảng data
       });
-      data.push([
-        "",
-        "",
-        "Total Price",
-        "$" + totalPrice,
-      ]); // Thêm hàng tính tổng tiền
+      data.push(["", "", "Total Price", "$" + totalPrice]); // Thêm hàng tính tổng tiền
       const startX = -40; // Tọa độ x trong file pdf
       const startY = 210; // Tọa độ y trong file pdf
       const rowHeight = 30; // Chiều cao của mỗi dòng
       const colWidth = 170; // Chiều rộng của mỗi cột
-      pdfDoc.font("Helvetica"); // Set font cho file pdf
+      pdfDoc.font(fontPath); // Set font cho file pdf
       pdfDoc.fontSize(16); // Set font size cho file pdf
       data.forEach((row, rowIndex) => {
         // Lặp qua tất cả các mảng(hàng) trong mảng data

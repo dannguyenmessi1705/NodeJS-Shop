@@ -261,3 +261,31 @@ form {
   display: flex;
   justify-content: center;
 }
+
+.pagination {
+  margin-top: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+}
+
+section a {
+  text-decoration: none;
+  color: black;
+  border: 1px solid #00695c;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin: auto 0.5rem;
+}
+section a:active, 
+section a:hover,
+section a.active {
+  text-decoration: none;
+  color: white;
+  background: #00695c;
+  border: 1px solid #00695c;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin: auto 0.5rem;
+}

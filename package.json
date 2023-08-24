@@ -22,7 +22,7 @@
     "start": "nodemon server.js",
     "build": "npm i"
   },
-  "name": "19.file_up-down",
+  "name": "20.pagination",
   "version": "1.0.0",
   "main": "server.js",
   "author": "",
