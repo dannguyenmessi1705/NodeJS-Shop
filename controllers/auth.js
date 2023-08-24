@@ -67,7 +67,7 @@ const postAuth = (req, res, next) => {
             });
           } else {
             // {FLASH MESSAGE} // Nếu password không trùng khớp
-            req.flash("errorLogin", "Incorrect username or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
+            req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
             return res.redirect("/login"); // Chuyển hướng về trang login
           }
         })

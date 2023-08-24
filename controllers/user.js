@@ -19,13 +19,15 @@ const getIndex = (req, res, next) => {
   const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
   let numProducts; // Tạo biến để lưu số lượng sản phẩm
   Product.countDocuments() // Đếm số có trong collection products
-    .then((numOfProducts) => {  
-      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts 
+    .then((numOfProducts) => {
+      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
       Product.find() // Tìm tất cả các sản phẩm
         .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm đầu tiên của trang hiện tại
         .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
-        .then((products) => { // Trả về kết quả
-          res.render("./user/index", { // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
+        .then((products) => {
+          // Trả về kết quả
+          res.render("./user/index", {
+            // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
             title: "Home",
             items: products,
             path: "/",
@@ -152,7 +154,7 @@ const getCart = (req, res, next) => {
         title: "Cart",
         path: "/cart",
         items: products,
-        totalPrice: totalPrice,
+        totalPrice: totalPrice.toFixed(2),
       }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
     })
     .catch((err) => {
@@ -229,14 +231,14 @@ const postOrder = (req, res, next) => {
 // {GET ORDER BY USER IN MONGOOSE} //
 const getOrder = (req, res, next) => {
   const curPage = req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
-  let numProducts; // Tạo biến để lưu số lượng sản phẩm 
+  let numProducts; // Tạo biến để lưu số lượng sản phẩm
   Order.countDocuments({ "user.userId": req.user._id }) // Đếm số lượng order có userId = userId của user hiện tại
     .then((numOfProducts) => {
       numProducts = numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
       Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
         .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
         .limit(itemOfOrder) // Giới hạn số lượng order trên 1 trang
-        .then((orders) => { 
+        .then((orders) => {
           // orders = [{ {products: {}, quantity}, user{}}, {}]
           res.render("./user/order", {
             title: "Order",
@@ -246,7 +248,7 @@ const getOrder = (req, res, next) => {
             curPage: curPage, // Trang hiện tại
             nextPage: curPage + 1, // Trang tiếp theo
             prevPage: curPage - 1, // Trang trước đó
-            hasPrevPage: curPage > 1,   // Kiểm tra xem có trang trước đó hay không
+            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
             hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
           });
         })
@@ -313,17 +315,19 @@ const getInvoice = (req, res, next) => {
       order.products.forEach((prod) => {
         // Lặp qua tất cả các sản phẩm trong order
         numth++; // Tăng biến đếm số thứ tự
-        totalPrice += prod.product.price * prod.quantity; // Tính tổng tiền
+        let priceItem = (prod.product.price * prod.quantity)
+        totalPrice += priceItem; // Tính tổng tiền
         data = data.concat([
           [
             numth,
             prod.product.name,
             prod.quantity,
-            "$" + prod.product.price * prod.quantity,
+            "$" + priceItem,
+            ,
           ],
         ]); // Thêm dữ liệu của sản phẩm vào mảng data
       });
-      data.push(["", "", "Total Price", "$" + totalPrice]); // Thêm hàng tính tổng tiền
+      data.push(["", "", "Total Price", "$" + totalPrice.toFixed(2)]); // Thêm hàng tính tổng tiền
       const startX = -40; // Tọa độ x trong file pdf
       const startY = 210; // Tọa độ y trong file pdf
       const rowHeight = 30; // Chiều cao của mỗi dòng
