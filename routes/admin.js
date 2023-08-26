@@ -48,6 +48,6 @@ route.post(
 );
 
 // {DELETE PRODUCT} //
-route.post("/delete-product", ProtectRoute, adminController.deleteProduct);
+route.delete("/delete-product/:productID", ProtectRoute, adminController.deleteProduct); // Sửa method xoá sang delete
 
 module.exports = route;

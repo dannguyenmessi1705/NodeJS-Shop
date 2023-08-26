@@ -39,8 +39,8 @@ const postProduct = (req, res, next) => {
       title: "Add Product",
       path: "/admin/add-product",
       editing: false,
-      error: error.msg,
-      errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
+      error: undefined,
+      errorType: undefined, //  Xác định trường nào chứa giá trị lỗi
       oldInput: {
         name: req.body.name,
         price: req.body.price,
@@ -251,7 +251,8 @@ const postEditProduct = (req, res, next) => {
 
 // {DELETE PRODUCT BY MONGOOSE} //
 const deleteProduct = (req, res, next) => {
-  const ID = req.body.id;
+  const ID = req.params.productID; // // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
+  // Vì không phải load lại trang nên không dùng method POST của form => không thể dùng req.body
   // Xoá sản phẩm trong database thì phải xoá file ảnh trong folder images (tiết kiệm ổ cứng)
   let urlDelete; // Khai báo biến url để lưu đường dẫn của file
   Product.findById(ID)
@@ -268,14 +269,17 @@ const deleteProduct = (req, res, next) => {
               next(new Error(err));
             }
           });
-          console.log("Deleted!");
-          res.redirect("/admin/product");
+          // Xoá cả sản phẩm nếu có trong giỏ hàng
+          req.user.cart.items = req.user.cart.items.filter((item) => {
+            return item.productId.toString() !== ID.toString();
+          });
+          return req.user.save().then(() => {
+            console.log("Deleted!");
+            res.status(200).json({ message: "Delete successfull" }); // Trả về kết quả là json với message là Delete successfull
+          });
         })
         .catch((err) => {
-          // {ERROR MIDDLEWARE} //
-          const error = new Error(err);
-          error.httpStatusCode = 500;
-          next(error);
+          res.status(500).json({ message: "Delete failed" }); // Trả về kết quả là json với message là Delete failed
         });
     })
     .catch((err) => {

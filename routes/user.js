@@ -13,13 +13,13 @@ route.get("/product/:productID", userController.getDetail); // :productID là dy
 // vì là dynamic route nên tên route product/:productID bắt buộc phải đặt ở sau các route cố định của product/... khác, để cho đỡ hiểu nhầm với các route cố định
 
 // {CART} //
-route.get("/cart", userController.getCart)
-route.post("/cart", userController.postCart)
-route.post("/delete-cart", userController.deleteCart)
+route.get("/cart", ProtectRoute, userController.getCart)
+route.post("/cart", ProtectRoute, userController.postCart)
+route.post("/delete-cart", ProtectRoute, userController.deleteCart)
 
 // {GET, ADD PRODUCT FROM CART TO ORDER} //
-route.get("/order", userController.getOrder);
-route.post("/add-order", userController.postOrder);
+route.get("/order", ProtectRoute, userController.getOrder);
+route.post("/add-order", ProtectRoute, userController.postOrder);
 
 // {GET INVOICE} //
 route.get("/order/:orderId", ProtectRoute, userController.getInvoice)

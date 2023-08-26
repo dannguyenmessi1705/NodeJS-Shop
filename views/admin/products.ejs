@@ -19,12 +19,11 @@
                     </div>
                     <div class="card__actions" style="display: flex; justify-content: center; align-items: center;">
                         <a href="/admin/edit-product/<%= item._id %>/?edit=true" class="btn">Edit</a>
-                        <form action="/admin/delete-product" method="POST">
-                            <!-- TOKEN CSRF -->
-                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                            <input type="hidden" name="id" id="id" value="<%=item._id%>">
-                            <button class="btn danger">Delete</button>
-                        </form>
+                        <!-- TOKEN CSRF -->
+                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                        <input type="hidden" name="id" id="id" value="<%=item._id%>">
+                        <button type="button" class="btn danger" onclick="deleteProduct(this)">Delete</button>
+                        <!-- onclick="deleteProduct(this)" là sự kiện click vào button sẽ gọi hàm deleteProduct(this), this là tham số truyền vào hàm deleteProduct (btn) --> 
                     </div>
                 </article>
                 <% }) %>
@@ -36,4 +35,5 @@
             </div>
         <% } %>
     </main>
+    <script src="/js/adminController.js"></script>
 <%- include('../includes/end.ejs') %>

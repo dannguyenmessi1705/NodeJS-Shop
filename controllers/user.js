@@ -145,6 +145,7 @@ const getCart = (req, res, next) => {
       return products; // Trả về kết quả
     })
     .then((products) => {
+
       // products = [{productId: {}, quantity, _id} ,{}]
       let totalPrice = products.reduce((sum, product, index) => {
         // Tính tổng tiền của tất cả product trong cart
