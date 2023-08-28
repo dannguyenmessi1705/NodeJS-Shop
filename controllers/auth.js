@@ -239,6 +239,7 @@ const postReset = (req, res, next) => {
           const token = buffer.toString("hex"); // Chuyển buffer thành chuỗi hex
           user.resetPasswordToken = token; // Lưu token vào user
           user.resetPasswordExpires = Date.now() + 600000; // Lưu thời gian hết hạn của token vào user (10 phút)
+          const http = req.protocol + "://" + req.get("host"); // Lấy đường dẫn trang mặc định (http://localhost:3000/)
           return user // Lưu user
             .save()
             .then(() => {
@@ -246,7 +247,7 @@ const postReset = (req, res, next) => {
                 from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
                 to: email, // Địa chỉ email của người nhận
                 subject: "Reset Password", // Tiêu đề mail
-                html: `<h2>Click this <a href="https://shop.didan.id.vn/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
+                html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
               }; // Tạo 1 mail
               transporter
                 .sendMail(data) // Gửi mail

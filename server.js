@@ -135,12 +135,14 @@ app.use((req, res, next) => {
 const authRoute = require("./routes/auth");
 const adminRoute = require("./routes/admin");
 const personRoute = require("./routes/user");
+const paymentRoute = require("./routes/payment");
 const errorRoute = require("./routes/error");
 
 app.use("/admin", adminRoute);
 app.use(personRoute);
 // {LOGIN ROUTE} //
 app.use(authRoute);
+app.use(paymentRoute);
 app.use(errorRoute);
 
 // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này

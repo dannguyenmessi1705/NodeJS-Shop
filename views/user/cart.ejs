@@ -8,9 +8,11 @@
             <div class="center">
                 <h1>Total Price: <b>$<%=totalPrice%></b></h1> 
             </div>
-            <form class="center" action="/add-order" method="POST">
+            <form class="center" action="/payment" method="POST">
                 <!-- TOKEN CSRF -->
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <input type="hidden" name="amount" value="<%=totalPrice%>">
+                <input type="hidden" name="userId" value="<%=userId%>">
                 <button class="btn" type="submit">ORDER ALL</button>
             </form>
             <ul class="cart__item-list">

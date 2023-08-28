@@ -156,6 +156,7 @@ const getCart = (req, res, next) => {
         path: "/cart",
         items: products,
         totalPrice: totalPrice.toFixed(2),
+        userId: req.user._id,
       }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
     })
     .catch((err) => {

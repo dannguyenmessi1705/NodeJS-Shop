@@ -1,0 +1,18 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/checkout.css">
+</head>
+<body>
+    <%- include('../includes/nav.ejs') %>
+    <main>
+        <h1 class="center"><%=title%></h1>
+        <div class="table-responsive">
+            <form id="createOrder" action='create-checkout' method='POST'>
+                <div class="form-group">
+                    <label for="amount">Số tiền</label>
+                    <input class="form-control" id="amount" name='amount' placeholder='Số tiền' value="<%=amount%>">
+                </div>
+                <button class="btn btn-default" id="btnPopup" type="submit">Thanh toán</button>
+            </form>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>
