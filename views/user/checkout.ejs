@@ -1,18 +1,15 @@
 <%- include('../includes/head.ejs') %>
-<link rel="stylesheet" href="/css/checkout.css">
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
     <main>
-        <h1 class="center"><%=title%></h1>
-        <div class="table-responsive">
-            <form id="createOrder" action='create-checkout' method='POST'>
-                <div class="form-group">
-                    <label for="amount">Số tiền</label>
-                    <input class="form-control" id="amount" name='amount' placeholder='Số tiền' value="<%=amount%>">
-                </div>
-                <button class="btn btn-default" id="btnPopup" type="submit">Thanh toán</button>
-            </form>
-        </div>
+        <% if (code == "00") { %>
+            <h1 style="text-align: center; margin: 3rem 0 auto;">Giao dịch thành công</h1>
+        <% } else { %>
+            <h1 style="text-align: center; color: red; margin: 3rem 0 auto">Giao dịch thất bại</h1>
+        <% } %>
+        <p style="text-align: center;">
+            <a class="btn btn-default" href="/order">GO TO ORDER LIST</a>
+        </p>
     </main>
 <%- include('../includes/end.ejs') %>

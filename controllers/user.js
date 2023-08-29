@@ -246,12 +246,12 @@ const getOrder = (req, res, next) => {
             title: "Order",
             path: "/order",
             orders: orders,
-            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
+            lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại
             nextPage: curPage + 1, // Trang tiếp theo
             prevPage: curPage - 1, // Trang trước đó
             hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
-            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
+            hasNextPage: curPage < Math.ceil(numProducts / itemOfOrder), // Kiểm tra xem có trang tiếp theo hay không
           });
         })
         .catch((err) => {
