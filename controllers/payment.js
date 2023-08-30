@@ -31,9 +31,10 @@ const getPayment = (req, res, next) => {
   let vnpUrl = config.vnp_Url; // Đường dẫn thanh toán
   // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
   let returnUrl =
-    req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn trả về từ VNPAY
+    req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn
   let orderId = moment(date).format("DDHHmmss"); // Định dạng mã giao dịch
   let amount = parseFloat(req.body.amount); // Lấy số tiền thanh toán
+  console.log(amount);
   let currencyConverter = new CC({
     // Tạo 1 object để chuyển đổi tiền tệ
     from: "USD", // Tiền tệ đầu vào
@@ -125,6 +126,7 @@ const VNPayReturn = (req, res, next) => {
         res.render("./user/checkout", {
           title: "Payment Success",
           path: "/checkout",
+          hasFooter: false,
           code: vnp_Params["vnp_ResponseCode"],
         })
       ) // Trả về trang vnpayReturn và truyền mã code trả về từ VNPAY (GD thành công))
@@ -139,6 +141,7 @@ const VNPayReturn = (req, res, next) => {
     res.render("./user/checkout", {
       title: "Payment Failed",
       path: "/checkout",
+      hasFooter: false,
       code: "97",
     }); // Trả về trang vnpayReturn và truyền mã code = 97 (GD thất bại)
   }

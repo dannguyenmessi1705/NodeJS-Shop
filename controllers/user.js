@@ -31,6 +31,7 @@ const getIndex = (req, res, next) => {
             title: "Home",
             items: products,
             path: "/",
+            hasFooter: true,
             successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
             // {PAGINATION} //
             lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
@@ -71,6 +72,7 @@ const getProduct = (req, res, next) => {
             title: "Product",
             items: products,
             path: "/product",
+            hasFooter: true,
             lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại
             nextPage: curPage + 1, // Trang tiếp theo
@@ -102,6 +104,7 @@ const getDetail = (req, res, next) => {
       res.render("./user/productDetail", {
         title: "Product Detail",
         path: "/product",
+        hasFooter: true,
         item: product,
       });
     })
@@ -145,7 +148,6 @@ const getCart = (req, res, next) => {
       return products; // Trả về kết quả
     })
     .then((products) => {
-
       // products = [{productId: {}, quantity, _id} ,{}]
       let totalPrice = products.reduce((sum, product, index) => {
         // Tính tổng tiền của tất cả product trong cart
@@ -155,6 +157,7 @@ const getCart = (req, res, next) => {
         title: "Cart",
         path: "/cart",
         items: products,
+        hasFooter: false,
         totalPrice: totalPrice.toFixed(2),
         userId: req.user._id,
       }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
@@ -245,6 +248,7 @@ const getOrder = (req, res, next) => {
           res.render("./user/order", {
             title: "Order",
             path: "/order",
+            hasFooter: false,
             orders: orders,
             lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại
@@ -317,16 +321,10 @@ const getInvoice = (req, res, next) => {
       order.products.forEach((prod) => {
         // Lặp qua tất cả các sản phẩm trong order
         numth++; // Tăng biến đếm số thứ tự
-        let priceItem = (prod.product.price * prod.quantity)
+        let priceItem = prod.product.price * prod.quantity;
         totalPrice += priceItem; // Tính tổng tiền
         data = data.concat([
-          [
-            numth,
-            prod.product.name,
-            prod.quantity,
-            "$" + priceItem,
-            ,
-          ],
+          [numth, prod.product.name, prod.quantity, "$" + priceItem, ,],
         ]); // Thêm dữ liệu của sản phẩm vào mảng data
       });
       data.push(["", "", "Total Price", "$" + totalPrice.toFixed(2)]); // Thêm hàng tính tổng tiền

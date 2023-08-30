@@ -289,3 +289,21 @@ section a.active {
   padding: 0.5rem 1rem;
   margin: auto 0.5rem;
 }
+
+.copy-right {
+  padding-bottom: 0.5rem;
+}
+.copy-right p {
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 2.1rem;
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+  text-transform: capitalize;
+}
+.copy-right p a {
+  transition: all 0.3s ease-in-out;
+}
+.copy-right p a:hover {
+  color: #00695c;
+}

@@ -35,6 +35,7 @@ const postAuth = (req, res, next) => {
     return res.status(422).render("./auth/login", {
       title: "Login",
       path: "/login",
+      hasFooter: false,
       error: error.msg,
       errorType: error.path, // Lưu lại lỗi thuộc trường nào
       oldInput: {
@@ -91,6 +92,7 @@ const getAuth = (req, res, next) => {
   res.render("./auth/login", {
     title: "Login",
     path: "/login",
+    hasFooter: false,
     successSignup: successSignup, // Truyền giá trị flash message có tên là "success" vào biến successSigup
     errorLogin: errorLogin,
     error: undefined, // Truyền giá trị flash message có tên là "error" vào biến errorMessage
@@ -127,6 +129,7 @@ const postSignup = (req, res, next) => {
     return res.status(422).render("./auth/signup", {
       title: "Sign Up",
       path: "/signup",
+      hasFooter: false,
       error: error.msg, // Nếu có lỗi thì giá trị sẽ được tìm thấy ở thuộc tính "msg"
       errorType: error.path, // xác định trường nào  lõi cần sửa
       oldInput: { username, email, password, re_password }, // Lưu lại các giá trị vừa nhập
@@ -197,6 +200,7 @@ const getSignup = (req, res, next) => {
   res.render("./auth/signup", {
     title: "Sign Up",
     path: "/signup",
+    hasFooter: false,
     error: false,
     errorType: undefined, // chưa có xảy ra lỗi
     oldInput: {
@@ -218,6 +222,7 @@ const postReset = (req, res, next) => {
     const [error] = errorValidation.array();
     return res.status(422).render("./auth/reset", {
       path: "/reset",
+      hasFooter: false,
       title: "Reset Password",
       requestSuccess: undefined,
       error: error.msg,
@@ -284,6 +289,7 @@ const getReset = (req, res, next) => {
   const [requestSuccess] = req.flash("requestSuccess"); // Lấy giá trị flash message có tên là "requestSuccess"
   res.render("./auth/reset", {
     path: "/reset",
+    hasFooter: false,
     title: "Reset Password",
     requestSuccess: requestSuccess,
     error: "",
@@ -303,6 +309,7 @@ const getUpdatePassword = (req, res, next) => {
       // Nếu tìm thấy
       res.render("./auth/updatePassword", {
         path: "/update-password",
+        hasFooter: false,
         title: "Update Password",
         passwordToken: token,
         userId: user._id.toString(),
@@ -335,6 +342,7 @@ const postUpdatePassword = (req, res, next) => {
         // Nếu tìm thấy
         return res.status(422).render("./auth/updatePassword", {
           path: "/update-password",
+          hasFooter: false,
           title: "Update Password",
           passwordToken: token,
           userId: user._id.toString(),
