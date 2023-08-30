@@ -30,7 +30,8 @@ const getPayment = (req, res, next) => {
   let secretKey = config.vnp_HashSecret; // Chuỗi bí mật
   let vnpUrl = config.vnp_Url; // Đường dẫn thanh toán
   // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
-  let returnUrl = req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn trả về từ VNPAY
+  let returnUrl =
+    req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn trả về từ VNPAY
   let orderId = moment(date).format("DDHHmmss"); // Định dạng mã giao dịch
   let amount = parseFloat(req.body.amount); // Lấy số tiền thanh toán
   let currencyConverter = new CC({
@@ -56,7 +57,7 @@ const getPayment = (req, res, next) => {
     vnp_Params["vnp_TxnRef"] = orderId; // Mã giao dịch
     vnp_Params["vnp_OrderInfo"] = "Thanh toan cho ma GD:" + orderId; // Thông tin giao dịch
     vnp_Params["vnp_OrderType"] = "other"; // Loại hình thanh toán
-    vnp_Params["vnp_Amount"] = amount * 100; // Số tiền thanh toán
+    vnp_Params["vnp_Amount"] = Math.ceil(amount * 100); // Số tiền thanh toán (amount*100 để chuyển đổi từ VND sang xu - tất cả API thanh toán đều làm việc như vậy), ngoài ra phải làm tròn số vì API thanh toán chỉ nhận số nguyên
     vnp_Params["vnp_ReturnUrl"] = returnUrl; // Đường dẫn trả về từ VNPAY
     vnp_Params["vnp_IpAddr"] = ipAddr; // Địa chỉ IP của user
     vnp_Params["vnp_CreateDate"] = createDate; // Thời gian tạo giao dịch
