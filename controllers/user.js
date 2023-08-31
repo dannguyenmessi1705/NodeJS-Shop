@@ -195,6 +195,9 @@ const deleteCart = (req, res, next) => {
 
 // {POST ORDER BY USER IN MONGOOSE}
 const postOrder = (req, res, next) => {
+  const currentDate = new Date();
+  const options = { timeZone: "Etc/GMT+7" };
+  const localDate = currentDate.toLocaleString("en-US", options);
   req.user
     .populate("cart.items.productId") // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
     .then((user) => {
@@ -217,7 +220,7 @@ const postOrder = (req, res, next) => {
           email: req.user.email,
           userId: req.user._id,
         },
-        date: new Date().toLocaleString(),
+        date: localDate,
       });
       return order.save(); // Lưu order vào database
     })
