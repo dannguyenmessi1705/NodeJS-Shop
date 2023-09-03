@@ -4,11 +4,17 @@ const { validationResult } = require("express-validator");
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
-const sgMail = require("@sendgrid/mail"); // Nhập module sendgrid
-sgMail.setApiKey(
-  "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"
-); // Đăng ký tài khoản sendgrid và lấy API key
-const transporter = sgMail; // Tạo 1 transporter để gửi mail
+const nodemailer = require("nodemailer"); // Nhập module nodemailer
+// Tạo transporter để gửi mail
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com", // Host của mail server
+  port: 465, // Port của mail server
+  secure: true, // Sử dụng SSL
+  auth: {
+    user: "didannguyen@5dulieu.com", // mail dùng để gửi
+    pass: "femryegbpgljleyv", // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
+  },
+});
 const fs = require("fs"); // Nhập module fs
 const rootPath = require("../util/path"); // Nhập đường dẫn tuyệt đối của thư mục gốc
 const path = require("path"); // Nhập module path
@@ -162,45 +168,29 @@ const postSignup = (req, res, next) => {
 
         // {SEND MAIL} //
         const pathImg = path.join(rootPath, "public", "img", "signup.png"); // Đường dẫn đến file hình ảnh
-        const readStream = fs.createReadStream(pathImg); // Tạo 1 readStream để đọc file hình ảnh (Dùng Stream để đọc file có ưu điểm là không bị giới hạn bộ nhớ khi đọc file
-        let imgContent = [];
-        readStream.on("data", (chunk) => {
-          imgContent.push(chunk);
-        }); // Đọc file hình ảnh
-        readStream.on("end", () => {
-          // Sau khi đọc xong file hình ảnh
-          const imgBuffer = Buffer.concat(imgContent); // Tạo 1 buffer từ các chunk đã đọc
-          imgContent = imgBuffer.toString("base64"); // Chuyển buffer thành chuỗi base64
-          // Dùng transporter vừa tạo để gửi mail
-          transporter
-            .send({
-              // Tạo 1 mail
-              from: {
-                name: "SHOP-DIDAN", // Tên người gửi
-                email: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
+        // Dùng transporter vừa tạo để gửi mail
+        transporter
+          .sendMail({
+            // Tạo 1 mail
+            from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
+            to: email, // Địa chỉ email của người nhận
+            subject: "Signup Successfully", // Tiêu đề mail
+            html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
+            attachments: [
+              // File đính kèm
+              {
+                filename: "signup.png", // Tên file đính kèm
+                content: fs.createReadStream(pathImg), // Nội dung file đính kèm
               },
-              to: email, // Địa chỉ email của người nhận
-              subject: "Signup Successfully", // Tiêu đề mail
-              html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
-              attachments: [
-                // File đính kèm
-                {
-                  content: imgContent, // Nội dung file đính kèm
-                  filename: "signup.png", // Tên file đính kèm
-                  type: "image/png", // Kiểu file đính kèm
-                  disposition: "attachment", // Loại file đính kèm (inline: hiển thị trực tiếp trên mail, attachment: hiển thị dưới dạng file đính kèm)
-                  contentId: "attachment", // ID của file đính kèm
-                },
-              ],
-            })
-            .then((res) => console.log(res)) // Nếu gửi mail thành công
-            .catch((err) => {
-              // {ERROR MIDDLEWARE} //
-              const error = new Error(err);
-              error.httpStatusCode = 500;
-              next(error);
-            }); // Nếu gửi mail thất bại
-        });
+            ],
+          })
+          .then((res) => console.log(res)) // Nếu gửi mail thành công
+          .catch((err) => {
+            // {ERROR MIDDLEWARE} //
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            next(error);
+          }); // Nếu gửi mail thất bại
       });
     });
 };
@@ -259,16 +249,13 @@ const postReset = (req, res, next) => {
             .save()
             .then(() => {
               const data = {
-                from: {
-                  name: "SHOP-DIDAN", // Tên người gửi
-                  email: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
-                },
+                from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
                 to: email, // Địa chỉ email của người nhận
                 subject: "Reset Password", // Tiêu đề mail
                 html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
               }; // Tạo 1 mail
               transporter
-                .send(data) // Gửi mail
+                .sendMail(data) // Gửi mail
                 .then((res) => {
                   console.log(res);
                 })
