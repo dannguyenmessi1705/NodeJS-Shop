@@ -24,7 +24,7 @@ const bcrypt = require("bcrypt");
 
 // LOGIN
 // {SESSION + COOKIES} // Đối với Session, phải tạo Session trước khi tạo Cookie
-const postAuth = (req, res, next) => {
+const postAuth = async (req, res, next) => {
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
   // {VALIDATION INPUT} //
@@ -44,45 +44,35 @@ const postAuth = (req, res, next) => {
       }, // Lưu lại các giá trị vừa nhập
     });
   }
-  User.findOne({ email: email }) // Tìm user có email = email
-    .then((user) => {
-      if (!user) {
-        // Nếu không tìm thấy user
-        // {FLASH MESSAGE} // Nếu password không trùng khớp
-        req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
-        return res.redirect("/login"); // Chuyển hướng về trang login
-      }
-      bcrypt
-        .compare(password, user.password) // So sánh password nhập vào với password đã mã hoá trong database
-        .then((isMatch) => {
-          if (isMatch) {
-            // {FLASH MESSAGE} //
-            req.flash("successLogin", "Login successfully!"); // Tạo flash message có tên là "success", giá trị là "Login successfully!"
-            // Nếu password trùng khớp
-            req.session.isLogin = true; // Tạo Session có tên là "isLogin", giá trị là "true"
-            req.session.user = user; // Tạo Session có tên là "user", giá trị là user vừa tìm được
-            // req.session.cookie.maxAge = 3000; // Thời gian tồn tại của Session là 3s
-            return req.session.save(() => {
-              // Lưu Session
-              res.redirect("/"); // Sau khi lưu Session thì mới chuyển hướng sang trang chủ (vì lưu Session là bất đồng bộ)
-            });
-          } else {
-            // {FLASH MESSAGE} // Nếu password không trùng khớp
-            req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
-            return res.redirect("/login"); // Chuyển hướng về trang login
-          }
-        })
-        .catch((err) => {
-          // {ERROR MIDDLEWARE} //
-          const error = new Error(err);
-          error.httpStatusCode = 500;
-          next(error);
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.redirect("/500-maintenance");
-    });
+  try {
+    const user = await User.findOne({ email: email }); // Tìm user có email = email
+    if (!user) {
+      // Nếu không tìm thấy user
+      // {FLASH MESSAGE} // Nếu password không trùng khớp
+      req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
+      return res.redirect("/login"); // Chuyển hướng về trang login
+    }
+    const checkPass = await bcrypt.compare(password, user.password); // So sánh password nhập vào với password đã mã hoá trong database
+    if (checkPass) {
+      // {FLASH MESSAGE} //
+      req.flash("successLogin", "Login successfully!"); // Tạo flash message có tên là "success", giá trị là "Login successfully!"
+      // Nếu password trùng khớp
+      req.session.isLogin = true; // Tạo Session có tên là "isLogin", giá trị là "true"
+      req.session.user = user; // Tạo Session có tên là "user", giá trị là user vừa tìm được
+      // req.session.cookie.maxAge = 3000; // Thời gian tồn tại của Session là 3s
+      await req.session.save(); // Lưu Session
+      res.redirect("/"); // Sau khi lưu Session thì mới chuyển hướng sang trang chủ (vì lưu Session là bất đồng bộ)
+    } else {
+      // {FLASH MESSAGE} // Nếu password không trùng khớp
+      req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
+      return res.redirect("/login"); // Chuyển hướng về trang login
+    }
+  } catch (error) {
+    // {ERROR MIDDLEWARE} //
+    const err = new Error(error);
+    error.httpStatusCode = 500;
+    next(error);
+  }
 };
 
 const getAuth = (req, res, next) => {

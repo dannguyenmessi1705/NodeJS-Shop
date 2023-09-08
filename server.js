@@ -49,26 +49,32 @@ app.use((req, res, next) => {
   next();
 }); // Sử dụng middleware bảo vệ các route, nếu không có token thì các lệnh request sẽ báo lỗi
 
-
 // {BODY PARSER} // (Để lấy dữ liệu từ form) //
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
 // {MULTER} // (Để lấy dữ liệu file từ form) //
 const multer = require("multer"); // Nhập module multer
-const fileStorage = multer.diskStorage({ // Tạo 1 storage để lưu file
-  destination(req, file, callback) { // Định nghĩa đường dẫn lưu file
+const fileStorage = multer.diskStorage({
+  // Tạo 1 storage để lưu file
+  destination(req, file, callback) {
+    // Định nghĩa đường dẫn lưu file
     callback(null, "images"); // Lưu file vào folder images
   },
-  filename(req, file, callback) { // Định nghĩa tên file
+  filename(req, file, callback) {
+    // Định nghĩa tên file
     const date = new Date(); // Lấy ngày giờ hiện tại
-    const formattedDate = date.toISOString().replace(/:/g, '_').replace(/\./g, ''); // Định dạng ngày giờ hiện tại (phải chuyển đổi sang dạng string mới đúng cú pháp đặt tên file)
+    const formattedDate = date
+      .toISOString()
+      .replace(/:/g, "_")
+      .replace(/\./g, ""); // Định dạng ngày giờ hiện tại (phải chuyển đổi sang dạng string mới đúng cú pháp đặt tên file)
     callback(null, formattedDate + file.originalname); // Đặt tên file = ngày giờ hiện tại + tên file gốc
   },
 });
-const fileFilter = (req, file, callback) => { // Định nghĩa loại file được phép upload
-  if ( // Nếu file là 1 trong các loại này thì cho phép upload
+const fileFilter = (req, file, callback) => {
+  // Định nghĩa loại file được phép upload
+  if (
+    // Nếu file là 1 trong các loại này thì cho phép upload
     file.mimetype === "image/png" ||
     file.mimetype === "image/jpg" ||
     file.mimetype === "image/jpeg"
@@ -78,14 +84,15 @@ const fileFilter = (req, file, callback) => { // Định nghĩa loại file đư
     callback(null, false); // false => không cho phép upload
   }
 };
-app.use( // Sử dụng middleware multer
-  multer({ // Định nghĩa các thuộc tính của multer
+app.use(
+  // Sử dụng middleware multer
+  multer({
+    // Định nghĩa các thuộc tính của multer
     storage: fileStorage, // Lưu file vào storage đã định nghĩa ở trên
     fileFilter: fileFilter, // Chỉ cho phép upload các loại file đã định nghĩa ở trên
   }).single("image") // Chỉ cho phép upload 1 file duy nhất có name="image"
 );
 app.use("/images", express.static(path.join(rootDir, "images"))); // Định nghĩa đường dẫn tĩnh để truy cập vào folder images (để hiển thị hình ảnh đã upload) - Nếu không có dòng này thì hình ảnh sẽ không hiển thị được
-
 
 // {FLASH MESSAGE} //
 const flash = require("connect-flash");
@@ -109,26 +116,27 @@ mongoose
   });
 
 // {MIDDLEWARE PHÂN QUYỀN DÙNG SESSION} //
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   if (!req.session?.user) {
     // Nếu không có session user thì return next() để chạy các middleware tiếp theo mà không có phân quyền
     return next();
   }
-  User.findById(req.session.user._id) // Tìm kiếm user trong collection users có id trùng với id của session user
-    .then((user) => {
-      // Nếu ko tìm thấy user => chuyển hướng mà không có phân quyền
-      if (!user) {
-        next();
-      }
-      // Nếu tìm thấy user thì lưu vào req.user
-      req.user = new User(user); // Lưu lại user vào request để sử dụng ở các middleware tiếp theo (không cần dùng new User vì user đã là object rồi, có thể dùng các method của mongoose cũng như từ class User luôn )
-      // Tuy nhiên, Ko cần req.user nữa vì dùng session rồi (biến user sẽ lưu vào req.session.user)
-      next(); // Tiếp tục chạy các middleware tiếp theo với phân quyền
-    })
-    .catch((err) => {
-      // {ERROR MIDDLEWARE} //
-      next(new Error(err));
-    });
+  try {
+    const user = await User.findById(req.session.user._id); // Tìm kiếm user trong collection users có id trùng với id của session user
+    // Nếu ko tìm thấy user => chuyển hướng mà không có phân quyền
+    if (!user) {
+      next();
+    }
+    // Nếu tìm thấy user thì lưu vào req.user
+    req.user = new User(user); // Lưu lại user vào request để sử dụng ở các middleware tiếp theo (không cần dùng new User vì user đã là object rồi, có thể dùng các method của mongoose cũng như từ class User luôn )
+    // Tuy nhiên, Ko cần req.user nữa vì dùng session rồi (biến user sẽ lưu vào req.session.user)
+    next(); // Tiếp tục chạy các middleware tiếp theo với phân quyền
+  } catch (err) {
+    if (!err.httpStatusCode) {
+      err.httpStatusCode = 500;
+    }
+    next(err);
+  }
 });
 
 // {LOGIN ROUTE} //
@@ -145,12 +153,12 @@ app.use(authRoute);
 app.use(paymentRoute);
 app.use(errorRoute);
 
-// // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
-// app.use((error, req, res, next) => {
-//   res.status(500).render("500", {
-//     title: "Server maintenance",
-//     path: "/500",
-//     authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
-//   });
-// });
-// /// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi
+// {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
+app.use((err, req, res, next) => {
+  res.status(500).render("500", {
+    title: "Server maintenance",
+    path: "/500",
+    authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
+  });
+});
+/// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi

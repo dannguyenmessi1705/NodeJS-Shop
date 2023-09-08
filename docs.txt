@@ -1,8 +1,4 @@
-Source code lấy từ folder 21. Async Request
-Folder 21. Payment: nói về việc thêm chức năng thanh toán cho website (Sử dụng VNPAY)
-=> Thêm module currency-converter-lt để chuyển đổi tiền tệ
-
-1, Tạo file thực chuyển hướng tới trang thanh toán của VNPAY
+Tạo file thực chuyển hướng tới trang thanh toán của VNPAY
    -> Tạo file ("controllers/payment.js"), ("routes/payment.js") để config các thông số cần thiết cho thanh toán
    -> Sửa nút Order All trong "views/cart.ejs" thành nút chuyển hướng tới trang thanh toán VNPAY
 

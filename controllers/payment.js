@@ -32,10 +32,9 @@ const getPayment = (req, res, next) => {
   // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
   let returnUrl =
     req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn
-  //let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
+  // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
   let orderId = moment(date).format("DDHHmmss"); // Định dạng mã giao dịch
   let amount = parseFloat(req.body.amount); // Lấy số tiền thanh toán
-  console.log(amount);
   let currencyConverter = new CC({
     // Tạo 1 object để chuyển đổi tiền tệ
     from: "USD", // Tiền tệ đầu vào
@@ -74,7 +73,7 @@ const getPayment = (req, res, next) => {
 };
 
 // CHUYỂN HƯỚNG TỚI TRANG TRẢ VỀ KẾT QUẢ THANH TOÁN //
-const VNPayReturn = (req, res, next) => {
+const VNPayReturn = async (req, res, next) => {
   let vnp_Params = req.query; // Lấy các tham số trả về từ VNPAY (đã được chuyển đổi thành object) - Để chuẩn bị kiểm tra mã hóa
   let secureHash = vnp_Params["vnp_SecureHash"]; // Lấy tham số mã hóa từ VNPAY
   delete vnp_Params["vnp_SecureHash"]; // Xóa tham số mã hóa để chuẩn bị kiểm tra mã hóa
@@ -89,62 +88,53 @@ const VNPayReturn = (req, res, next) => {
   let hmac = crypto.createHmac("sha512", secretKey); // Tạo 1 object để mã hóa dữ liệu (SHA512)
   let signed = hmac.update(new Buffer.from(signData, "utf-8")).digest("hex"); // Mã hóa dữ liệu
 
-  if (secureHash === signed && vnp_Params["vnp_ResponseCode"] == "00") {
-    // Nếu mã hóa trả về từ VNPAY trùng với mã hóa của chúng ta
-    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-    // {SAVE ORDER AND DELETE CART} //
-    const Order = require("../models/orders"); // Gọi model order
-    req.user
-      .populate("cart.items.productId") // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
-      .then((user) => {
-        const products = [...user.cart.items]; // Sau khi lấy được dữ liệu từ collection products qua populate, copy lại vào biến products
-        return products;
-      })
-      .then((products) => {
-        const productArray = products.map((item) => {
-          // Tạo mảng mới chứa các object product và quantity
-          return {
-            product: item.productId._doc, // _doc là thuộc tính của mongoose, nó sẽ lấy ra tất cả các thuộc tính của object productId
-            quantity: item.quantity, // Lấy quantity từ cart
-          };
-        });
-        const order = new Order({
-          // Tạo order mới
-          products: productArray,
-          user: {
-            username: req.user.username,
-            email: req.user.email,
-            userId: req.user._id,
-          },
-          date: new Date().toLocaleString(),
-        });
-        return order.save(); // Lưu order vào database
-      })
-      .then(() => {
-        return req.user.clearCart(); // Xoá cart của user
-      })
-      .then(() =>
-        res.render("./user/checkout", {
-          title: "Payment Success",
-          path: "/checkout",
-          hasFooter: false,
-          code: vnp_Params["vnp_ResponseCode"],
-        })
-      ) // Trả về trang vnpayReturn và truyền mã code trả về từ VNPAY (GD thành công))
-      .catch((err) => {
-        // {ERROR MIDDLEWARE} //
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        next(error);
+  try {
+    if (secureHash === signed && vnp_Params["vnp_ResponseCode"] == "00") {
+      // Nếu mã hóa trả về từ VNPAY trùng với mã hóa của chúng ta
+      //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+      // {SAVE ORDER AND DELETE CART} //
+      const Order = require("../models/orders"); // Gọi model order
+      const user = await req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
+      const products = [...user.cart.items]; // Sau khi lấy được dữ liệu từ collection products qua populate, copy lại vào biến products
+      const productArray = products.map((item) => {
+        // Tạo mảng mới chứa các object product và quantity
+        return {
+          product: item.productId._doc, // _doc là thuộc tính của mongoose, nó sẽ lấy ra tất cả các thuộc tính của object productId
+          quantity: item.quantity, // Lấy quantity từ cart
+        };
       });
-  } else {
-    // Nếu mã hóa trả về từ VNPAY không trùng với mã hóa của chúng ta
-    res.render("./user/checkout", {
-      title: "Payment Failed",
-      path: "/checkout",
-      hasFooter: false,
-      code: "97",
-    }); // Trả về trang vnpayReturn và truyền mã code = 97 (GD thất bại)
+      const order = new Order({
+        // Tạo order mới
+        products: productArray,
+        user: {
+          username: req.user.username,
+          email: req.user.email,
+          userId: req.user._id,
+        },
+        date: new Date().toLocaleString(),
+      });
+      const result = await order.save(); // Lưu order vào database
+      const clearCart = await req.user.clearCart(); // Xoá cart của user
+      res.render("./user/checkout", {
+        title: "Payment Success",
+        path: "/checkout",
+        hasFooter: false,
+        code: vnp_Params["vnp_ResponseCode"],
+      }); // Trả về trang vnpayReturn và truyền mã code trả về từ VNPAY (GD thành công))
+    } else {
+      // Nếu mã hóa trả về từ VNPAY không trùng với mã hóa của chúng ta
+      res.render("./user/checkout", {
+        title: "Payment Failed",
+        path: "/checkout",
+        hasFooter: false,
+        code: "97",
+      }); // Trả về trang vnpayReturn và truyền mã code = 97 (GD thất bại)
+    }
+  } catch (err) {
+    if (!err.httpStatusCode) {
+      err.httpStatusCode = 500;
+    }
+    next(err);
   }
 };
 
