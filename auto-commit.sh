@@ -2,8 +2,8 @@
 
 cd /root/NodeJS-Shop/
 
-# Pull the latest changes from the remote repository
-git pull origin main
+# # Pull the latest changes from the remote repository
+# git pull origin main
 
 # Add all changes
 git add .
