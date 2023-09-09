@@ -1,4 +1,3 @@
-const products = require("../models/products");
 const Product = require("../models/products");
 const fs = require("fs");
 
@@ -198,31 +197,31 @@ const postEditProduct = async (req, res, next) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
-  // VALIDATION INPUT
-  if (!errorValidation.isEmpty()) {
-    console.log(errorValidation.array());
-    const [error] = errorValidation.array();
-    return res.status(422).render("./admin/editProduct", {
-      title: "Edit Product",
-      path: "/admin/add-product",
-      hasFooter: false,
-      editing: true, // truyền giá trị của query 'edit' vào biến editing để kiểm tra xem có phải đang ở trạng thái edit hay không
-      item: product,
-      error: error.msg,
-      errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
-      oldInput: {
-        name,
-        price,
-        description,
-      }, // Lưu lại các giá trị vừa nhập
-    });
-  }
   try {
     const product = await Product.findById(ID);
     if (!product) {
       const err = new Error("Product not found");
       err.httpStatusCode = 404;
       throw err;
+    }
+    // VALIDATION INPUT
+    if (!errorValidation.isEmpty()) {
+      console.log(errorValidation.array());
+      const [error] = errorValidation.array();
+      return res.status(422).render("./admin/editProduct", {
+        title: "Edit Product",
+        path: "/admin/add-product",
+        hasFooter: false,
+        editing: true, // truyền giá trị của query 'edit' vào biến editing để kiểm tra xem có phải đang ở trạng thái edit hay không
+        item: product,
+        error: error.msg,
+        errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
+        oldInput: {
+          name,
+          price,
+          description,
+        }, // Lưu lại các giá trị vừa nhập
+      });
     }
     // {AUTHORIZATION} //
     if (product.userId.toString() !== req.user._id.toString()) {

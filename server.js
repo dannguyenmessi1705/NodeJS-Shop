@@ -112,7 +112,6 @@ mongoose
   }) // Kết nối với database, sau đó mới chạy server
   .catch((err) => {
     console.log(err);
-    res.redirect("/500-maintenance");
   });
 
 // {MIDDLEWARE PHÂN QUYỀN DÙNG SESSION} //

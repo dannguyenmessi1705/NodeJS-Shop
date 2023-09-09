@@ -145,7 +145,7 @@ function sortObject(obj) {
   let key; // Tạo 1 biến để lưu tên tham số
   for (key in obj) {
     // Duyệt qua tất cả các tham số
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       // Nếu tham số tồn tại
       str.push(encodeURIComponent(key)); // Thêm tên tham số vào mảng
     }
