@@ -2,16 +2,14 @@
 
 cd /root/NodeJS-Shop/
 
-# Check for changes in the remote repository
-if git pull origin master; then
-    # Add all changes
-    git add .
+# Pull the latest changes from the remote repository
+git pull origin main
 
-    # Commit the changes with a timestamp
-    git commit -m "Nguyen Di Dan commit on $(date +'%Y-%m-%d %H:%M:%S')"
+# Add all changes
+git add .
 
-    # Push the changes to the remote repository
-    git push origin master
-else
-    echo "No changes to pull."
-fi
+# Commit the changes with a timestamp
+git commit -m "Auto commit on $(date +'%Y-%m-%d %H:%M:%S')"
+
+# Push the changes to the remote repository
+git push origin main

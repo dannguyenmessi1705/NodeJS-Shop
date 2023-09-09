@@ -1,6 +1,6 @@
 Tạo file thực chuyển hướng tới trang thanh toán của VNPAY
    -> Tạo file ("controllers/payment.js"), ("routes/payment.js") để config các thông số cần thiết cho thanh toán
-   -> Sửa nút Order All trong "views/cart.ejs" thành nút chuyển hướng tới trang thanh toán VNPAY
+   -> Sửa nút Order All trong "views/cart.ejs" thành nút chuyển hướng tới trang thanh toán VNPAY.
 
 
 
