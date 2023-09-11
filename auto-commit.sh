@@ -2,7 +2,7 @@
 cd /root/NodeJS-Shop/
 
 git config --global user.email "didannguyen17@gmail.com"
-git config --global user.name "Di Đan Nguyễn"
+git config --global user.name "dannguyenmessi1705"
 
 # # Pull the latest changes from the remote repository
 git pull origin main
