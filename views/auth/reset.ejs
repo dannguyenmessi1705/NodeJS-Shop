@@ -7,25 +7,28 @@
    <%- include('../includes/nav.ejs') %>
 
     <main>
-        <!-- FLASH MESSAGE -->
-        <% if (requestSuccess) { %>
-            <div class="message message--success">
+        <div class="d-flex align-items-center py-2">
+            <!-- FLASH MESSAGE -->
+            <% if (requestSuccess) { %>
+            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
                 <%= requestSuccess %>
             </div>
             <div style="display: flex; justify-content: center; align-items: center;">
                 <h2>An email has sent, please check inbox to reset password</h2>
             </div>
-        <% } else { %>
-            <% if(error) { %> 
-                <div class="message message--error">
-                    <%=error%>
-                </div>
+            <% } else { %>
+                <% if(error) { %> 
+                    <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+                        <%= error %>
+                    </div>
+                <% } %>
             <% } %>
+        </div>
             <form class="login-form" action="/reset" method="POST">
                 <div class="form-control">
                     <label for="email">E-Mail</label>
                     <input type="email" name="email" id="email" value="<%=oldInput%>"
-                        class="<%=errorType === 'email' ? 'invalid' : ''%>">
+                        class="border-3 <%=errorType === 'email' ? 'border-danger' : ''%>">
                 </div>
                 <!-- TOKEN CSRF -->
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">

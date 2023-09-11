@@ -1,43 +1,60 @@
 <%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/swiper-icons.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/carousel-slide.css">
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <!-- FLASH MESSAGE -->
-        <% if(successLogin) { %>
-            <div class="message message--success">
+    <!-- FLASH MESSAGE -->
+    <% if(successLogin) { %>
+        <div class="d-flex align-items-center py-2">
+            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
                 <%= successLogin %>
             </div>
-        <% } %>
-        <% if (items.length > 0) { %>
-            <div class="grid">
-                <% items.forEach((item) => { %>
-                <article class="card product-item">
-                    <header class="card__header">
-                        <h1 class="product__title"><%= item.name %></h1>
-                    </header>
-                    <div class="card__image">
-                        <img src="/<%=item.url%>" alt="A Book">
+        </div>
+    <% } %>
+    <section id="carousel">
+        <div class="carousel slide" data-bs-ride="carousel" id="carousel-1">
+            <div class="carousel-inner">
+                <div class="carousel-item">
+                    <div class="border rounded border-light-subtle pulse animated everything carousel-hero jumbotron py-5 px-4">
+                        <h1 class="display-3 fw-semibold hero-title">Everything</h1>
+                        <p class="hero-subtitle">We strive to bring you as much as possible, more than you expect</p>
+                        <p><a class="btn btn-primary btn-lg hero-button plat" role="button" href="/product">Go to SHOP</a></p>
                     </div>
-                    <div class="card__content">
-                        <h2 class="product__price">$<%= item.price %></h2>
-                        <p class="product__description"><%= item.description %></p>
+                </div>
+                <div class="carousel-item">
+                    <div class="border rounded border-light pulse animated everytime carousel-hero jumbotron py-5 px-4">
+                        <h1 class="display-3 fw-semibold hero-title">Everytime</h1>
+                        <p class="hero-subtitle">You don't have to wait long, with a large force of young staff, our services are ready to support you at any time</p>
+                        <p><a class="btn btn-primary btn-lg hero-button plat" role="button" href="/product">Go to SHOP</a></p>
                     </div>
-                    <div class="card__actions">
-                        <!-- POST CART  -->
-                        <% if(authenticate) { %>
-                            <%- include('../includes/addCart.ejs', {item: item}) %>
-                            <!-- Thêm object {item: item} để thẻ chỉ xác định duy nhất 1 item trong vòng lặp có nhiều items -->
-                        <% } %> 
+                </div>
+                <div class="carousel-item active">
+                    <div class="border rounded border-light pulse animated everywhere carousel-hero jumbotron py-5 px-4">
+                        <h1 class="display-3 fw-semibold hero-title">Everywhere</h1>
+                        <p class="hero-subtitle">Our e-commerce store is available in over 140 countries and territories, so you don't have to worry about delivery times</p>
+                        <p><a class="btn btn-primary btn-lg hero-button plat" role="button" href="/product">Go to SHOP</a></p>
                     </div>
-                </article>
-                <% }) %>
+                </div>
             </div>
-            <%- include('../includes/pagination.ejs') %>
-        <% } else { %>
-            <div class="empty">
-                <h1>The item is empty</h1>
+            <div>
+                <a class="caro carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                    <span class="visually-hidden">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                    <span class="visually-hidden">Next</span>
+                </a>
             </div>
-        <% } %>
-    </main>
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="0"></button> 
+                <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="1"></button> 
+                <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="2" class="active"></button>
+            </div>
+        </div>
+    </section>
+    <script src="/js/Simple-Slider-swiper-bundle.min.js"></script>
+    <script src="/js/Simple-Slider.js"></script>
 <%- include('../includes/end.ejs') %>

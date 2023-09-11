@@ -1,9 +1,9 @@
-const btn = document.querySelector(".btn.danger"); // Chọn button có class là btn và danger (nút xóa)
+const btn = document.querySelector(".btn.btn-danger"); // Chọn button có class là btn và danger (nút xóa)
 const deleteProduct = (btn) => {
   // Tạo hàm xóa
   const productId = btn.parentNode.querySelector("input[name=id]").value; // Lấy id của sản phẩm
   const csrf_token = btn.parentNode.querySelector("input[name=_csrf]").value; // Lấy token để xác thực khi xoá
-  const item = btn.closest(".card.product-item"); // Lấy thẻ cha của button có class là card và product-item
+  const item = btn.closest(".card-dan"); // Lấy thẻ cha của button có class là card và product-item
   fetch(`delete-product/${productId}`, {
     // Gửi request lên server
     method: "DELETE", // Sử dụng method delete

@@ -1,40 +1,103 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/cart.css">
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <% if(items.length > 0){ %>
-            <div class="center">
-                <h1>Total Price: <b>$<%=totalPrice%></b></h1> 
-            </div>
-            <form class="center" action="/payment" method="POST">
-                <!-- TOKEN CSRF -->
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                <input type="hidden" name="amount" value="<%=totalPrice%>">
-                <input type="hidden" name="userId" value="<%=userId%>">
-                <button class="btn" type="submit">ORDER ALL</button>
-            </form>
-            <ul class="cart__item-list">
-                <% items.forEach((item) => { %>
-                    <li class="cart__item">
-                        <h1><%=item.productId.name%></h1>
-                        <h2>Quantity: <%=item.quantity%></h2>
-                        <div class="card__actions">
-                            <form action="/delete-cart" method="POST">
-                                <!-- TOKEN CSRF -->
-                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                                <input type="hidden" name="id" value="<%=item.productId._id%>">
-                                <button class="btn danger" type="submit">Delete</button>
-                            </form>
+    <section data-aos="fade" data-aos-delay="400" class="py-2">
+        <div class="container py-5">
+            <div class="row mx-auto">
+                <% if(!items.length > 0){ %>
+                    <div data-aos="fade-down" data-aos-delay="400" class="my-4 py-2 text-center">
+                        <h1>No any products in the your cart, please add !</h1>
+                    </div>
+                <%}else{%>
+                    <div class="col">
+                        <div data-reflow-type="shopping-cart">
+                            <div class="reflow-shopping-cart" style="display: block;">
+                                <div class="ref-loading-overlay"></div>
+                                <div class="ref-message" style="display: none;"></div>
+                                <div class="ref-cart" style="display: block;">
+                                    <div class="ref-heading">Shopping Cart</div>
+                                    <div class="ref-th">
+                                        <div class="ref-product-col">Product</div>
+                                        <div class="ref-price-col">Price</div>
+                                        <div class="ref-quantity-col">Quantity</div>
+                                        <div class="ref-total-col">Total</div>
+                                    </div>
+                                <% items.forEach((item) => { %>
+                                    <div class="ref-cart-table">
+                                        <div class="ref-product">
+                                            <div class="ref-product-col">
+                                                <div class="ref-product-wrapper"><img class="ref-product-photo" src="/<%=item.productId.url%>" alt="product" />
+                                                    <div class="ref-product-data">
+                                                        <div class="ref-product-info">
+                                                            <div>
+                                                                <div class="ref-product-name"><%=item.productId.name%></div>
+                                                            </div>
+                                                            <div class="ref-product-price ref-mobile-product-price">$<%=item.productId.price%></div>
+                                                        </div>
+                                                        <div class="ref-product-controls ref-mobile-product-controls">
+                                                            <div class="d-flex flex-column">
+                                                                <div>Quantity: <%=item.quantity%></div>
+                                                                <form action="/delete-cart" method="POST">
+                                                                    <!-- TOKEN CSRF -->
+                                                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                                                    <input type="hidden" name="id" value="<%=item.productId._id%>">
+                                                                    <button class="btn btn-danger" style="margin-top: 2rem;" type="submit">Delete</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ref-price-col">
+                                                <div class="ref-product-price">$<%=item.productId.price%></div>
+                                            </div>
+                                            <div class="ref-quantity-col">
+                                                <div class="ref-product-quantity">
+                                                    <div class="ref-quantity-container">
+                                                        <div><%=item.quantity%></div>
+                                                    </div>
+                                                    <div class="ref-product-qty-message"></div>
+                                                    <div class="ref-product-remove">
+                                                        <form action="/delete-cart" method="POST">
+                                                            <!-- TOKEN CSRF -->
+                                                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                                            <input type="hidden" name="id" value="<%=item.productId._id%>">
+                                                            <button class="btn btn-danger" style="margin-top: 2rem;" type="submit">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ref-total-col">
+                                                <div class="ref-product-total">
+                                                    <div class="ref-product-total-sum">$<%=+(item.quantity * item.productId.price)%></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <%})%>
+                                    </div>
+                                    <div class="ref-footer">
+                                        <div class="ref-links"><a href="https://google.com" target="_blank" class="text-light-emphasis">Terms &amp; Conditions</a><a href="https://google.com" target="_blank" class="text-light-emphasis">Privacy Policy</a><a href="https://google.com" target="_blank" class="text-light-emphasis">Refund Policy</a></div>
+                                        <div class="ref-totals">
+                                            <div class="ref-subtotal">Subtotal: $<%=totalPrice%></div>
+                                            <form class="ref-accept-terms" style="display: block;"><label><input id="ref-terms-agreement" type="checkbox" data-state-src="accept-terms" required /><span class="ref-terms-agreement-text"><span>I agree to the </span><a href="https://google.com">Terms &amp; Conditions</a><span>, </span><a href="https://google.com">Privacy Policy</a><span> and </span><a href="https://google.com">Refund Policy</a></span></label></form>
+                                            <div class="ref-row ref-checkout-buttons">
+                                                <form class="center" action="/payment" method="POST">
+                                                    <!-- TOKEN CSRF -->
+                                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                                    <input type="hidden" name="amount" value="<%=totalPrice%>">
+                                                    <input type="hidden" name="userId" value="<%=userId%>">
+                                                    <button class="ref-button ref-standard-checkout-button" type="submit">ORDER ALL</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </li>
-                <% }) %>
-        </ul>
-        <%}else{%>
-            <div class="empty">
-                <h1>There is nothing here</h1>
+                    </div>
+                <%}%>
             </div>
-        <%}%>
-    </main>
+        </div>
+    </section>
 <%- include('../includes/end.ejs') %>

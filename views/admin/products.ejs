@@ -2,38 +2,47 @@
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <% if (items.length > 0) { %>
-            <div class="grid">
-                <% items.forEach((item) => { %>
-                <article class="card product-item">
-                    <header class="card__header">
-                        <h1 class="product__title"><%= item.name %></h1>
-                    </header>
-                    <div class="card__image">
-                        <img src="/<%=item.url%>" alt="Product">
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm py-4">
+        <div class="container py-2">
+            <% if (!items.length > 0) { %>
+                <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
+                    <div class="col-md-8 col-xl-6 text-center mx-auto">
+                        <h2 class="fw-bold">Products</h2>
+                        <p class="text-muted">You still don't have any of your products</p>
                     </div>
-                    <div class="card__content">
-                        <h2 class="product__price">$<%= item.price %></h2>
-                        <p class="product__description"><%= item.description %></p>
-                    </div>
-                    <div class="card__actions" style="display: flex; justify-content: center; align-items: center;">
-                        <a href="/admin/edit-product/<%= item._id %>/?edit=true" class="btn">Edit</a>
-                        <!-- TOKEN CSRF -->
-                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                        <input type="hidden" name="id" id="id" value="<%=item._id%>">
-                        <button type="button" class="btn danger" onclick="deleteProduct(this)">Delete</button>
-                        <!-- onclick="deleteProduct(this)" là sự kiện click vào button sẽ gọi hàm deleteProduct(this), this là tham số truyền vào hàm deleteProduct (btn) --> 
-                    </div>
-                </article>
-                <% }) %>
-            </div>
-            <%- include('../includes/pagination.ejs') %>
-        <% } else { %>
-            <div class="empty">
-                <h1>The item is empty</h1>
-            </div>
-        <% } %>
-    </main>
+                </div>
+            <% } else { %>
+                <div class="d-flex flex-wrap justify-content-around align-items-stretch">
+                    <% items.forEach((item) => { %>
+                        <article class="bg-light-subtle card-dan d-flex flex-column align-items-center justify-content-around text-center my-4 p-1 mx-1 border rounded-3 shadow-lg">
+                            <header class="d-flex flex-column align-items-center justify-content-center p-3">
+                                <h2 class="ref-name fs-2"><%= item.name %></h2>
+                            </header>
+                            <div class="card__image-dan">
+                                <img src="/<%=item.url%>" alt="A Book">
+                            </div>
+                            <div class="d-flex flex-column align-items-center justify-content-center p-3">
+                                <h1 class="ref-original-price fs-4">$<%= item.price %></h1>
+                                <p class="ref-description"><%= item.description %></p>
+                            </div>
+                            <div class="card__actions-dan">
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <!-- ADD ID FOR PRODUCT -->
+                                <a href="/admin/edit-product/<%= item._id %>/?edit=true" class="btn btn-warning">Edit</a>
+                                <!-- href = product/0.7834371053383911 -->
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <input type="hidden" name="id" id="id" value="<%=item._id%>">
+                                <button type="submit" class="btn btn-danger" onclick="deleteProduct(this)">Delete</button>
+                                <!-- onclick="deleteProduct(this)" là sự kiện click vào button sẽ gọi hàm deleteProduct(this), this là tham số truyền vào hàm deleteProduct (btn) -->       
+                            </div>
+                        </article>
+                    <% }) %>
+                </div>
+                <%- include('../includes/pagination.ejs') %>
+            <% } %>
+        </div>
+    </section>
     <script src="/js/adminController.js"></script>
 <%- include('../includes/end.ejs') %>

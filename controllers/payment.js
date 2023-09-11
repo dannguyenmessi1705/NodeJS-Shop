@@ -31,7 +31,7 @@ const getPayment = (req, res, next) => {
   let vnpUrl = config.vnp_Url; // Đường dẫn thanh toán
   // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
   let returnUrl =
-    req.protocol + "://" + req.get("host") + "/payment/vnpay_return"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn
+    req.protocol + "://" + req.get("host") + "/payment/vnpay_return/"; // Lấy đường dẫn trang mặc định (http://localhost:3000); // Đường dẫn
   // let returnUrl = config.vnp_ReturnUrl; // Đường dẫn trả về từ VNPAY
   let orderId = moment(date).format("DDHHmmss"); // Định dạng mã giao dịch
   let amount = parseFloat(req.body.amount); // Lấy số tiền thanh toán

@@ -4,7 +4,14 @@
 </head>
 <body>
     <%- include('./includes/nav.ejs') %>
-    <div style="display: flex; justify-content: center; align-items: center;">
-        <h1>OOPS, Server is down. We are fixing the problem. Sorry for the inconvenience</h1>
-    </div>
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm py-5">
+        <div class="container py-2">
+            <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="fw-bold">OOPS</h2>
+                    <h1 class="text-muted">Server is down. We are fixing the problem. Sorry for the inconvenience !!!</h1>
+                </div>
+            </div>
+        </div>
+    </section>
 <%- include('./includes/end.ejs') %>

@@ -2,45 +2,62 @@
     <link rel="stylesheet" href="/css/form.css">
     <link rel="stylesheet" href="/css/auth.css">
 </head>
-
 <body>
    <%- include('../includes/nav.ejs') %>
-
-    <main>
+   <div class="d-flex align-items-center py-2">
         <!-- FLASH MESSAGE -->
         <% if(error) { %> 
-            <div class="message message--error">
+            <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
                 <%= error %>
             </div>
         <% } else if(errorLogin) { %>
-            <div class="message message--error">
+            <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
                 <%= errorLogin %>
             </div>
         <% } else if(successSignup) { %>
-            <div class="message message--success">
+            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
                 <%= successSignup %>
             </div>
         <% } else if (updatePassword) { %>
-            <div class="message message--success">
+            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
                 <%= updatePassword %>
             </div>
         <% } %>
-        <form class="login-form" action="/login" method="POST">
-            <!--  LOAD OLD DATA WHEN VALIDATE FAILED -->
-            <div class="form-control">
-                <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email" value="<%=oldInput.email%>"
-                    class="<%=errorType === 'email' ? 'invalid' : ''%>">
+    </div>
+    <section data-aos="zoom-in" class="py-5">
+        <div class="container py-1">
+            <div class="row mb-4 mb-lg-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h3 class="fw-bold">Welcome back</h3>
+                </div>
             </div>
-            <div class="form-control">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" value="<%=oldInput.password%>"
-                    class="<%=errorType === 'password' ? 'invalid' : ''%>">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <div class="bs-icon-xl bs-icon-circle bs-icon-primary shadow bs-icon my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"></path>
+                                </svg>
+                            </div>
+                            <form method="post" action="/login" data-bs-theme="light">
+                                <div class="mb-3">
+                                    <input class="form-control border-3 <%=errorType === 'email' ? 'border-danger' : ''%>" type="email" name="email" id="email" placeholder="Email" value="<%=oldInput.email%>">
+                                </div>
+                                <div class="mb-3">
+                                    <input class="form-control border-3 <%=errorType === 'password' ? 'border-danger' : ''%>" type="password" name="password" id="password" placeholder="Password" value="<%=oldInput.password%>">
+                                </div>
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <div class="mb-3">
+                                    <button class="btn btn-primary shadow d-block w-100" type="submit">Log in</button>
+                                </div>
+                            </form>
+                            <a href="/reset" class="text-muted">Forgot your password?</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- TOKEN CSRF -->
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-            <button class="btn" type="submit">Login</button>
-        </form>
-        <a href="/reset" class="center" style="color: #00695c;">Forgot password?</a>
-    </main>
+        </div>
+    </section>
 <%- include('../includes/end.ejs') %>

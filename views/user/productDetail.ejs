@@ -2,26 +2,48 @@
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <div class="grid">
-            <article class="card product-item">
-                <header class="card__header">
-                    <h1 class="product__title"><%= item.name %></h1>
-                </header>
-                <div class="card__image">
-                    <img src="/<%=item.url%>" alt="A Book">
+    <section data-aos="fade" class="bg-dark-subtle shadow-sm py-4">
+        <div class="container py-2 d-flex align-items-center justify-content-center">
+            <div data-reflow-type="product" data-bss-dynamic-product data-bss-dynamic-product-param="product">
+                <div class="bg-light-subtle d-flex flex-column flex-md-row align-items-center justify-content-center p-1 m-1 border rounded-3 shadow-lg">
+                    <div class="ref-media my-2">
+                        <div class="w-100 ref-preview">
+                            <img class="w-100 ref-image active px-4 m-auto" src="/<%=item.url%>" data-reflow-preview-type="image" />
+                        </div>
+                    </div>
+                    <div class="ref-product-data px-4">
+                        <h2 class="ref-name"><%= item.name %></h2>
+                        <div class="ref-categories">
+                            <span class="ref-category"></span>
+                        </div>
+                        <strong class="ref-price ref-on-sale fs-3">
+                            <s class="ref-original-price"></s>$<%= item.price %>
+                        </strong>
+                            <div class="reflow-add-to-cart my-2">
+                                <!-- POST CART  -->
+                                <% if(authenticate) { %>
+                                    <%- include('../includes/addCart.ejs') %>
+                                <% } %> 
+                            </div>
+                        <div class="ref-description my-4"><%= item.description %></div>
+                    </div>
                 </div>
-                <div class="card__content">
-                    <h2 class="product__price">$<%= item.price %></h2>
-                    <p class="product__description"><%= item.description %></p>
-                </div>
-                <div class="card__actions">
-                    <!-- POST CART  -->
-                    <% if(authenticate) { %>
-                        <%- include('../includes/addCart.ejs') %>
-                    <% } %> 
-                </div>
-            </article>
+            </div>
         </div>
-    </main>
+    </section>
+    <style>
+        .ref-preview {
+            position: relative;
+            width: 480px;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .ref-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
 <%- include('../includes/end.ejs') %>

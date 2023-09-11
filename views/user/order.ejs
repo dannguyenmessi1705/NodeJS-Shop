@@ -1,28 +1,48 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/orders.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <% if(orders.length > 0){ %>
-        <ul class="orders">
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm">
+        <% if(orders.length > 0){ %>
+          <ul class="orders list-unstyled">
             <% orders.forEach(order => { %>
-                <li class="orders__item">
-                    <h1>Order - #<%= order._id %></h1>
-                    <h1><a href="/order/<%=order._id%>" class="printbutton"><i class="fa fa-print" style="font-size:24px"></i>Invoice</a> <%=order.date%></h1>
-                    <ul class="orders__products">
-                        <% order.products.forEach(item => { %> 
-                            <li class="orders__products-item"><%= item.product.name %> (<%= item.quantity %>)</li>
-                        <% }) %>
-                    </ul>
-                </li>
-                <hr>
+              <li class="shadow-sm p-4 border border-dark-subtle">
+                <h1 class="order-id">Order - #<%= order._id %></h1> <!-- Use the full ID -->
+                <h1 class="d-inline-block date">Date: <%= order.date %></h1>
+                <ul class="list-unstyled">
+                  <% order.products.forEach(item => { %> 
+                    <li class="my-2 py-2 border rounded-4 border-dark-subtle">
+                      <ul class="mx-2 px-2"><%= item.product.name %> (<%= item.quantity %>)</ul>
+                    </li>
+                  <% }) %>
+                </ul>
+                <a href="/order/<%= order._id %>" class="align-content-end text-decoration-none text-light-emphasis btn btn-info my-2"><i class="fa fa-print fs-3"></i> Invoice</a>
+              </li>
             <% }) %>
-        </ul>
-        <%- include('../includes/pagination.ejs') %>
-    <% }else{ %>
-        <div class="empty">
-            <h1>There is nothing here</h1>
-        </div>
-    <% } %>
+          </ul>
+          <%- include('../includes/pagination.ejs') %>
+        <% }else{ %>
+          <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+              <h2 class="fw-bold">Products</h2>
+              <p class="text-muted">You still don't have any of your products</p>
+            </div>
+          </div>
+        <% } %>
+      </section>
+      
+      <style>
+      /* Styles for laptop/desktop */
+      .order-id, .date {
+        font-size: 24px; /* Adjust the font size for laptop/desktop here */
+      }
+      
+      /* Styles for mobile */
+      @media (max-width: 767px) {
+        .order-id, .date {
+          font-size: 16px; /* Adjust the font size for mobile screens here */
+        }
+      }
+      </style>
 <%- include('../includes/end.ejs') %>

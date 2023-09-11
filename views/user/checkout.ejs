@@ -2,14 +2,23 @@
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <% if (code == "00") { %>
-            <h1 style="text-align: center; margin: 3rem 0 auto;">Giao dịch thành công</h1>
-        <% } else { %>
-            <h1 style="text-align: center; color: red; margin: 3rem 0 auto">Giao dịch thất bại</h1>
-        <% } %>
-        <p style="text-align: center;">
-            <a class="btn btn-default" href="/order">GO TO ORDER LIST</a>
-        </p>
-    </main>
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm py-5">
+        <div class="container py-2">
+            <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <% if (code == "00") { %>
+                        <h1 class="text-center mb-3">Giao dịch thành công</h1>
+                        <p class="text-center">
+                            <a class="btn btn-primary" href="/order">GO TO ORDER LIST</a>
+                        </p>
+                    <% } else { %>
+                        <h1 class="text-center text-danger mb-3">Giao dịch thất bại</h1>
+                        <p class="text-center">
+                            <a class="btn btn-primary" href="/cart">GO TO CART</a>
+                        </p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
 <%- include('../includes/end.ejs') %>

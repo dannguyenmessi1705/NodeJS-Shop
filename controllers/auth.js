@@ -29,22 +29,22 @@ const postAuth = async (req, res, next) => {
   const password = req.body.password; // Lấy giá trị password từ form
   // {VALIDATION INPUT} //
   const errorValidation = validationResult(req);
-  if (!errorValidation.isEmpty()) {
-    console.log(errorValidation.array());
-    const [error] = errorValidation.array();
-    return res.status(422).render("./auth/login", {
-      title: "Login",
-      path: "/login",
-      hasFooter: false,
-      error: error.msg,
-      errorType: error.path, // Lưu lại lỗi thuộc trường nào
-      oldInput: {
-        email,
-        password,
-      }, // Lưu lại các giá trị vừa nhập
-    });
-  }
   try {
+    if (!errorValidation.isEmpty()) {
+      console.log(errorValidation.array());
+      const [error] = errorValidation.array();
+      return res.status(422).render("./auth/login", {
+        title: "Login",
+        path: "/login",
+        hasFooter: false,
+        error: error.msg,
+        errorType: error.path, // Lưu lại lỗi thuộc trường nào
+        oldInput: {
+          email,
+          password,
+        }, // Lưu lại các giá trị vừa nhập
+      });
+    }
     const user = await User.findOne({ email: email }); // Tìm user có email = email
     if (!user) {
       // Nếu không tìm thấy user

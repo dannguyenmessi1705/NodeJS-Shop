@@ -1,49 +1,47 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/addProduct.css">
-    <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <main>
-        <!-- VALIDATION INPUT -->
-        <% if(error) {%>
-            <div class="message message--error">
+    <section class="position-relative py-4 py-xl-5">
+        <% if(error) { %> 
+            <div class="shake animated d-inline-block pb-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
                 <%= error %>
             </div>
-        <%}%>
+        <% } %>
         <!-- Nếu editing = true => Edit, ngược lại là ADD -->
-        <form class="product-form" action="/admin/<%if(editing){%>edit-product<%}else{%>add-product<%}%>" method="POST" enctype="multipart/form-data">
-            <!-- TOKEN CSRF -->
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-            <div class="form-control">
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" value="<%if(editing){%><%=item.name%><%}else{%><%=oldInput.name%><%}%>"
-                    class="<%=errorType === 'name' ? 'invalid' : ''%>">
+        <div class="container position-relative">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4" style>
+                    <div class="card mb-5">
+                        <div class="card-body p-sm-5">
+                            <h2 class="text-center mb-4"><%if(editing){%>Edit Product<%}else{%>Add Product<%}%></h2>
+                            <form method="post" action="/admin/<%if(editing){%>edit-product<%}else{%>add-product<%}%>" enctype="multipart/form-data">
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <div class="mb-3">
+                                    <input id="name" class="form-control border-3 <%=errorType === 'name' ? 'border-danger' : ''%>" type="text" name="name" placeholder="Name" autocomplete="on" value="<%if(editing){%><%=item.name%><%}else{%><%=oldInput.name%><%}%>"/>
+                                </div>
+                                <div class="mb-3">
+                                    <input id="price" class="form-control border-3 <%=errorType === 'price' ? 'border-danger' : ''%>" type="number" step="0.01" name="price" placeholder="Price" autocomplete="on" value="<%if(editing){%><%=item.price%><%}else{%><%=oldInput.price%><%}%>"/>
+                                </div>
+                                <div class="mb-3">
+                                    <input class="form-control form-control-file" type="file" name="image" id="image">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea id="description" class="form-control border-3 <%=errorType === 'description' ? 'border-danger' : ''%>" name="description" rows="4" placeholder="Description" autocomplete="on" spellcheck="true" wrap="soft"><%if(editing){%><%=item.description%><%}else{%><%=oldInput.description%><%}%></textarea>
+                                </div>
+                                        <!-- UPDATE PRODUCT -->
+                                <%if(editing){%>
+                                    <input type="hidden" value="<%=item._id%>" name="id">
+                                <%}%>
+                                <div>
+                                    <button class="btn btn-outline-success d-block w-100" type="submit"><%if(editing){%>Update Product<%}else{%>Add Product<%}%></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-control">
-                <label for="price">Price</label>
-                <input type="number" name="price" id="price" step="0.01" value="<%if(editing){%><%=item.price%><%}else{%><%=oldInput.price%><%}%>"
-                    class="<%=errorType === 'price' ? 'invalid' : ''%>">
-            </div>
-            <!-- <div class="form-control">
-                <label for="url">URL</label>
-                <input type="text" name="url" id="url" rows="5" value="<%if(editing){%><%=item.url%><%}else{%><%=oldInput.url%><%}%>"
-                    class="<%=errorType === 'url' ? 'invalid' : ''%>">
-            </div> -->
-            <div class="form-control">
-                <label for="image">Image File</label>
-                <input type="file" name="image" id="image">
-            </div>
-            <div class="form-control">
-                <label for="description">Description</label>
-                <textarea type="text" name="description" id="description" rows="5"
-                    class="<%=errorType === 'description' ? 'invalid' : ''%>"><%if(editing){%><%=item.description%><%}else{%><%=oldInput.description%><%}%></textarea>
-            </div>
-            <!-- UPDATE PRODUCT -->
-            <%if(editing){%>
-                <input type="hidden" value="<%=item._id%>" name="id">
-            <%}%>
-            <button type="submit" class="btn"><%if(editing){%>Update Product<%}else{%>Add Product<%}%></button>
-        </form>
-    </main>
+        </div>
+    </section>
 <%- include('../includes/end.ejs') %>
