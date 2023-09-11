@@ -28,7 +28,7 @@
                             </div>
                             <form method="post" action="/signup" data-bs-theme="light">
                                 <div class="mb-3">
-                                    <input class="form-control border-3 <%=errorType === 'username' ? 'border-danger' : ''%>" type="text" name="text" id="username" placeholder="Username" value="<%=oldInput.username%>">
+                                    <input class="form-control border-3 <%=errorType === 'username' ? 'border-danger' : ''%>" type="text" name="username" id="username" placeholder="Username" value="<%=oldInput.username%>">
                                 </div>
                                 <div class="mb-3">
                                     <input class="form-control border-3 <%=errorType === 'email' ? 'border-danger' : ''%>" type="email" name="email" id="email" placeholder="Email" value="<%=oldInput.email%>">

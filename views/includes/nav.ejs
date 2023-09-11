@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md sticky-top bg-primary-subtle py-3 navbar-light" id="mainNav" style="border-color: var(--bs-secondary-bg);">
+<nav class="navbar navbar-expand-md sticky-top bg-primary-subtle py-2 navbar-light" id="mainNav" style="border-color: var(--bs-secondary-bg);">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" data-aos="fade-right" href="/">
             <span class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex justify-content-center align-items-center me-2 bs-icon">
@@ -30,7 +30,7 @@
                 <form action="/logout" method="POST">
                     <!-- TOKEN CSRF -->
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                    <button class="btn btn-danger shadow d-grid" role="button" data-aos="fade-left" type="submit">Log Out</button>
+                    <button class="btn btn-danger shadow d-grid m-2" role="button" data-aos="fade-left" type="submit">Log Out</button>
                 </form>
             <% } %>
             <label data-aos="fade-left" for="theme" class="theme">
