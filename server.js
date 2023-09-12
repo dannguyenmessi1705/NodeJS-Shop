@@ -1,6 +1,22 @@
 const express = require("express");
 const app = express();
 
+// {BODY PARSER} // (Để lấy dữ liệu từ form) //
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false })); // Sử dụng body-parser để lấy dữ liệu từ form (x-www-form-urlencoded)
+app.use(bodyParser.json()); // Sử dụng body-parser để lấy dữ liệu từ form (json) - dùng cho client side
+
+// {CORS} //
+const cors = require("cors");
+app.use(cors());
+// Nếu không dùng cors thì phải khai báo như sau:
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*'); // cho phép tất cả các domain đều có thể gọi API
+//     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE'); // cho phép các method này
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // dùng để gửi header lên
+// })
+// ==== app.use(cors()); // cho phép tất cả các domain đều có thể gọi API
+
 const path = require("path");
 const rootDir = require("./util/path.js");
 app.use(express.static(path.join(rootDir, "public")));
@@ -48,10 +64,6 @@ app.use((req, res, next) => {
   res.locals.csrfToken = token; // Truyền biến csrfToken vào locals để sử dụng ở tất cả các route
   next();
 }); // Sử dụng middleware bảo vệ các route, nếu không có token thì các lệnh request sẽ báo lỗi
-
-// {BODY PARSER} // (Để lấy dữ liệu từ form) //
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
 
 // {MULTER} // (Để lấy dữ liệu file từ form) //
 const multer = require("multer"); // Nhập module multer
@@ -138,18 +150,30 @@ app.use(async (req, res, next) => {
   }
 });
 
-// {LOGIN ROUTE} //
+// {ROUTE SERVER SIDE} //
 const authRoute = require("./routes/auth");
 const adminRoute = require("./routes/admin");
 const personRoute = require("./routes/user");
 const paymentRoute = require("./routes/payment");
 const errorRoute = require("./routes/error");
-
 app.use("/admin", adminRoute);
 app.use(personRoute);
 // {LOGIN ROUTE} //
 app.use(authRoute);
 app.use(paymentRoute);
+
+// {ENPOINT API ROUTE FOR CLIENT} //
+const authRouteAPI = require("./api/routes/auth");
+const adminRouteAPI = require("./api/routes/admin");
+const personRouteAPI = require("./api/routes/user");
+const paymentRouteAPI = require("./api/routes/payment");
+app.use("/api/admin", adminRouteAPI);
+app.use("/api", personRouteAPI);
+// {LOGIN ROUTE} //
+app.use("/api", authRouteAPI);
+app.use("/api", paymentRouteAPI);
+
+// Phải đặt các route lỗi ở cuối cùng
 app.use(errorRoute);
 
 // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
