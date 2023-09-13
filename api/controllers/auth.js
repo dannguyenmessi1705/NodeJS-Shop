@@ -1,6 +1,9 @@
 // {ADDING VALIDATION} // Nhập module validationResult dùng để xác thực dữ liệu đầu vào
 const { validationResult } = require("express-validator");
 
+// {JSONWEBTOKEN} //
+const genJWT = require("../middleware/jwtGeneration"); // Nhập module jwtGeneration
+
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
@@ -36,7 +39,6 @@ const postAuth = async (req, res, next) => {
         message: error.msg,
         title: "Login",
         path: "/login",
-        hasFooter: false,
         errorType: error.path, // Lưu lại lỗi thuộc trường nào
         oldInput: {
           email,
@@ -48,16 +50,29 @@ const postAuth = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "Email does not exist!" });
     }
-    const checkPass = await bcrypt.compare(password, user.password); // So sánh password nhập vào với password đã mã hoá trong database
+    const checkPass = bcrypt.compareSync(password, user.password); // So sánh password nhập vào với password đã mã hoá trong database
     if (checkPass) {
       // Nếu password trùng khớp
+      const accessToken = genJWT.generateAccessToken({
+        userId: user._id.toString(),
+      }); // Tạo accessToken
+      const refreshToken = genJWT.generateRefreshToken({
+        userId: user._id.toString(),
+      }); // Tạo refreshToken
+      req.session.accessToken = accessToken; // Lưu accessToken vào session
+      req.session.refreshToken = refreshToken; // Lưu refreshToken vào session
       req.session.isLogin = true; // Tạo Session có tên là "isLogin", giá trị là "true"
       req.session.user = user; // Tạo Session có tên là "user", giá trị là user vừa tìm được
       // req.session.cookie.maxAge = 3000; // Thời gian tồn tại của Session là 3s
-      await req.session.save(); // Lưu Session
-      res
-        .status(200)
-        .json({ message: "Login successfully", userId: user._id.toString() });
+      req.session.save(() => {
+        res
+          .status(200)
+          .json({
+            message: "Login successfully",
+            userId: user._id.toString(),
+            accessToken: accessToken,
+          });
+      }); // Lưu Session
     } else {
       res.status(401).json({ message: "Email or Password is incorrect!" });
     }
@@ -93,7 +108,6 @@ const postSignup = async (req, res, next) => {
         message: error.msg,
         title: "Sign Up",
         path: "/signup",
-        hasFooter: false,
         errorType: error.path, // xác định trường nào  lõi cần sửa
         oldInput: { username, email, password, re_password }, // Lưu lại các giá trị vừa nhập
       });
@@ -152,7 +166,6 @@ const postReset = async (req, res, next) => {
         requestSuccess: undefined,
         errorType: error.path,
         oldInput: email,
-        hasFooter: false,
       });
     } else {
       const user = await User.findOne({ email: email }); // Tìm kiếm 1 user trong collection có email là email
@@ -192,62 +205,58 @@ const postReset = async (req, res, next) => {
   }
 };
 
-const postUpdatePassword = (req, res, next) => {
+const postUpdatePassword = async (req, res, next) => {
   const ID = req.body.userId; // Lấy giá trị userId từ form
   const token = req.body.passwordToken; // Lấy giá trị passwordToken từ form
   const password = req.body.password; // Lấy giá trị password từ form
   let resetUser; // Khai báo 1 biến để lưu user
   const errorValidation = validationResult(req);
-  if (!errorValidation.isEmpty()) {
-    console.log(errorValidation.array());
-    const [error] = errorValidation.array();
-    return User.findOne({
+  try {
+    if (!errorValidation.isEmpty()) {
+      console.log(errorValidation.array());
+      const [error] = errorValidation.array();
+      const user = await User.findOne({
+        resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
+        resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
+      });
+      if (!user) {
+        // Nếu không tìm thấy
+        return res.status(404).json({ message: "User not found" }); // Trả về lỗi
+      }
+      // Nếu tìm thấy
+      return res.status(422).json({
+        path: "/update-password",
+        title: "Update Password",
+        passwordToken: token,
+        userId: user._id.toString(),
+        error: error.msg,
+        errorType: error.path,
+        oldInput: password,
+      });
+    }
+    const user = await User.findOne({
       resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
       resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
-    })
-      .then((user) => {
-        // Nếu tìm thấy
-        return res.status(422).render("./auth/updatePassword", {
-          path: "/update-password",
-          hasFooter: false,
-          title: "Update Password",
-          passwordToken: token,
-          userId: user._id.toString(),
-          error: error.msg,
-          errorType: error.path,
-          oldInput: password,
-        });
-      })
-      .catch((err) => {
-        // {ERROR MIDDLEWARE} //
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        next(error);
-      });
+      _id: ID, // Và _id = ID
+    });
+    if (!user) {
+      // Nếu không tìm thấy
+      return res.status(404).json({ message: "User not found" }); // Trả về lỗi
+    }
+    // Nếu tìm thấy
+    resetUser = user; // Lưu user vào biến resetUser
+    const hashPassword = bcrypt.hashSync(password, 12); // Hash password
+    resetUser.password = hashPassword; // Lưu password đã hash vào user
+    resetUser.resetPasswordToken = null; // Xóa resetPasswordToken
+    resetUser.resetPasswordExpires = null; // Xóa resetPasswordExpires
+    await resetUser.save(); // Lưu user
+    res.status(201).json({
+      message: "Update password successfully",
+      userId: user._id.toString(),
+    }); // Trả về thành công
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
-  User.findOne({
-    resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
-    resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
-    _id: ID, // Và _id = ID
-  })
-    .then((user) => {
-      // Nếu tìm thấy
-      resetUser = user; // Lưu user vào biến resetUser
-      return bcrypt.hash(password, 12); // Hash password
-    })
-    .then((hashPassword) => {
-      resetUser.password = hashPassword; // Lưu password đã hash vào user
-      resetUser.resetPasswordToken = null; // Xóa resetPasswordToken
-      resetUser.resetPasswordExpires = null; // Xóa resetPasswordExpires
-      return resetUser.save();
-    })
-    .then(() => {
-      req.flash(
-        "updatePassword",
-        "You change your password successully, Please login"
-      );
-      res.redirect("/login");
-    })
 };
 module.exports = {
   postAuth,

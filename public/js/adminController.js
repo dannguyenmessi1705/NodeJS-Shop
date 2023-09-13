@@ -9,7 +9,7 @@ const deleteProduct = (btn) => {
     method: "DELETE", // Sử dụng method delete
     headers: {
       // Gửi header lên server
-      "csrf-token": csrf_token, // Gửi token lên server để xác thực khi xoá sản phẩm (phòng trường hợp bị tấn công CSRF)
+      "X-CSRF-Token": csrf_token, // Gửi token lên server để xác thực khi xoá sản phẩm (phòng trường hợp bị tấn công CSRF)
     },
   })
     .then((result) => {

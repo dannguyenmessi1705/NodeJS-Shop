@@ -4,14 +4,15 @@ const { check } = require("express-validator");
 const express = require("express");
 const route = express.Router();
 const getAuth = require("../controllers/auth");
-
 const User = require("../models/users");
+const { verifyCSRFToken } = require("../middleware/csrfToken");
 
 route.get("/login", getAuth.getAuth);
 
 // {VALIDATION INPUT LOGIN} //
 route.post(
   "/login",
+  verifyCSRFToken,
   [
     check("email")
       .normalizeEmail()
@@ -25,12 +26,13 @@ route.post(
   getAuth.postAuth
 );
 
-route.post("/logout", getAuth.postLogout);
+route.post("/logout", verifyCSRFToken, getAuth.postLogout);
 
 route.get("/signup", getAuth.getSignup);
 // {VALIDATION INPUT} //
 route.post(
   "/signup",
+  verifyCSRFToken,
   [
     // Kiểm tra username đã tồn tại chưa
     check("username")
@@ -90,6 +92,7 @@ route.get("/reset", getAuth.getReset);
 
 route.post(
   "/reset",
+  verifyCSRFToken,
   // {VALIDATION INPUT} //
   check("email", "Please enter a valid email")
     .normalizeEmail()
@@ -108,6 +111,7 @@ route.get("/reset/:tokenReset", getAuth.getUpdatePassword);
 
 route.post(
   "/update-password",
+  verifyCSRFToken,
   // {VALIDATION INPUT} //
   check("password", "The password must be at least 5")
     .trim()

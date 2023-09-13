@@ -15,46 +15,14 @@ const itemOfOrder = 10;
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
-  /// {PAGINATION} ///
-  const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
-  let numProducts; // Tạo biến để lưu số lượng sản phẩm
-  Product.countDocuments() // Đếm số có trong collection products
-    .then((numOfProducts) => {
-      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
-      Product.find() // Tìm tất cả các sản phẩm
-        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm đầu tiên của trang hiện tại
-        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
-        .then((products) => {
-          // Trả về kết quả
-          res.render("./user/index", {
-            // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
-            title: "Home",
-            items: products,
-            path: "/",
-            hasFooter: true,
-            successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
-            // {PAGINATION} //
-            lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
-            curPage: curPage, // Trang hiện tại
-            nextPage: curPage + 1, // Trang tiếp theo
-            prevPage: curPage - 1, // Trang trước đó
-            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
-            hasNextPage: curPage < Math.ceil(numProducts / productOfPage), // Kiểm tra xem có trang tiếp theo hay không
-          });
-        })
-        .catch((err) => {
-          // {ERROR MIDDLEWARE} //
-          const error = new Error(err);
-          error.httpStatusCode = 500;
-          next(error);
-        });
-    })
-    .catch((err) => {
-      // {ERROR MIDDLEWARE} //
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      next(error);
-    });
+  res.header('Cache-Control', 'no-cache'); // Không lưu cache
+  res.render("./user/index", {
+    // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
+    title: "Home",
+    items: products,
+    path: "/",
+    successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
+  });
 };
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
@@ -72,7 +40,6 @@ const getProduct = (req, res, next) => {
             title: "Product",
             items: products,
             path: "/product",
-            hasFooter: true,
             lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại
             nextPage: curPage + 1, // Trang tiếp theo
@@ -104,7 +71,6 @@ const getDetail = (req, res, next) => {
       res.render("./user/productDetail", {
         title: "Product Detail",
         path: "/product",
-        hasFooter: true,
         item: product,
       });
     })
@@ -157,7 +123,6 @@ const getCart = (req, res, next) => {
         title: "Cart",
         path: "/cart",
         items: products,
-        hasFooter: false,
         totalPrice: totalPrice.toFixed(2),
         userId: req.user._id,
       }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
@@ -251,7 +216,6 @@ const getOrder = (req, res, next) => {
           res.render("./user/order", {
             title: "Order",
             path: "/order",
-            hasFooter: false,
             orders: orders,
             lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại

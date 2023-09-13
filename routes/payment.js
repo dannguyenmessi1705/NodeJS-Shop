@@ -1,10 +1,12 @@
 const express = require("express");
 const route = express.Router();
 const Payment = require("../controllers/payment");
-const ProtectRoute = require("../middleware/auth");
+const ProtectRoute = require("../middleware/isAuth");
+const { verifyCSRFToken } = require("../middleware/csrfToken");
+
 // {PAYMENT} //
 // Chuyển hướng đến trang thanh toán của VNPAY
-route.post("/payment", ProtectRoute, Payment.getPayment);
+route.post("/payment", ProtectRoute, verifyCSRFToken, Payment.getPayment);
 
 // Trả về kết quả thanh toán
 route.get("/payment/vnpay_return", ProtectRoute, Payment.VNPayReturn);

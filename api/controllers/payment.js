@@ -10,7 +10,7 @@ const config = {
   vnp_ReturnUrl: "http://localhost:3000/payment/vnpay_return", // Đường dẫn trả về từ VNPAY
 }; // config của VNPAY
 
-// {PAYMENT} //
+// {PAYMENT} // Thu nhập thông tin từ client và chuyển hướng đến API trang thanh toán
 const getPayment = (req, res, next) => {
   const userId = req.body.userId; // Lấy id của user
   if (userId.toString() !== req.user._id.toString()) {
@@ -119,7 +119,6 @@ const VNPayReturn = async (req, res, next) => {
         message: "Payment Success",
         title: "Payment Success",
         path: "/checkout",
-        hasFooter: false,
         code: vnp_Params["vnp_ResponseCode"],
       }); // Trả về trang vnpayReturn và truyền mã code trả về từ VNPAY (GD thành công))
     } else {
@@ -128,7 +127,6 @@ const VNPayReturn = async (req, res, next) => {
         message: "Payment Failed",
         title: "Payment Failed",
         path: "/checkout",
-        hasFooter: false,
         code: "97",
       }); // Trả về trang vnpayReturn và truyền mã code = 97 (GD thất bại)
     }

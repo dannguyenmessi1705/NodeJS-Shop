@@ -12,7 +12,6 @@ const addProduct = async (req, res, next) => {
   res.render("./admin/editProduct", {
     title: "Add Product",
     path: "/admin/add-product",
-    hasFooter: false,
     editing: false, // Phân biệt với trạng thái Edit vs Add Product
     error: undefined,
     errorType: undefined, //  ban đầu chưa có giá trị nào lỗi
@@ -38,7 +37,6 @@ const postProduct = async (req, res, next) => {
     return res.status(422).render("./admin/editProduct", {
       title: "Add Product",
       path: "/admin/add-product",
-      hasFooter: false,
       editing: false,
       error: undefined,
       errorType: undefined, //  Xác định trường nào chứa giá trị lỗi
@@ -59,7 +57,6 @@ const postProduct = async (req, res, next) => {
     return res.status(422).render("./admin/editProduct", {
       title: "Add Product",
       path: "/admin/add-product",
-      hasFooter: false,
       editing: false,
       error: error.msg,
       errorType: error.path, //  Xác định trường nào chứa giá trị lỗi
@@ -122,7 +119,6 @@ const getProduct = async (req, res, next) => {
       title: "Admin Product",
       items: products,
       path: "/admin/product",
-      hasFooter: false,
       // {PAGINATION} //
       lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
       curPage: curPage, // Trang hiện tại
@@ -161,7 +157,6 @@ const getEditProduct = async (req, res, next) => {
     res.render("./admin/editProduct", {
       title: "Edit Product",
       path: "/admin/add-product",
-      hasFooter: false,
       editing: isEdit, // truyền giá trị của query 'edit' vào biến editing để kiểm tra xem có phải đang ở trạng thái edit hay không
       item: product, // gán product vừa tìm được vào biến item để đưa vào file ejs
       error: undefined,
@@ -211,7 +206,6 @@ const postEditProduct = async (req, res, next) => {
       return res.status(422).render("./admin/editProduct", {
         title: "Edit Product",
         path: "/admin/add-product",
-        hasFooter: false,
         editing: true, // truyền giá trị của query 'edit' vào biến editing để kiểm tra xem có phải đang ở trạng thái edit hay không
         item: product,
         error: error.msg,

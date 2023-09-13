@@ -1,6 +1,7 @@
 // {ADDING VALIDATION} // Nhập module validationResult dùng để xác thực dữ liệu đầu vào
 const { validationResult } = require("express-validator");
-
+// {JSONWEBTOKEN CREATION} //
+const genJWT = require("../middleware/jwtGeneration");
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
@@ -36,7 +37,6 @@ const postAuth = async (req, res, next) => {
       return res.status(422).render("./auth/login", {
         title: "Login",
         path: "/login",
-        hasFooter: false,
         error: error.msg,
         errorType: error.path, // Lưu lại lỗi thuộc trường nào
         oldInput: {
@@ -52,16 +52,25 @@ const postAuth = async (req, res, next) => {
       req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
       return res.redirect("/login"); // Chuyển hướng về trang login
     }
-    const checkPass = await bcrypt.compare(password, user.password); // So sánh password nhập vào với password đã mã hoá trong database
+    const checkPass = bcrypt.compareSync(password, user.password); // So sánh password nhập vào với password đã mã hoá trong database
     if (checkPass) {
       // {FLASH MESSAGE} //
       req.flash("successLogin", "Login successfully!"); // Tạo flash message có tên là "success", giá trị là "Login successfully!"
       // Nếu password trùng khớp
+      const accessToken = genJWT.generateAccessToken({
+        userId: user._id.toString(),
+      }); // Tạo accessToken
+      const refreshToken = genJWT.generateRefreshToken({
+        userId: user._id.toString(),
+      }); // Tạo refreshToken
+      req.session.accessToken = accessToken; // Lưu accessToken vào Session
+      req.session.refreshToken = refreshToken; // Lưu refreshToken vào Session
       req.session.isLogin = true; // Tạo Session có tên là "isLogin", giá trị là "true"
       req.session.user = user; // Tạo Session có tên là "user", giá trị là user vừa tìm được
       // req.session.cookie.maxAge = 3000; // Thời gian tồn tại của Session là 3s
-      await req.session.save(); // Lưu Session
-      res.redirect("/"); // Sau khi lưu Session thì mới chuyển hướng sang trang chủ (vì lưu Session là bất đồng bộ)
+      req.session.save(() => {
+        res.redirect("/"); // Sau khi lưu Session thì mới chuyển hướng sang trang chủ (vì lưu Session là bất đồng bộ)
+      }); // Lưu Session
     } else {
       // {FLASH MESSAGE} // Nếu password không trùng khớp
       req.flash("errorLogin", "Incorrect email or password!"); // Tạo flash message có tên là "error", giá trị là "Email or Password does not match!"
@@ -71,18 +80,21 @@ const postAuth = async (req, res, next) => {
     // {ERROR MIDDLEWARE} //
     const err = new Error(error);
     error.httpStatusCode = 500;
-    next(error);
+    next(err);
   }
 };
 
 const getAuth = (req, res, next) => {
+  if (req.session.isLogin) {
+    // Nếu đã đăng nhập
+    return res.redirect("/"); // Chuyển hướng về trang chủ
+  }
   const [errorLogin] = req.flash("errorLogin"); // Lấy giá trị flash message có tên là "error"
   const [successSignup] = req.flash("successSignup"); // Lấy giá trị flash message có tên là "successSigup"
   const [updatePassword] = req.flash("updatePassword");
   res.render("./auth/login", {
     title: "Login",
     path: "/login",
-    hasFooter: false,
     successSignup: successSignup, // Truyền giá trị flash message có tên là "success" vào biến successSigup
     errorLogin: errorLogin,
     error: undefined, // Truyền giá trị flash message có tên là "error" vào biến errorMessage
@@ -105,6 +117,10 @@ const postLogout = (req, res, next) => {
 
 // SIGNUP
 const postSignup = (req, res, next) => {
+  if (req.session.isLogin) {
+    // Nếu đã đăng nhập
+    return res.redirect("/"); // Chuyển hướng về trang chủ
+  }
   const username = req.body.username; // Lấy giá trị username từ form
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
@@ -119,7 +135,6 @@ const postSignup = (req, res, next) => {
     return res.status(422).render("./auth/signup", {
       title: "Sign Up",
       path: "/signup",
-      hasFooter: false,
       error: error.msg, // Nếu có lỗi thì giá trị sẽ được tìm thấy ở thuộc tính "msg"
       errorType: error.path, // xác định trường nào  lõi cần sửa
       oldInput: { username, email, password, re_password }, // Lưu lại các giá trị vừa nhập
@@ -190,7 +205,6 @@ const getSignup = (req, res, next) => {
   res.render("./auth/signup", {
     title: "Sign Up",
     path: "/signup",
-    hasFooter: false,
     error: false,
     errorType: undefined, // chưa có xảy ra lỗi
     oldInput: {
@@ -212,7 +226,6 @@ const postReset = (req, res, next) => {
     const [error] = errorValidation.array();
     return res.status(422).render("./auth/reset", {
       path: "/reset",
-      hasFooter: false,
       title: "Reset Password",
       requestSuccess: undefined,
       error: error.msg,
@@ -279,7 +292,6 @@ const getReset = (req, res, next) => {
   const [requestSuccess] = req.flash("requestSuccess"); // Lấy giá trị flash message có tên là "requestSuccess"
   res.render("./auth/reset", {
     path: "/reset",
-    hasFooter: false,
     title: "Reset Password",
     requestSuccess: requestSuccess,
     error: "",
@@ -299,7 +311,6 @@ const getUpdatePassword = (req, res, next) => {
       // Nếu tìm thấy
       res.render("./auth/updatePassword", {
         path: "/update-password",
-        hasFooter: false,
         title: "Update Password",
         passwordToken: token,
         userId: user._id.toString(),
@@ -332,7 +343,6 @@ const postUpdatePassword = (req, res, next) => {
         // Nếu tìm thấy
         return res.status(422).render("./auth/updatePassword", {
           path: "/update-password",
-          hasFooter: false,
           title: "Update Password",
           passwordToken: token,
           userId: user._id.toString(),

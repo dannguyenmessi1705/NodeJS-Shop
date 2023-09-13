@@ -31,7 +31,6 @@ const getIndex = async (req, res, next) => {
       message: "Get products successfully",
       title: "Home",
       path: "/",
-      hasFooter: true,
       successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
       // {PAGINATION} //
       lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
@@ -56,9 +55,9 @@ const getAllProduct = async (req, res, next) => {
     }
     res.status(200).json({
       message: "Get all products successfully",
+      csrfToken: res.locals.csrfToken,
       title: "Product",
-      path: "/product",
-      hasFooter: true,
+      path: "/products",
       items: products,
     });
   } catch (error) {
@@ -78,7 +77,6 @@ const getDetail = async (req, res, next) => {
       message: "Get product detail successfully",
       title: "Product Detail",
       path: "/product",
-      hasFooter: true,
       item: product,
     });
   } catch (error) {
@@ -120,7 +118,6 @@ const getCart = async (req, res, next) => {
       message: "Get cart successfully",
       title: "Cart",
       path: "/cart",
-      hasFooter: false,
       totalPrice: totalPrice.toFixed(2),
       userId: req.user._id,
       items: products,
@@ -201,7 +198,6 @@ const getOrder = async (req, res, next) => {
       message: "Get order successfully",
       title: "Order",
       path: "/order",
-      hasFooter: false,
       lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
       curPage: curPage, // Trang hiện tại
       nextPage: curPage + 1, // Trang tiếp theo

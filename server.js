@@ -43,27 +43,21 @@ app.use(
   session({
     secret: "Nguyen Di Dan", // Chuỗi bí mật để mã hoá session
     resave: false, // resave: false => Không lưu lại session nếu không có sự thay đổi (Không cần thiết)
-    saveUninitialized: false, // saveUninitialized: false => Không lưu lại session nếu không có sự thay đổi (Không cần thiết)
+    saveUninitialized: true, // saveUninitialized: true => Lưu session ngay cả khi chưa có sự thay đổi  
     // resave vs saveUninitialized: https://stackoverflow.com/questions/40381401/when-use-saveuninitialized-and-resave-in-express-session
     store: storeDB, // Lưu session vào database
     // Ngoài ra có thể tuỳ chỉnh thêm cho cookie: secure, path, signed,... ở cấu hình session
     cookie: {
       signed: true,
+      maxAge: 1000 * 60 * 60 * 24 * 3, // Thời gian sống của cookie (3 ngày)
+      httpOnly: true, // Chỉ có thể truy cập cookie thông qua http request, không thể truy cập bằng javascript
     },
   })
 );
 
-// {CSRF khai báo sau khi định nghĩa SESSION} //
-const Tokens = require("csrf"); // Nhập module csrf
-const csrf = new Tokens(); // Tạo 1 object csrf
-const csrfProtectSecret = csrf.secretSync(); // Tạo 1 secret để mã hoá token
-// {MIDDLEWARE ĐỂ TRUYỀN BIẾN LOCALS CHO TẤT CẢ CÁC ROUTE} //
-app.use((req, res, next) => {
-  const token = csrf.create(csrfProtectSecret); // Tạo 1 token
-  res.locals.authenticate = req.session.isLogin; // Truyền biến authenticate vào locals để sử dụng ở tất cả các route
-  res.locals.csrfToken = token; // Truyền biến csrfToken vào locals để sử dụng ở tất cả các route
-  next();
-}); // Sử dụng middleware bảo vệ các route, nếu không có token thì các lệnh request sẽ báo lỗi
+// {CSRF - CROSS SITE REQUEST FORGERY} // Bảo vệ trang web khỏi tấn công CSRF (Tấn công giả mạo yêu cầu trang web)
+const { CreateCSRFTOKEN } = require("./middleware/csrfToken"); // Nhập middleware để tạo csrfToken
+app.use(CreateCSRFTOKEN); // Sử dụng middleware để tạo token và truyền vào locals để sử dụng ở tất cả các route
 
 // {MULTER} // (Để lấy dữ liệu file từ form) //
 const multer = require("multer"); // Nhập module multer
@@ -176,12 +170,12 @@ app.use("/api", paymentRouteAPI);
 // Phải đặt các route lỗi ở cuối cùng
 app.use(errorRoute);
 
-// {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
-app.use((err, req, res, next) => {
-  res.status(500).render("500", {
-    title: "Server maintenance",
-    path: "/500",
-    authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
-  });
-});
-/// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi
+// // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
+// app.use((err, req, res, next) => {
+//   res.status(500).render("500", {
+//     title: "Server maintenance",
+//     path: "/500",
+//     authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
+//   });
+// });
+// /// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi

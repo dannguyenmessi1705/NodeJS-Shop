@@ -118,7 +118,6 @@ const VNPayReturn = async (req, res, next) => {
       res.render("./user/checkout", {
         title: "Payment Success",
         path: "/checkout",
-        hasFooter: false,
         code: vnp_Params["vnp_ResponseCode"],
       }); // Trả về trang vnpayReturn và truyền mã code trả về từ VNPAY (GD thành công))
     } else {
@@ -126,7 +125,6 @@ const VNPayReturn = async (req, res, next) => {
       res.render("./user/checkout", {
         title: "Payment Failed",
         path: "/checkout",
-        hasFooter: false,
         code: "97",
       }); // Trả về trang vnpayReturn và truyền mã code = 97 (GD thất bại)
     }
