@@ -5,6 +5,7 @@ const route = express.Router();
 const getAuth = require("../controllers/auth");
 const User = require("../../models/users");
 const { verifyCSRFToken } = require("../middleware/csrfToken");
+const ProtectRoute = require("../middleware/isAuth");
 
 // {VALIDATION INPUT LOGIN} //
 route.post(
@@ -22,7 +23,7 @@ route.post(
   getAuth.postAuth
 );
 
-route.post("/logout", verifyCSRFToken, getAuth.postLogout);
+route.delete("/logout", ProtectRoute, getAuth.postLogout);
 
 // {VALIDATION INPUT} //
 route.post(
@@ -99,7 +100,7 @@ route.post(
   getAuth.postReset
 );
 
-route.post(
+route.put(
   "/update-password",
   verifyCSRFToken,
   // {VALIDATION INPUT} //
@@ -108,5 +109,8 @@ route.post(
     .isLength({ min: 5 }),
   getAuth.postUpdatePassword
 );
+
+// {CSRF} Lấy token từ server và gửi về client
+route.get("/csrf-token", getAuth.getCsrfToken);
 
 module.exports = route;

@@ -180,16 +180,8 @@ const postOrder = async (req, res, next) => {
 
 // {GET ORDER BY USER IN MONGOOSE} //
 const getOrder = async (req, res, next) => {
-  const curPage = req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
-  let numProducts; // Tạo biến để lưu số lượng sản phẩm
   try {
-    const numOfProducts = await Order.countDocuments({
-      "user.userId": req.user._id,
-    }); // Đếm số lượng order có userId = userId của user hiện tại
-    numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
     const orders = await Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
-      .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
-      .limit(itemOfOrder); // Giới hạn số lượng order trên 1 trang
     // orders = [{ {products: {}, quantity}, user{}}, {}]
     if (!orders) {
       return res.status(404).json({ message: "Orders not found" });
@@ -198,12 +190,6 @@ const getOrder = async (req, res, next) => {
       message: "Get order successfully",
       title: "Order",
       path: "/order",
-      lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
-      curPage: curPage, // Trang hiện tại
-      nextPage: curPage + 1, // Trang tiếp theo
-      prevPage: curPage - 1, // Trang trước đó
-      hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
-      hasNextPage: curPage < Math.ceil(numProducts / itemOfOrder), // Kiểm tra xem có trang tiếp theo hay không
       orders: orders,
     });
   } catch (error) {

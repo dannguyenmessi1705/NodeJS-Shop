@@ -2,11 +2,12 @@
 const Tokens = require("csrf"); // Nhập module csrf
 const csrf = new Tokens(); // Tạo 1 object csrf
 const csrfProtectSecret = csrf.secretSync(); // Tạo 1 secret để mã hoá token
+let csrfToken
 // {MIDDLEWARE ĐỂ TRUYỀN BIẾN LOCALS CHO TẤT CẢ CÁC ROUTE} //
 const CreateCSRFTOKEN = (req, res, next) => {
-  req.token = csrf.create(csrfProtectSecret); // Tạo 1 token
+  csrfToken = csrf.create(csrfProtectSecret); // Tạo 1 token
   res.locals.authenticate = req.session.isLogin; // Truyền biến authenticate vào locals để sử dụng ở tất cả các route
-  res.locals.csrfToken = req.token; // Truyền biến csrfToken vào locals để sử dụng ở tất cả các route
+  res.locals.csrfToken = csrfToken; // Truyền biến csrfToken vào locals để sử dụng ở tất cả các route
   next();
 }; // Sử dụng middleware bảo vệ các route, nếu không có token thì các lệnh request sẽ báo lỗi
 
@@ -21,7 +22,12 @@ const verifyCSRFToken = (req, res, next) => {
   next();
 };
 
+const getCsrfToken = () => {
+  return csrfToken;
+}
+
 module.exports = {
   CreateCSRFTOKEN,
   verifyCSRFToken,
+  getCsrfToken
 };

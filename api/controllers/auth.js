@@ -65,13 +65,11 @@ const postAuth = async (req, res, next) => {
       req.session.user = user; // Tạo Session có tên là "user", giá trị là user vừa tìm được
       // req.session.cookie.maxAge = 3000; // Thời gian tồn tại của Session là 3s
       req.session.save(() => {
-        res
-          .status(200)
-          .json({
-            message: "Login successfully",
-            userId: user._id.toString(),
-            accessToken: accessToken,
-          });
+        res.status(200).json({
+          message: "Login successfully",
+          userId: user._id.toString(),
+          accessToken: accessToken,
+        });
       }); // Lưu Session
     } else {
       res.status(401).json({ message: "Email or Password is incorrect!" });
@@ -84,8 +82,9 @@ const postAuth = async (req, res, next) => {
 // LOGOUT => SESSION SẼ XOÁ
 const postLogout = async (req, res, next) => {
   try {
-    await req.session.destroy(); // Xoá Session
-    res.status(200).json({ message: "Logout successfully" });
+    req.session.destroy(() => {
+      res.status(200).json({ message: "Logout successfully" });
+    }); // Xoá Session
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -258,10 +257,17 @@ const postUpdatePassword = async (req, res, next) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// {CSRF TOKEN} // Lấy token từ server và gửi về client
+const getCsrfToken = (req, res, next) => {
+  res.json({ csrfToken: res.locals.csrfToken }); // Trả về token vừa tạo ở middleware
+};
+
 module.exports = {
   postAuth,
   postLogout,
   postSignup,
   postReset,
   postUpdatePassword,
+  getCsrfToken,
 };
