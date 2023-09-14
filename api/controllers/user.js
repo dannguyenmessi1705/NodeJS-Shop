@@ -105,8 +105,8 @@ const postCart = async (req, res, next) => {
 // {GET CART USER BY MONGOOSE} //
 const getCart = async (req, res, next) => {
   try {
-    console.log(1)
-    const user = await req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
+    console.log(req.user)
+    const user = req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
     if (!user) {
       console.log(2)
       return res.status(404).json({ message: "User not found" });
