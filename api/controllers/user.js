@@ -105,21 +105,16 @@ const postCart = async (req, res, next) => {
 // {GET CART USER BY MONGOOSE} //
 const getCart = async (req, res, next) => {
   try {
-    console.log(req.user)
-    const user = req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
+    const user = await req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
     if (!user) {
-      console.log(2)
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(3)
     let products = [...user.cart.items]; // Sau khi lấy được dữ liệu từ collection products qua populate, copy lại vào biến products
     // products = [{productId: {}, quantity, _id} ,{}]
-    console.log(4)
     let totalPrice = products.reduce((sum, product, index) => {
       // Tính tổng tiền của tất cả product trong cart
       return +product.productId.price * product.quantity + sum;
     }, 0); // Tính tổng tiền của tất cả product trong cart
-    console.log(5)
     res.status(200).json({
       message: "Get cart successfully",
       title: "Cart",
@@ -129,7 +124,6 @@ const getCart = async (req, res, next) => {
       items: products,
     }); // Render ra dữ liệu, đồng thời trả về các giá trị động cho file cart.ejs
   } catch (error) {
-    console.log(6)
     res.status(500).json({ message: "Server error" });
   }
 };
