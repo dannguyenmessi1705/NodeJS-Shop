@@ -119,6 +119,7 @@ const getProduct = async (req, res, next) => {
       title: "Admin Product",
       items: products,
       path: "/admin/product",
+      accessToken: req.session.accessToken,
       // {PAGINATION} //
       lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
       curPage: curPage, // Trang hiện tại

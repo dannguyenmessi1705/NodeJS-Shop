@@ -3,6 +3,7 @@ const deleteProduct = (btn) => {
   // Tạo hàm xóa
   const productId = btn.parentNode.querySelector("input[name=id]").value; // Lấy id của sản phẩm
   const csrf_token = btn.parentNode.querySelector("input[name=_csrf]").value; // Lấy token để xác thực khi xoá
+  const accessToken = btn.parentNode.querySelector("input[name=_accessToken]")
   const item = btn.closest(".card-dan"); // Lấy thẻ cha của button có class là card và product-item
   fetch(`delete-product/${productId}`, {
     // Gửi request lên server
@@ -10,6 +11,7 @@ const deleteProduct = (btn) => {
     headers: {
       // Gửi header lên server
       "X-CSRF-Token": csrf_token, // Gửi token lên server để xác thực khi xoá sản phẩm (phòng trường hợp bị tấn công CSRF)
+      "Authorization": `Bearer ${accessToken}` // Gửi token lên server để xác thực khi xoá sản phẩm (phòng trường hợp bị tấn công CSRF)
     },
   })
     .then((result) => {

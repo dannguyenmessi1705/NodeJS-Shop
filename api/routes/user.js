@@ -14,9 +14,9 @@ route.get("/products/:productID", userController.getDetail); // :productID là d
 
 // {CART} //
 route.get("/cart", ProtectRoute, userController.getCart);
-route.post("/cart", ProtectRoute, verifyCSRFToken, userController.postCart);
-route.delete(
-  "/delete-cart",
+route.patch("/cart/:productID", ProtectRoute, verifyCSRFToken, userController.postCart);
+route.patch(
+  "/delete-cart/:productID",
   ProtectRoute,
   verifyCSRFToken,
   userController.deleteCart

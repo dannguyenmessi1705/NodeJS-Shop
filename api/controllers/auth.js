@@ -142,8 +142,8 @@ const postSignup = async (req, res, next) => {
           },
         ],
       })
-      .then((res) =>
-        res.status(201).json({ message: "Signup successfully", email: res })
+      .then((result) =>
+        res.status(201).json({ message: "Signup successfully", result: result })
       ); // Nếu gửi mail thành công
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -188,17 +188,45 @@ const postReset = async (req, res, next) => {
           from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
           to: email, // Địa chỉ email của người nhận
           subject: "Reset Password", // Tiêu đề mail
-          html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
+          html: `<h2>Click this <a href="${http}/api/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
         }; // Tạo 1 mail
         transporter
           .sendMail(data) // Gửi mail
-          .then((res) => {
+          .then((result) => {
             res
               .status(201)
-              .json({ message: "Reset password successfully", email: res }); // Trả về thành công
+              .json({
+                message: "Sent email reset password successfully",
+                token: token,
+                result: result,
+              }); // Trả về thành công
           });
       });
     }
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// {UPDATE PASSWORD} //
+const getUpdatePassword = async (req, res, next) => {
+  const token = req.params.tokenReset; // Lấy token từ route đến trang update password (http://localhost:3000/reset/:tokenReset)
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token, // Tìm kiếm 1 user trong collection có resetPasswordToken là token
+      resetPasswordExpires: { $gt: Date.now() }, // Và resetPasswordExpires > Date.now()
+    });
+    if (!user) {
+      // Nếu không tìm thấy
+      return res.status(404).json({ message: "User not found" }); // Trả về lỗi
+    }
+    // Nếu tìm thấy
+    res.status(200).json({
+      path: "/update-password",
+      title: "Update Password",
+      passwordToken: token,
+      userId: user._id.toString(),
+    }); // Render ra trang update password
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -268,6 +296,7 @@ module.exports = {
   postLogout,
   postSignup,
   postReset,
+  getUpdatePassword,
   postUpdatePassword,
   getCsrfToken,
 };

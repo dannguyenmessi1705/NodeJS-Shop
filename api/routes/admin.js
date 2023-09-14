@@ -37,7 +37,7 @@ route.get(
 // {UPDATE PRODUCT}
 // {VALIDATION INPUT} //
 route.put(
-  "/edit-product",
+  "/edit-product/:productID",
   ProtectRoute,
   verifyCSRFToken,
   [

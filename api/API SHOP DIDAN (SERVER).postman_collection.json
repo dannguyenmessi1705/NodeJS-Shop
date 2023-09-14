@@ -1,0 +1,714 @@
+{
+	"info": {
+		"_postman_id": "7b6fe7f1-043b-4043-8c3d-a2fa4f3a2c59",
+		"name": "API SHOP DIDAN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26464204",
+		"_collection_link": "https://www.postman.com/lunar-module-cosmologist-19298354/workspace/api-shop-didann/collection/26464204-7b6fe7f1-043b-4043-8c3d-a2fa4f3a2c59?action=share&source=collection_link&creator=26464204"
+	},
+	"item": [
+		{
+			"name": "GET CSRFTOKEN",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/csrf-token",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"csrf-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST SIGNUP",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"any\",\r\n    \"email\": \"any\",\r\n    \"password\": \"any\",\r\n    \"re_password\": \"any\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/signup",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"any\",\r\n    \"password\": \"any\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/login",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "REQUEST RESET PASSWORD",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"any\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/reset",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET USER, TOKEN TO RESET PASSWORD",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/reset/:tokenReset",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"reset",
+						":tokenReset"
+					],
+					"variable": [
+						{
+							"key": "tokenReset",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE PASSWORD",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"any\",\r\n    \"passwordToken\": \"any\",\r\n    \"password\": \"any\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/update-password",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"update-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LOGOUT",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/logout",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCT",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/products",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST PRODUCT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "any",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "any",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "description",
+							"value": "any",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/admin/add-product",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"admin",
+						"add-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCT DETAIL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/products/:productID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"products",
+						":productID"
+					],
+					"variable": [
+						{
+							"key": "productID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE PRODUCT",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "any",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "any",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "description",
+							"value": "any",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/admin/edit-product/:productID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"admin",
+						"edit-product",
+						":productID"
+					],
+					"variable": [
+						{
+							"key": "productID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE PRODUCT",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/admin/delete-product/:productID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"admin",
+						"delete-product",
+						":productID"
+					],
+					"variable": [
+						{
+							"key": "productID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET CART",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "fss",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/cart",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD CART",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/cart/:userID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"cart",
+						":userID"
+					],
+					"variable": [
+						{
+							"key": "userID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE CART",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/delete-cart/:userID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"delete-cart",
+						":userID"
+					],
+					"variable": [
+						{
+							"key": "userID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST PAYMENT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/payment/:userID",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"payment",
+						":userID"
+					],
+					"variable": [
+						{
+							"key": "userID",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ORDER",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/orders",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST ORDER",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/add-order",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"add-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET INVOICE",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer any",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://shop.didan.id.vn/api/order/6503557fd95d13acf22454fb",
+					"protocol": "http",
+					"host": [
+						"shop",
+						"didan",
+						"id",
+						"vn"
+					],
+					"path": [
+						"api",
+						"order",
+						"6503557fd95d13acf22454fb"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

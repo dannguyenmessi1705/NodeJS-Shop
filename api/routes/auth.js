@@ -10,6 +10,7 @@ const ProtectRoute = require("../middleware/isAuth");
 // {VALIDATION INPUT LOGIN} //
 route.post(
   "/login",
+  verifyCSRFToken,
   [
     check("email")
       .normalizeEmail()
@@ -23,7 +24,7 @@ route.post(
   getAuth.postAuth
 );
 
-route.delete("/logout", ProtectRoute, getAuth.postLogout);
+route.delete("/logout", ProtectRoute, verifyCSRFToken, getAuth.postLogout);
 
 // {VALIDATION INPUT} //
 route.post(
@@ -100,7 +101,9 @@ route.post(
   getAuth.postReset
 );
 
-route.put(
+route.get("/reset/:tokenReset", getAuth.getUpdatePassword);
+
+route.patch(
   "/update-password",
   verifyCSRFToken,
   // {VALIDATION INPUT} //

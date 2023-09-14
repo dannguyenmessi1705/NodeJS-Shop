@@ -31,6 +31,7 @@
                                 <!-- href = product/0.7834371053383911 -->
                                 <!-- TOKEN CSRF -->
                                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <input type="hidden" name="_accessToken" id="id" value="<%=accessToken%>">
                                 <input type="hidden" name="id" id="id" value="<%=item._id%>">
                                 <button type="submit" class="btn btn-danger" onclick="deleteProduct(this)">Delete</button>
                                 <!-- onclick="deleteProduct(this)" là sự kiện click vào button sẽ gọi hàm deleteProduct(this), this là tham số truyền vào hàm deleteProduct (btn) -->       

@@ -12,8 +12,9 @@ const config = {
 
 // {PAYMENT} // Thu nhập thông tin từ client và chuyển hướng đến API trang thanh toán
 const getPayment = (req, res, next) => {
-  const userId = req.body.userId; // Lấy id của user
-  if (userId.toString() !== req.user._id.toString()) {
+  // const userId = req.body.userId; // Lấy id của user
+  const userId = req.params.userID; // Lấy id của user từ params route (API)
+  if (userId !== req.user._id.toString()) {
     // Nếu id của user không trùng với id của session user thì chuyển hướng về trang chủ
     return res.status(403).json({ message: "Forbiden" });
   }

@@ -1,0 +1,646 @@
+{
+	"info": {
+		"_postman_id": "521788f3-622f-4136-ac04-040b72ae8f91",
+		"name": "API SHOP DIDAN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26464204",
+		"_collection_link": "https://www.postman.com/lunar-module-cosmologist-19298354/workspace/api-shop-didan-test-localhost/collection/26464204-521788f3-622f-4136-ac04-040b72ae8f91?action=share&source=collection_link&creator=26464204"
+	},
+	"item": [
+		{
+			"name": "GET CSRFTOKEN",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/csrf-token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"csrf-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST SIGNUP",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"test1234\",\r\n    \"email\": \"test1234@gmail.com\",\r\n    \"password\": \"12345\",\r\n    \"re_password\": \"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"danprohy@gmail.com\",\r\n    \"password\": \"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "REQUEST RESET PASSWORD",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTkyNjMsImV4cCI6MTY5NDcxOTg2M30.nGnEWFpvG1uK7-2y7hYyseoFhD_A6-l_8PlWsGujIq4",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test1234@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/reset",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET TOKEN TO UPDATE PASSWORD",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/reset/ce6bffbd88861dd4df9454220563c75d5c57336df0d5db7678cb5ace835b2ce3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"reset",
+						"ce6bffbd88861dd4df9454220563c75d5c57336df0d5db7678cb5ace835b2ce3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE PASSWORD",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "59bEp6qV-n_oNuoslIIyL5Ue7cy5SnYEpv8U",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"650358deef20fb694e402492\",\r\n    \"passwordToken\": \"ce6bffbd88861dd4df9454220563c75d5c57336df0d5db7678cb5ace835b2ce3\",\r\n    \"password\": \"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/update-password",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"update-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LOGOUT",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ2NDQyMjEsImV4cCI6MTY5NDY0NDgyMX0.1BIsFPVAJSW8k9LyTdIaaZg0QzIK4kY5VCsxWnLWroE",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZXXKQASY-btUlGXX0YFLoeogh4OQE3da_zs8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCT",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST PRODUCT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "9UQn7QdU-zn4jyliOmrVqIXF7CypgS9IzDsI",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MDY4MjcsImV4cCI6MTY5NDcwNzQyN30.Zu2wStohSf5np2HsEbVu7xkwF22BftceM-R1B0H3tPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Macbook Air M1",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "81.27",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/D:/messi/Pictures/SHOP/LapTop.jpg"
+						},
+						{
+							"key": "description",
+							"value": "Laptop dành cho giới trẻ và dân văn phòng",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/admin/add-product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"admin",
+						"add-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCT DETAIL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/products/65032cc1355569791d2d035b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"65032cc1355569791d2d035b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE PRODUCT",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MDc0NDEsImV4cCI6MTY5NDcwODA0MX0.ZwONuvrKq_mJA3uTLf1O46GQKDxCKwFHdzS68DSKw0M",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "9UQn7QdU-zn4jyliOmrVqIXF7CypgS9IzDsI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Macbook M1 Air 2020",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "81.1",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "description",
+							"value": "Update",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/admin/edit-product/65032cc1355569791d2d035b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"admin",
+						"edit-product",
+						"65032cc1355569791d2d035b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE PRODUCT",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MDc0NDEsImV4cCI6MTY5NDcwODA0MX0.ZwONuvrKq_mJA3uTLf1O46GQKDxCKwFHdzS68DSKw0M",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "9UQn7QdU-zn4jyliOmrVqIXF7CypgS9IzDsI",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/admin/delete-product/65032cc1355569791d2d035b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"admin",
+						"delete-product",
+						"65032cc1355569791d2d035b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET CART",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTY0OTUsImV4cCI6MTY5NDcxNzA5NX0.qFSxjKACcM-OM1lzmPRMEdkC98rWjgMn0ChN5e9ac3E",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "fss",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/cart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADD CART",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTY0OTUsImV4cCI6MTY5NDcxNzA5NX0.qFSxjKACcM-OM1lzmPRMEdkC98rWjgMn0ChN5e9ac3E",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/cart/64e7957777cc012223ec9254",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"64e7957777cc012223ec9254"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE CART",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTY0OTUsImV4cCI6MTY5NDcxNzA5NX0.qFSxjKACcM-OM1lzmPRMEdkC98rWjgMn0ChN5e9ac3E",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/delete-cart/64e7957777cc012223ec9254",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"delete-cart",
+						"64e7957777cc012223ec9254"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST PAYMENT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTY0OTUsImV4cCI6MTY5NDcxNzA5NX0.qFSxjKACcM-OM1lzmPRMEdkC98rWjgMn0ChN5e9ac3E",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/payment/64d932fde5a1d001a5a9bbf1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"payment",
+						"64d932fde5a1d001a5a9bbf1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ORDER",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTcyMTAsImV4cCI6MTY5NDcxNzgxMH0.Y8GTZxE21WIo8N2wy0mhTbY0xFrUYBo6rglbZF4uGIE",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "oMHbTE2P-y8iz810FyzZyzCXRnN4CMsA6EOw",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST ORDER",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTcyMTAsImV4cCI6MTY5NDcxNzgxMH0.Y8GTZxE21WIo8N2wy0mhTbY0xFrUYBo6rglbZF4uGIE",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRF-Token",
+						"value": "ZeFL6DB9-pMmenswzZZBD9Cffvb2Ou9rtkgQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/add-order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"add-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET INVOICE",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ5MzJmZGU1YTFkMDAxYTVhOWJiZjEiLCJpYXQiOjE2OTQ3MTc5MDcsImV4cCI6MTY5NDcxODUwN30.Nmx27JRiT1DLkspwmNyZFED7DH73UQgAGf8Dup0V2Ug",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/order/6503557fd95d13acf22454fb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"order",
+						"6503557fd95d13acf22454fb"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
