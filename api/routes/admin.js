@@ -7,11 +7,11 @@ const { verifyCSRFToken } = require("../middleware/csrfToken");
 // {TẠO CAC ENDPOINT API} //
 
 // {VALIDATION INPUT} //
+// #swagger.tags = ['Admin']
 const { check } = require("express-validator");
-
 // {VALIDATION INPUT} //
 route.post(
-  "/add-product",
+  "/admin/add-product",
   ProtectRoute,
   verifyCSRFToken,
   [
@@ -23,13 +23,13 @@ route.post(
   ],
   adminController.postProduct
 );
-
-route.get("/products", ProtectRoute, adminController.getProduct);
+// #swagger.tags = ['Admin']
+route.get("/admin/products", ProtectRoute, adminController.getProduct);
 
 // {ADD EDIT PRODUCT} //
 // url = "http://.../edit-poduct/id"
 route.get(
-  "/edit-product/:productID",
+  "/admin/edit-product/:productID",
   ProtectRoute,
   adminController.getEditProduct
 );
@@ -37,7 +37,7 @@ route.get(
 // {UPDATE PRODUCT}
 // {VALIDATION INPUT} //
 route.put(
-  "/edit-product/:productID",
+  "/admin/edit-product/:productID",
   ProtectRoute,
   verifyCSRFToken,
   [
@@ -52,7 +52,7 @@ route.put(
 
 // {DELETE PRODUCT} //
 route.delete(
-  "/delete-product/:productID",
+  "/admin/delete-product/:productID",
   ProtectRoute,
   verifyCSRFToken,
   adminController.deleteProduct

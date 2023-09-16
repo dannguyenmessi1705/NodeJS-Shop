@@ -12,6 +12,26 @@ const config = {
 
 // {PAYMENT} // Thu nhập thông tin từ client và chuyển hướng đến API trang thanh toán
 const getPayment = (req, res, next) => {
+  /* #swagger.tags = ['Payment']
+      #swagger.description = 'Endpoint direct to VNPAY payment website' 
+      #swagger.security = [{
+        "csrfToken": [],
+        "bearAuth": []
+    }]
+      #swagger.parameters['userID'] = {
+          in: 'path',
+          description: 'ID of user',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['amount'] = {
+          in: 'body',
+          description: 'Amount of money',
+          required: true,
+          type: 'number'
+      }
+    */
+
   // const userId = req.body.userId; // Lấy id của user
   const userId = req.params.userID; // Lấy id của user từ params route (API)
   if (userId !== req.user._id.toString()) {
@@ -75,6 +95,48 @@ const getPayment = (req, res, next) => {
 
 // CHUYỂN HƯỚNG TỚI TRANG TRẢ VỀ KẾT QUẢ THANH TOÁN //
 const VNPayReturn = async (req, res, next) => {
+  /* #swagger.tags = ['Payment']
+     #swagger.description = 'Endpoint return from VNPAY payment website'
+     #swagger.security = [{
+      "bearAuth": []
+    }]
+      #swagger.parameters['vnp_SecureHash'] = {
+          in: 'query',
+          description: 'Secure Hash from VNPAY',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['vnp_ResponseCode'] = {
+          in: 'query',
+          description: 'Response Code from VNPAY',
+          required: true,
+          type: 'string'
+      }
+      #swagger.responses[200] = {
+        description: 'Payment Success',
+        schema: {
+          $message: 'Payment Success',
+          $title: 'Payment Success',
+          $path: '/checkout',
+          $code: '00'
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Payment Failed',
+        schema: {
+          $message: 'Payment Failed',
+          $title: 'Payment Failed',
+          $path: '/checkout',
+          $code: '97'
+        }
+      }
+      #swagger.responses[500] = {
+        description: 'Server Error',
+        schema: {
+          $message: 'Server Error',
+        }
+      }
+    */
   try {
     let vnp_Params = req.query; // Lấy các tham số trả về từ VNPAY (đã được chuyển đổi thành object) - Để chuẩn bị kiểm tra mã hóa
     let secureHash = vnp_Params["vnp_SecureHash"]; // Lấy tham số mã hóa từ VNPAY

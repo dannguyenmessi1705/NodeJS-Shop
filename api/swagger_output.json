@@ -1,0 +1,1213 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API for SHOP Website",
+    "description": "This is a REST API application made by ZDiDane for SHOP Website. \n\nIf you want to use this API, please get csrfToken first, then add csrfToken to header of request. \n\nIf you want to use API for Admin, please add bearAuth to header of request.",
+    "contact": {
+      "name": "ZDiDane",
+      "email": "didannguyen17@gmail.com",
+      "url": "https://didan.id.vn"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    },
+    {
+      "url": "https://localhost:3000/api"
+    },
+    {
+      "url": "http://shop.didan.id.vn/api"
+    },
+    {
+      "url": "https://shop.didan.id.vn/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "API for Auth in the system"
+    },
+    {
+      "name": "Admin",
+      "description": "API for Admin in the system"
+    },
+    {
+      "name": "User",
+      "description": "API for User in the system"
+    },
+    {
+      "name": "Payment",
+      "description": "API for Payment in the system"
+    }
+  ],
+  "paths": {
+    "/csrf-token": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to get CSRF token.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to login.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to logout.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to signup.",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUp"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to reset password.",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reset"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset/{tokenReset}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to get userID update password.",
+        "parameters": [
+          {
+            "name": "tokenReset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Token to reset password"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/update-password": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to update password.",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePassword"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/add-product": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Endpoint to create a new product",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Iphone 12"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 1000
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "A smartphone from Apple"
+                  }
+                },
+                "required": [
+                  "name",
+                  "price",
+                  "image",
+                  "description"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/products": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Endpoint to get products",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/edit-product/{productID}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Endpoint to get edit product",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          },
+          {
+            "name": "edit",
+            "in": "query",
+            "description": "Edit product",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "308": {
+            "description": "Permanent Redirect"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Endpoint to update product",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          },
+          {
+            "name": "edit",
+            "in": "query",
+            "description": "Edit product",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Iphone 12"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 1000
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "A smartphone from Apple"
+                  }
+                },
+                "required": [
+                  "name",
+                  "price",
+                  "description"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/delete-product/{productID}": {
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Endpoint to delete product",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get products follow pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "description": "Page number",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get all products",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/{productID}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get product detail",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get cart",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/cart/{productID}": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to add product to cart",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/delete-cart/{productID}": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to delete product in cart",
+        "parameters": [
+          {
+            "name": "productID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get order",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/add-order": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to add order",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/order/{orderId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get invoice",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/payment/{userID}": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "description": "Endpoint direct to VNPAY payment website",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of user"
+          },
+          {
+            "name": "x-forwarded-for",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/vnpay_return": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "description": "Endpoint return from VNPAY payment website",
+        "parameters": [
+          {
+            "name": "vnp_SecureHash",
+            "in": "query",
+            "description": "Secure Hash from VNPAY",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_ResponseCode",
+            "in": "query",
+            "description": "Response Code from VNPAY",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Payment Success"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Payment Success"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/checkout"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "00"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "title",
+                    "path",
+                    "code"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Payment Success"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Payment Success"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/checkout"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "00"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "title",
+                    "path",
+                    "code"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "308": {
+            "description": "Permanent Redirect"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Payment Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Payment Failed"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Payment Failed"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/checkout"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "97"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "title",
+                    "path",
+                    "code"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Payment Failed"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Payment Failed"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/checkout"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "97"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "title",
+                    "path",
+                    "code"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server Error"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server Error"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "csrfToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token"
+      },
+      "bearAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "SignUp": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "anv"
+          },
+          "email": {
+            "type": "string",
+            "example": "anv@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          },
+          "re_password": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "re_password"
+        ],
+        "xml": {
+          "name": "SignUp"
+        }
+      },
+      "SignIn": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "anb@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "xml": {
+          "name": "SignIn"
+        }
+      },
+      "Reset": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "anv@gmai.com"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "xml": {
+          "name": "Reset"
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Iphone 12"
+          },
+          "price": {
+            "type": "number",
+            "example": 1000
+          },
+          "url": {
+            "type": "string",
+            "example": "file.jpg"
+          },
+          "description": {
+            "type": "string",
+            "example": "A smartphone from Apple"
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "url",
+          "description"
+        ],
+        "xml": {
+          "name": "Product"
+        }
+      }
+    }
+  }
+}

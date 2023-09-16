@@ -7,6 +7,9 @@ const User = require("../../models/users");
 const { verifyCSRFToken } = require("../middleware/csrfToken");
 const ProtectRoute = require("../middleware/isAuth");
 
+// {CSRF} Lấy token từ server và gửi về client
+route.get("/csrf-token", getAuth.getCsrfToken);
+
 // {VALIDATION INPUT LOGIN} //
 route.post(
   "/login",
@@ -112,8 +115,5 @@ route.patch(
     .isLength({ min: 5 }),
   getAuth.postUpdatePassword
 );
-
-// {CSRF} Lấy token từ server và gửi về client
-route.get("/csrf-token", getAuth.getCsrfToken);
 
 module.exports = route;

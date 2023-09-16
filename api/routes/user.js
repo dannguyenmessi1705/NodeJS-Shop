@@ -4,6 +4,9 @@ const userController = require("../controllers/user");
 const ProtectRoute = require("../middleware/isAuth");
 const { verifyCSRFToken } = require("../middleware/csrfToken");
 
+/*
+ #swagger.tags = ['User'] 
+ */
 route.get("/", userController.getIndex);
 
 route.get("/products", userController.getAllProduct);

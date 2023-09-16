@@ -43,7 +43,7 @@ app.use(
   session({
     secret: "Nguyen Di Dan", // Chuỗi bí mật để mã hoá session
     resave: false, // resave: false => Không lưu lại session nếu không có sự thay đổi (Không cần thiết)
-    saveUninitialized: true, // saveUninitialized: true => Lưu session ngay cả khi chưa có sự thay đổi  
+    saveUninitialized: true, // saveUninitialized: true => Lưu session ngay cả khi chưa có sự thay đổi
     // resave vs saveUninitialized: https://stackoverflow.com/questions/40381401/when-use-saveuninitialized-and-resave-in-express-session
     store: storeDB, // Lưu session vào database
     // Ngoài ra có thể tuỳ chỉnh thêm cho cookie: secure, path, signed,... ở cấu hình session
@@ -144,6 +144,7 @@ app.use(async (req, res, next) => {
   }
 });
 
+
 // {ROUTE SERVER SIDE} //
 const authRoute = require("./routes/auth");
 const adminRoute = require("./routes/admin");
@@ -156,12 +157,17 @@ app.use(personRoute);
 app.use(authRoute);
 app.use(paymentRoute);
 
+// {SWAGGER API} //
+const swaggerUi = require("swagger-ui-express");
+const swaggerDoc = require("./api/swagger_output.json");
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
 // {ENPOINT API ROUTE FOR CLIENT} //
 const authRouteAPI = require("./api/routes/auth");
 const adminRouteAPI = require("./api/routes/admin");
 const personRouteAPI = require("./api/routes/user");
 const paymentRouteAPI = require("./api/routes/payment");
-app.use("/api/admin", adminRouteAPI);
+app.use("/api", adminRouteAPI);
 app.use("/api", personRouteAPI);
 // {LOGIN ROUTE} //
 app.use("/api", authRouteAPI);

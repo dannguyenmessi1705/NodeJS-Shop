@@ -19,10 +19,13 @@
     "mysql2": "^3.5.2",
     "nodemailer": "^6.9.4",
     "pdfkit": "^0.13.0",
-    "sequelize": "^6.32.1"
+    "sequelize": "^6.32.1",
+    "swagger-autogen": "^2.23.5",
+    "swagger-ui-express": "^5.0.0"
   },
   "scripts": {
     "start": "nodemon server.js",
+    "swagger": "node ./api/swagger.js",
     "build": "npm i"
   },
   "name": "22.payment",

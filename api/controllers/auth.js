@@ -25,9 +25,32 @@ const path = require("path"); // Nhập module path
 const User = require("../../models/users");
 const bcrypt = require("bcrypt");
 
+
+// {CSRF TOKEN} // Lấy token từ server và gửi về client (có token mới cho phép gửi request post, put, delete lên server)
+const getCsrfToken = (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.description = 'Endpoint to get CSRF token.' */
+  res.json({ csrfToken: res.locals.csrfToken }); // Trả về token vừa tạo ở middleware
+};
+
 // LOGIN
 // {SESSION + COOKIES} // Đối với Session, phải tạo Session trước khi tạo Cookie
 const postAuth = async (req, res, next) => {
+  /* #swagger.tags = ['Auth'] 
+    #swagger.description = 'Endpoint to login.'
+    #swagger.security = [{
+      "csrfToken": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/definitions/SignIn"
+          }
+        }
+      }
+    } */
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
   // {VALIDATION INPUT} //
@@ -81,6 +104,12 @@ const postAuth = async (req, res, next) => {
 
 // LOGOUT => SESSION SẼ XOÁ
 const postLogout = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+      #swagger.security = [{
+      "csrfToken": [],
+      "bearAuth": []
+    }]
+    #swagger.description = 'Endpoint to logout.' */
   try {
     req.session.destroy(() => {
       res.status(200).json({ message: "Logout successfully" });
@@ -92,6 +121,21 @@ const postLogout = async (req, res, next) => {
 
 // SIGNUP
 const postSignup = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+    #swagger.description = 'Endpoint to signup.'
+    #swagger.security = [{
+      "csrfToken": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/definitions/SignUp"
+          }
+        }
+      }
+    } */
   const username = req.body.username; // Lấy giá trị username từ form
   const email = req.body.email; // Lấy giá trị email từ form
   const password = req.body.password; // Lấy giá trị password từ form
@@ -152,6 +196,21 @@ const postSignup = async (req, res, next) => {
 
 // {RESET PASSWORD} //
 const postReset = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.description = 'Endpoint to reset password.'
+     #swagger.security = [{
+       "csrfToken": []
+    }]
+     #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/definitions/Reset"
+          }
+        }
+      }
+     } */
   const email = req.body.email; // Lấy giá trị email từ form
   // {VALIDATION INPUT} + CHECK EMAIL EXIST ?
   const errorValidation = validationResult(req);
@@ -210,6 +269,14 @@ const postReset = async (req, res, next) => {
 
 // {UPDATE PASSWORD} //
 const getUpdatePassword = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.description = 'Endpoint to get userID update password.'  
+     #swagger.parameters['tokenReset'] = {
+        in: 'path',
+        description: 'Token to reset password',
+        required: true,
+        type: 'string'
+     } */
   const token = req.params.tokenReset; // Lấy token từ route đến trang update password (http://localhost:3000/reset/:tokenReset)
   try {
     const user = await User.findOne({
@@ -233,6 +300,21 @@ const getUpdatePassword = async (req, res, next) => {
 };
 
 const postUpdatePassword = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.description = 'Endpoint to update password.'
+     #swagger.security = [{
+      "csrfToken": []
+    }]
+     #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/definitions/UpdatePassword"
+          }
+        }
+      }
+     } */
   const ID = req.body.userId; // Lấy giá trị userId từ form
   const token = req.body.passwordToken; // Lấy giá trị passwordToken từ form
   const password = req.body.password; // Lấy giá trị password từ form
@@ -286,10 +368,6 @@ const postUpdatePassword = async (req, res, next) => {
   }
 };
 
-// {CSRF TOKEN} // Lấy token từ server và gửi về client
-const getCsrfToken = (req, res, next) => {
-  res.json({ csrfToken: res.locals.csrfToken }); // Trả về token vừa tạo ở middleware
-};
 
 module.exports = {
   postAuth,

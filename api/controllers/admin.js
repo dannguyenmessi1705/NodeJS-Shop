@@ -9,6 +9,47 @@ const { validationResult } = require("express-validator");
 
 // {CREAT PRODUCT BY MONGOOSE} //
 const postProduct = async (req, res, next) => {
+  /*#swagger.tags = ['Admin']
+    #swagger.description = 'Endpoint to create a new product'
+    #swagger.security = [{
+      "csrfToken": [],
+      "bearAuth": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Iphone 12"
+              },
+              "price": {
+                "type": "number",
+                "example": 1000
+              },
+              "image": {
+                "type": "string",
+                "format": "binary"
+              },
+              "description": {
+                "type": "string",
+                "example": "A smartphone from Apple"
+              }
+            },
+            "required": [
+              "name",
+              "price",
+              "image",
+              "description"
+            ]
+          }
+        }
+      }
+    }
+  */
   const name = req.body.name;
   let price = req.body.price;
   if (price.includes(",")) {
@@ -73,6 +114,19 @@ const postProduct = async (req, res, next) => {
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getProduct = async (req, res, next) => {
+  /*#swagger.tags = ['Admin']
+    #swagger.description = 'Endpoint to get products'
+    #swagger.security = [{
+      "bearAuth": []
+    }]
+    #swagger.parameters['page'] = {
+      in: 'query',
+      description: 'Page number',
+      required: false,
+      type: 'integer'
+    }
+  */
+
   /// {PAGINATION} ///
   const curPage = +req.query.page || 1; // Lấy giá trị của query 'page' từ URL, nếu không có thì mặc định là 1
   let numProducts; // Khai báo biến để lưu số lượng sản phẩm
@@ -111,6 +165,24 @@ const getProduct = async (req, res, next) => {
 
 // {GET EDIT PRODUCT BY MONGOOSE} //
 const getEditProduct = async (req, res, next) => {
+  /*#swagger.tags = ['Admin']
+    #swagger.description = 'Endpoint to get edit product'
+    #swagger.security = [{
+      "bearAuth": []
+    }]
+    #swagger.parameters['edit'] = {
+      in: 'query',
+      description: 'Edit product',
+      required: false,
+      type: 'boolean'
+    }
+    #swagger.parameters['productID'] = {
+      in: 'path',
+      description: 'Product ID',
+      required: true,
+      type: 'string'
+    }
+  */
   const isEdit = req.query.edit;
   if (!isEdit) {
     return res.redirect("/");
@@ -146,6 +218,58 @@ const getEditProduct = async (req, res, next) => {
 
 // {UPDATE PRODUCT BY MONGOOSE} //
 const postEditProduct = async (req, res, next) => {
+  /*#swagger.tags = ['Admin']
+    #swagger.description = 'Endpoint to update product'
+    #swagger.security = [{
+      "csrfToken": [],
+      "bearAuth": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Iphone 12"
+              },
+              "price": {
+                "type": "number",
+                "example": 1000
+              },
+              "image": {
+                "type": "string",
+                "format": "binary"
+              },
+              "description": {
+                "type": "string",
+                "example": "A smartphone from Apple"
+              }
+            },
+            "required": [
+              "name",
+              "price",
+              "description"
+            ]
+          }
+        }
+      }
+    }
+    #swagger.parameters['edit'] = {
+      in: 'query',
+      description: 'Edit product',
+      required: false,
+      type: 'boolean'
+    }
+    #swagger.parameters['productID'] = {
+      in: 'path',
+      description: 'Product ID',
+      required: true,
+      type: 'string'
+    }
+  */
   const name = req.body.name;
   let price = req.body.price;
   if (price.includes(",")) {
@@ -159,7 +283,7 @@ const postEditProduct = async (req, res, next) => {
     url = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
   }
   const description = req.body.description;
-  const ID = req.params.productID
+  const ID = req.params.productID;
   // const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
@@ -221,6 +345,20 @@ const postEditProduct = async (req, res, next) => {
 
 // {DELETE PRODUCT BY MONGOOSE} //
 const deleteProduct = async (req, res, next) => {
+  /*#swagger.tags = ['Admin']
+    #swagger.description = 'Endpoint to delete product'
+    #swagger.security = [{
+      "csrfToken": [],
+      "bearAuth": []
+    }]
+    #swagger.parameters['productID'] = {
+      in: 'path',
+      description: 'Product ID',
+      required: true,
+      type: 'string'
+    }
+  */
+ 
   const ID = req.params.productID; // // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
   // Vì không phải load lại trang nên không dùng method POST của form => không thể dùng req.body
   // Xoá sản phẩm trong database thì phải xoá file ảnh trong folder images (tiết kiệm ổ cứng)
