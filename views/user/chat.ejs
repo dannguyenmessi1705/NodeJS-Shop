@@ -210,11 +210,17 @@
     // Hàm cập nhật URL của trang web với roomId mới
     function updateURLParameter(roomId) {
         // Lấy URL hiện tại
-        var currentURL = window.location.href;
-        // Thêm hoặc cập nhật tham số roomId trong URL
-        var updatedURL = currentURL.replace(/\/chat\/[^/]+/, '/chat/' + roomId);
+        let currentURL = window.location.href;
+        let updatedURL
+        if (currentURL.endsWith('/chat')) {
+            // Thêm hoặc cập nhật tham số roomId trong URL
+            updatedURL = currentURL.replace(/\/chat/, '/chat/' + roomId); 
+        } else {
+            // Thêm hoặc cập nhật tham số roomId trong URL
+            updatedURL = currentURL.replace(/\/chat\/[^/]+/, '/chat/' + roomId);
+        } 
         // Thay đổi URL của trình duyệt mà không làm tải lại trang
-        window.history.pushState({ roomId: roomId }, '', updatedURL);
+        window.history.pushState({ roomId: roomId }, '', updatedURL); 
     }
 
     const rooms = document.querySelectorAll("#room-list"); // Lấy tất cả các phần tử cuộc trò chuyện
