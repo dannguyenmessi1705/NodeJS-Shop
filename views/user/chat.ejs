@@ -192,7 +192,9 @@
         h6.classList.add("text-muted", "card-subtitle", "text-end"); // Thêm class vào thẻ h6 vừa tạo
         h6.style.fontSize = ".75rem"; // Đặt font size cho thẻ h6 vừa tạo
         h6.innerHTML = (m.chats.sender._id.toString() === m.countUnReadOnRoom.participants[0].toString() ? m.sender : m.receiver) + " " + m.time; // Đặt nội dung cho thẻ h6 vừa tạo
-        div1.appendChild(img); // Thêm thẻ img vào thẻ div1
+        if (m.url) { // Nếu message có chứa ảnh
+            div1.appendChild(img); // Thêm thẻ img vào thẻ div1
+        }
         div1.appendChild(p); // Thêm thẻ p vào thẻ div1
         div1.appendChild(h6); // Thêm thẻ h6 vào thẻ div1
         div.appendChild(div1); // Thêm thẻ div1 vào thẻ div
