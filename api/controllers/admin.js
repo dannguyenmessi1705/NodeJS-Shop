@@ -140,7 +140,7 @@ const getProduct = async (req, res, next) => {
     const products = await Product.find({ userId: req.user._id }) // Tìm tất cả sản phẩm trong database (userId: req.user._id) - Chỉ tìm sản phẩm của user đang đăng nhập
       .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
       .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
-      .select("name price url description _id") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+      .select("name price url description _id soldQuantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
       .exec(); // Thực thi
     if (!products) {
       return res.status(404).json({ message: "Product not found" });

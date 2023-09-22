@@ -88,6 +88,7 @@ const getDetail = async (req, res, next) => {
       title: "Product Detail",
       path: "/product",
       item: product,
+      userId: req.user._id,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -215,6 +216,16 @@ const postOrder = async (req, res, next) => {
     });
     await order.save(); // Lưu order vào database
     await req.user.clearCart(); // Xoá cart của user
+    productArray.forEach(async (item) => {
+      // Lặp qua tất cả các sản phẩm trong cart
+      try {
+        const product = await Product.findById(item.product._id); // Tìm product có _id = _id của sản phẩm trong cart
+        product.soldQuantity += item.quantity; // Tăng số lượng sản phẩm đã bán
+        await product.save(); // Lưu lại
+      } catch (error) {
+        res.status(500).json({ message: "Server error" });
+      }
+    }); // Cập nhật số lượng sản phẩm đã bán
     res.status(201).json({ message: "Order successfully", item: order });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

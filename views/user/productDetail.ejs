@@ -19,9 +19,25 @@
                         <strong class="ref-price ref-on-sale fs-3">
                             <s class="ref-original-price"></s>$<%= item.price %>
                         </strong>
-                            <div class="reflow-add-to-cart my-2">
+                            <div class="reflow-add-to-cart my-2 d-flex flex-row justify-content-center align-items-center">
+                                <!-- POST CHAT -->
+                                <!-- Nếu đây không phải là sản phẩm chính acc này tạo ra thì mới hiện chat -->
+                                <% if (item.userId.toString() !== userId.toString()) { %> 
+                                <form action="<%if(authenticate){%>/chat<%}else{%>/login<%}%>" method="<%if(authenticate){%>POST<%}else{%>GET<%}%>"> 
+                                    <!-- TOKEN CSRF -->
+                                    <%if(authenticate){%>
+                                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                        <input type="hidden" name="id" value="<%= item._id %>" > 
+                                        <input type="hidden" name="url" value="<%= item.url %>" > 
+                                        <input type="hidden" name="sender" value="<%= userId %>" > 
+                                        <input type="hidden" name="receiver" value="<%= item.userId %>" > 
+                                    <%}%>
+                                        <button class="btn btn-primary mx-1" type="submit">Chat</button>
+                                    <!-- thẻ input được ẩn nhằm mục đích chỉ lấy id cua sản phẩm để đưa vào POST trong controller  -->
+                                </form>
+                                <% } %>
                                 <!-- POST CART  -->
-                                <%- include('../includes/addCart.ejs') %>
+                                <%- include('../includes/addCart.ejs', {item: item}) %>
                             </div>
                         <div class="ref-description my-4"><%= item.description %></div>
                     </div>

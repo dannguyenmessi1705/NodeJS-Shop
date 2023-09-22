@@ -15,11 +15,10 @@ const itemOfOrder = 10;
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
-  res.header('Cache-Control', 'no-cache'); // Không lưu cache
+  res.header("Cache-Control", "no-cache"); // Không lưu cache
   res.render("./user/index", {
     // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
     title: "Home",
-    items: products,
     path: "/",
     successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
   });
@@ -72,6 +71,7 @@ const getDetail = (req, res, next) => {
         title: "Product Detail",
         path: "/product",
         item: product,
+        userId: req.user._id,
       });
     })
     .catch((err) => {
@@ -177,6 +177,16 @@ const postOrder = (req, res, next) => {
           quantity: item.quantity, // Lấy quantity từ cart
         };
       });
+      productArray.forEach(async (item) => {
+        // Lặp qua tất cả các sản phẩm trong cart
+        try {
+          const product = await Product.findById(item.product._id); // Tìm product có _id = _id của sản phẩm trong cart
+          product.soldQuantity += item.quantity; // Tăng số lượng sản phẩm đã bán
+          await product.save(); // Lưu lại
+        } catch (error) {
+          res.status(500).json({ message: "Server error" });
+        }
+      }); // Cập nhật số lượng sản phẩm đã bán
       const order = new Order({
         // Tạo order mới
         products: productArray,
@@ -325,6 +335,7 @@ const getInvoice = (req, res, next) => {
       next(error); // Trả về lỗi
     });
 };
+
 
 module.exports = {
   getIndex,

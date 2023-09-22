@@ -19,10 +19,11 @@
                                 <h2 class="ref-name fs-2"><%= item.name %></h2>
                             </header>
                             <div class="card__image-dan">
-                                <img src="/<%=item.url%>" alt="A Book">
+                                <img src="/<%=item.url%>" loading="lazy" alt="A Product">
                             </div>
                             <div class="d-flex flex-column align-items-center justify-content-center p-3">
                                 <h1 class="ref-original-price fs-4">$<%= item.price %></h1>
+                                <h2 class="ref-product-quantity fs-6"><b>Sold: </b><%= item.soldQuantity %></h2>
                                 <p class="ref-description"><%= item.description %></p>
                             </div>
                             <div class="card__actions-dan">

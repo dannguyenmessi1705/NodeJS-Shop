@@ -23,8 +23,7 @@ const rootPath = require("../../util/path"); // Nhập đường dẫn tuyệt �
 const path = require("path"); // Nhập module path
 
 const User = require("../../models/users");
-const bcrypt = require("bcrypt");
-
+const bcrypt = require("bcryptjs");
 
 // {CSRF TOKEN} // Lấy token từ server và gửi về client (có token mới cho phép gửi request post, put, delete lên server)
 const getCsrfToken = (req, res, next) => {
@@ -252,13 +251,11 @@ const postReset = async (req, res, next) => {
         transporter
           .sendMail(data) // Gửi mail
           .then((result) => {
-            res
-              .status(201)
-              .json({
-                message: "Sent email reset password successfully",
-                token: token,
-                result: result,
-              }); // Trả về thành công
+            res.status(201).json({
+              message: "Sent email reset password successfully",
+              token: token,
+              result: result,
+            }); // Trả về thành công
           });
       });
     }
@@ -367,7 +364,6 @@ const postUpdatePassword = async (req, res, next) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   postAuth,

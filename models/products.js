@@ -19,6 +19,10 @@ const Product = new Schema({
     type: SchemaTypes.String, // Kiểu dữ liệu
     require: true, // Bắt buộc phải có
   },
+  soldQuantity: {
+    type: SchemaTypes.Number, // Kiểu dữ liệu
+    default: 0, // Giá trị mặc định
+  },
   // {Realation} //
   userId: {
     type: SchemaTypes.ObjectId,

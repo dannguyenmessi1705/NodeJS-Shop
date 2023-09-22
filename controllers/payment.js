@@ -94,6 +94,7 @@ const VNPayReturn = async (req, res, next) => {
       //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
       // {SAVE ORDER AND DELETE CART} //
       const Order = require("../models/orders"); // Gọi model order
+      const Product = require("../models/products"); // Gọi model product
       const user = await req.user.populate("cart.items.productId"); // Lấy tất cả dữ liệu user, populate để lấy thêm dữ liệu từ collection products vào thuộc tính productId của cart
       const products = [...user.cart.items]; // Sau khi lấy được dữ liệu từ collection products qua populate, copy lại vào biến products
       const productArray = products.map((item) => {
@@ -115,6 +116,16 @@ const VNPayReturn = async (req, res, next) => {
       });
       const result = await order.save(); // Lưu order vào database
       const clearCart = await req.user.clearCart(); // Xoá cart của user
+      productArray.forEach(async (item) => {
+        // Lặp qua tất cả các sản phẩm trong cart
+        try {
+          const product = await Product.findById(item.product._id); // Tìm product có _id = _id của sản phẩm trong cart
+          product.soldQuantity += item.quantity; // Tăng số lượng sản phẩm đã bán
+          await product.save(); // Lưu lại
+        } catch (error) {
+          res.status(500).json({ message: "Server error" });
+        }
+      }); // Cập nhật số lượng sản phẩm đã bán
       res.render("./user/checkout", {
         title: "Payment Success",
         path: "/checkout",

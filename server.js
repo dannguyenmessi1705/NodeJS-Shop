@@ -107,14 +107,29 @@ app.use(flash());
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-// {RUN SERVER + Add user to req (Phân quyền)} //
+// {RUN SERVER + Add user to req (Phân quyền) + SOCKET.IO} //
 const mongoose = require("mongoose"); // Nhập module mongoose
 const User = require("./models/users"); // Nhập vào class User lấy từ file users.js
 mongoose
   .connect(URL)
   .then(() => {
-    app.listen(3000);
+    const server = app.listen(3000);
+    // {SOCKET.IO} //
+    const io = require("./util/socket").init(server); // Khởi tạo socket.io và lưu vào biến io, sẽ được khởi tạo ở file server.js
     console.log("Connected!");
+    io.on("connection", (socket) => {
+      // socket là 1 object chứa các thông tin của client
+      // Khi có 1 client kết nối đến server thì sẽ chạy hàm này với biến socket là 1 object chứa các thông tin của client
+      console.log("Client connected!");
+      socket.on("message", (message) => {
+        // Khi client gửi 1 message lên server thì sẽ chạy hàm này
+        console.log(message);
+      });
+      socket.on("disconnect", () => {
+        // Khi client disconnect thì sẽ chạy hàm này
+        console.log("Client disconnected!");
+      });
+    });
   }) // Kết nối với database, sau đó mới chạy server
   .catch((err) => {
     console.log(err);
@@ -144,18 +159,19 @@ app.use(async (req, res, next) => {
   }
 });
 
-
 // {ROUTE SERVER SIDE} //
 const authRoute = require("./routes/auth");
 const adminRoute = require("./routes/admin");
 const personRoute = require("./routes/user");
 const paymentRoute = require("./routes/payment");
+const chatRoute = require("./routes/chat");
 const errorRoute = require("./routes/error");
 app.use("/admin", adminRoute);
 app.use(personRoute);
 // {LOGIN ROUTE} //
 app.use(authRoute);
 app.use(paymentRoute);
+app.use(chatRoute);
 
 // {SWAGGER API} //
 const swaggerUi = require("swagger-ui-express");
@@ -176,12 +192,12 @@ app.use("/api", paymentRouteAPI);
 // Phải đặt các route lỗi ở cuối cùng
 app.use(errorRoute);
 
-// {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
-app.use((err, req, res, next) => {
-  res.status(500).render("500", {
-    title: "Server maintenance",
-    path: "/500",
-    authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
-  });
-});
-/// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi
+// // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
+// app.use((err, req, res, next) => {
+//   res.status(500).render("500", {
+//     title: "Server maintenance",
+//     path: "/500",
+//     authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
+//   });
+// });
+// /// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi
