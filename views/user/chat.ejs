@@ -144,7 +144,7 @@
         chat = [...data.room.messages] // Gán các message vào mảng chat
     })
     import { io } from "/js/socket.io-client.min.js"; // Import thư viện socket.io-client (đã được tải về từ server vì đây là file view nên chir có thể impport được thư viện đã được public)
-    const socket = new io("http://localhost:3000"); // Tạo 1 socket mới
+    const socket = new io(); // Tạo 1 socket mới
     socket.on("connect", (socket) => { // Khi socket kết nối thành công
         console.log("Connected to server!");
     })
