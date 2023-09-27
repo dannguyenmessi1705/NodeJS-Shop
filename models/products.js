@@ -23,6 +23,10 @@ const Product = new Schema({
     type: SchemaTypes.Number, // Kiểu dữ liệu
     default: 0, // Giá trị mặc định
   },
+  quantity: {
+    type: SchemaTypes.Number, // Kiểu dữ liệu
+    required: true, // Bắt buộc phải có
+  },
   // {Realation} //
   userId: {
     type: SchemaTypes.ObjectId,

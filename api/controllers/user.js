@@ -113,7 +113,12 @@ const postCart = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+    if (product.quantity <= 0) {
+      return res.status(404).json({ message: "Product out of stock" });
+    }
     await req.user.postCartByUser(product); // Thêm product vào cart User
+    product.quantity -= 1; // Giảm số lượng sản phẩm
+    await product.save(); // Lưu lại
     res
       .status(201)
       .json({ message: "Add product to cart successfully", item: product });
@@ -168,11 +173,13 @@ const deleteCart = async (req, res, next) => {
   const ID = req.params.productID; // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
   // const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   try {
-    const product = await Product.findById(ID); // Tìm product có _id = ID
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    await req.user.deleteCartByUser(product); // Xoá product trong cart User
+    const product = await Product.findById(ID);
+    const restoreQuantity = await req.user.cart.items.find(
+      (item) => item.productId.toString() === ID.toString()
+    ).quantity;
+    await req.user.deleteCartByUser(product);
+    product.quantity += restoreQuantity;
+    await product.save();
     res
       .status(200)
       .json({ message: "Delete product in cart successfully", item: product });

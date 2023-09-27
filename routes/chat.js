@@ -11,7 +11,4 @@ route.post("/chat", ProtectRoute, ChatController.postChat);
 // {GET ROOM CHAT} //
 route.get("/chat/:roomID", ProtectRoute, ChatController.getRoom); 
 
-// {GET ROOM CHAT JSON} //
-route.get("/chat1/:roomID", ProtectRoute, ChatController.getRoom1);
-
 module.exports = route;

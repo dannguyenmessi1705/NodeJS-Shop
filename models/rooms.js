@@ -14,9 +14,13 @@ const Room = new Schema({
       ref: "chats",
     },
   ],
+  marked: {
+    type: SchemaTypes.Boolean,
+    default: false,
+  },
   countUnRead: {
     type: SchemaTypes.Number,
     default: 0,
   },
-});
+}, {timestamps: true});
 module.exports = mongoose.model("rooms", Room);

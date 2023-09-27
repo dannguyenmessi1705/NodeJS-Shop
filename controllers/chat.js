@@ -1,13 +1,13 @@
 const Chat = require("../models/chats");
 const Room = require("../models/rooms");
 
-// {GET CHAT} //
+// {GET LIST CHAT ROOM} //
 const getChat = async (req, res, next) => {
   try {
     const rooms = await Room.find({ participants: req.user._id }) // Tìm kiếm các room có id của user hiện tại trong participants
       .populate("participants", "username") // Populate các field participants với các field name
       .populate("messages", "message url sender receiver createdAt") // Populate các field messages với các field message, createdAt
-      .sort({ "messages.createdAt": -1 }); // Sắp xếp các room theo thời gian tạo của message mới nhất
+      .sort({ "updatedAt": -1 }); // Sắp xếp các room theo thời gian cập nhật của message mới nhất
     // GET LATEST MESSAGE //
     let latestMessages; // Khởi tạo mảng latestMessages
     if (rooms.length > 0) {
@@ -55,6 +55,7 @@ const postChat = async (req, res, next) => {
       const newRoom = new Room({
         participants: [sender, receiver], // Lưu id của sender và receiver vào participants
         messages: [chats._id], // Lưu id của chat vào messages
+        marked: false, // Mặc định là false (chưa đọc tin nhắn)
         countUnRead: 1, // Mặc định là 1 vì vừa tạo mới room nên chưa đọc
       });
       countUnReadOnRoom = await newRoom.save(); // Lưu room vào collection rooms
@@ -64,6 +65,7 @@ const postChat = async (req, res, next) => {
         // Cập nhật lại room
         $inc: { countUnRead: 1 }, // Tăng countUnRead lên 1
         $push: { messages: chats._id }, // Thêm id của chat vào messages
+        marked: false, // Đánh dấu là chưa đọc tin nhắn
       });
     }
     const senderSOC = (await chat.populate("sender", "username")).sender
@@ -77,7 +79,9 @@ const postChat = async (req, res, next) => {
       sender: senderSOC, // Username của sender
       receiver: receiverSOC, // Username của receiver
       chats, // Thông tin của message
-      time: chats.createdAt.toLocaleString('en-US', {timeZone: 'Asia/Ho_Chi_Minh'}), // Thời gian tạo message
+      time: chats.createdAt.toLocaleString("en-US", {
+        timeZone: "Asia/Ho_Chi_Minh",
+      }), // Thời gian tạo message
       countUnReadOnRoom, // Thông tin của room
       countUnRead: countUnReadOnRoom?.countUnRead || 1, // Nếu countUnReadOnRoom không tồn tại thì mặc định là 1
     });
@@ -95,54 +99,42 @@ const postChat = async (req, res, next) => {
 // {GET ROOM} //
 const getRoom = async (req, res, next) => {
   try {
+    const header = req.get("Content-Type");
     const roomID = req.params.roomID; // Lấy id của room từ params
     const sender = req.user._id; // Lấy id của user hiện tại
     const rooms = await Room.find({ participants: sender }) // Tìm kiếm room có id và participants là sender
       .populate("participants", "username") // Populate các field participants với các field name và avatar
       .populate("messages", "message url sender receiver createdAt") // Populate các field messages với các field message, url, sender, receiver, createdAt
-      .sort({ "messages.createdAt": -1 }); // Sắp xếp các room theo thời gian tạo của message mới nhất
-    const room = rooms.find((room) => room._id.toString() === roomID); // Tìm kiếm room có id trùng với roomID
+      .sort({ "updatedAt": -1 }); // Sắp xếp các room theo thời gian tạo của message mới nhất
+    // Tìm kiếm room có id trùng với roomID
+    const room = rooms.find((room) => room._id.toString() === roomID);
     if (!room) {
       // Nếu không tìm thấy room thì chuyển hướng đến trang chat
       return res.redirect("/chat");
     }
-    console.log(rooms);
-    res.render("./user/chat", {
-      title: "Room",
-      path: "/chat",
-      rooms,
-      room,
-      userId: req.user._id,
-      token: req.session.accessToken,
-    });
-  } catch (error) {
-    const err = new Error(error);
-    err.httpStatusCode = 500;
-    next(err);
-  }
-};
-// {GET ROOM JSON} //
-const getRoom1 = async (req, res, next) => {
-  try {
-    const roomID = req.params.roomID; // Lấy id của room từ params
-    const sender = req.user._id; // Lấy id của user hiện tại
-    const rooms = await Room.find({ participants: sender }) // Tìm kiếm room có id và participants là sender
-      .populate("participants", "username") // Populate các field participants với các field name và avatar
-      .populate("messages", "message url sender receiver createdAt") // Populate các field messages với các field message, url, sender, receiver, createdAt
-      .sort({ "messages.createdAt": -1 }); // Sắp xếp các room theo thời gian tạo của message mới nhất
-    const room = rooms.find((room) => room._id.toString() === roomID); // Tìm kiếm room có id trùng với roomID
-    if (!room) {
-      // Nếu không tìm thấy room thì chuyển hướng đến trang chat
-      return res.redirect("/chat");
+    // Cập nhật lại room đã đọc tin nhắn
+    room.marked = true; // Đã đọc tin nhắn
+    room.countUnRead = 0; // Đã đọc tin nhắn nên countUnRead = 0
+    await room.save(); // Lưu room vào collection rooms
+    if (header && header.includes("application/json")) {
+      res.json({
+        title: "Room",
+        path: "/chat",
+        rooms,
+        room,
+        userId: req.user._id,
+        token: req.session.accessToken,
+      });
+    } else {
+      res.render("./user/chat", {
+        title: "Room",
+        path: "/chat",
+        rooms,
+        room,
+        userId: req.user._id,
+        token: req.session.accessToken,
+      });
     }
-    res.json({
-      title: "Room",
-      path: "/chat",
-      rooms,
-      room,
-      userId: req.user._id,
-      token: req.session.accessToken,
-    });
   } catch (error) {
     const err = new Error(error);
     err.httpStatusCode = 500;
@@ -150,9 +142,9 @@ const getRoom1 = async (req, res, next) => {
   }
 };
 
+
 module.exports = {
   getChat,
   postChat,
   getRoom,
-  getRoom1,
 };

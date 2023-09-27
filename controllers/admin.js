@@ -44,10 +44,12 @@ const postProduct = async (req, res, next) => {
         name: req.body.name,
         price: req.body.price,
         description: req.body.description,
+        quantity: req.body.quantity,
       }, // Lưu lại các giá trị vừa nhập
     });
   }
   const description = req.body.description;
+  const quantity = req.body.quantity;
   const userId = req.user._id;
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
@@ -64,6 +66,7 @@ const postProduct = async (req, res, next) => {
         name: req.body.name,
         price: req.body.price,
         description: req.body.description,
+        quantity: req.body.quantity,
       }, // Lưu lại các giá trị vừa nhập
     });
   }
@@ -73,6 +76,7 @@ const postProduct = async (req, res, next) => {
       price,
       url: image.path, // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
       description,
+      quantity,
       userId,
     });
     const result = await product.save();
@@ -108,7 +112,7 @@ const getProduct = async (req, res, next) => {
     const products = await Product.find({ userId: req.user._id }) // Tìm tất cả sản phẩm trong database (userId: req.user._id) - Chỉ tìm sản phẩm của user đang đăng nhập
       .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
       .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
-      .select("name price url description _id soldQuantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+      .select("name price url description _id soldQuantity quantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
       .exec(); // Thực thi
     if (!products) {
       const err = new Error("Product not found");
@@ -166,6 +170,7 @@ const getEditProduct = async (req, res, next) => {
         name: "",
         price: "",
         description: "",
+        quantity: "",
       }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
     });
   } catch (err) {
@@ -190,6 +195,7 @@ const postEditProduct = async (req, res, next) => {
     url = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
   }
   const description = req.body.description;
+  const quantity = req.body.quantity;
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
   // VALIDATION INPUT
   const errorValidation = validationResult(req);
@@ -215,6 +221,7 @@ const postEditProduct = async (req, res, next) => {
           name,
           price,
           description,
+          quantity
         }, // Lưu lại các giá trị vừa nhập
       });
     }
@@ -239,6 +246,7 @@ const postEditProduct = async (req, res, next) => {
       product.url = url; // Lưu đường dẫn của file mới
     }
     product.description = description;
+    product.quantity = quantity;
     // Lưu lại vào database
     const result = await product.save();
     if (result) {

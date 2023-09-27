@@ -26,6 +26,7 @@ const getIndex = (req, res, next) => {
 
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getProduct = (req, res, next) => {
+  const [outOfStock] = req.flash("outOfStock"); // Lấy giá trị Flash có tên là "outOfStock"
   const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
   let numProducts; // Tạo biến để lưu số lượng sản phẩm
   Product.countDocuments() // Đếm số có trong collection products
@@ -38,6 +39,7 @@ const getProduct = (req, res, next) => {
           res.render("./user/productList", {
             title: "Product",
             items: products,
+            outOfStock: outOfStock || undefined, // Truyền giá trị Flash vào biến outOfStock để hiển thị thông báo
             path: "/product",
             lastPage: Math.ceil(numProducts / productOfPage), // Tính số lượng trang
             curPage: curPage, // Trang hiện tại
@@ -85,17 +87,29 @@ const getDetail = (req, res, next) => {
 // {POST CART USER BY MONGOOSE} //
 const postCart = (req, res, next) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
+  let updateCart;
   Product.findById(ID) // Tìm product có _id = ID
     .then((product) => {
-      req.user
-        .postCartByUser(product) // Thêm product vào cart User
-        .then(() => {
-          return res.redirect("/cart");
-        })
-        .catch((err) => {
-          console.log(err);
-          res.redirect("/500-maintenance");
-        });
+      if (product.quantity <= 0) {
+        // Kiểm tra xem số lượng sản phẩm còn lại có lớn hơn 0 hay không
+        req.flash("outOfStock", "Out of stock"); // Nếu không thì trả về lỗi
+        return res.redirect("/product"); // Nếu không thì trả về trang sản phẩm
+      } else {
+        updateCart = product;
+        req.user
+          .postCartByUser(product) // Thêm product vào cart User
+          .then(() => {
+            updateCart.quantity -= 1;
+            updateCart.save();
+          })
+          .then(() => {
+            return res.redirect("/cart");
+          })
+          .catch((err) => {
+            console.log(err);
+            res.redirect("/500-maintenance");
+          });
+      }
     })
     .catch((err) => {
       // {ERROR MIDDLEWARE} //
@@ -136,26 +150,22 @@ const getCart = (req, res, next) => {
 };
 
 // {DELETE CART USER BY MONGOOSE} //
-const deleteCart = (req, res, next) => {
+const deleteCart = async (req, res, next) => {
   const ID = req.body.id; // ".id" vì id được đặt trong thuộc tính name của thẻ input đã được hidden
-  Product.findById(ID) // Tìm product có _id = ID
-    .then((product) => {
-      req.user
-        .deleteCartByUser(product) // Xoá product trong cart User
-        .then((result) => {
-          return res.redirect("/cart");
-        })
-        .catch((err) => {
-          console.log(err);
-          res.redirect("/500-maintenance");
-        });
-    })
-    .catch((err) => {
-      // {ERROR MIDDLEWARE} //
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      next(error);
-    });
+  try {
+    const product = await Product.findById(ID);
+    const restoreQuantity = await req.user.cart.items.find(
+      (item) => item.productId.toString() === ID.toString()
+    ).quantity;
+    await req.user.deleteCartByUser(product);
+    product.quantity += restoreQuantity;
+    await product.save();
+    return res.redirect("/cart");
+  } catch (error) {
+    const err = new Error(error);
+    err.httpStatusCode = 500;
+    next(err);
+  }
 };
 
 // {POST ORDER BY USER IN MONGOOSE}
@@ -335,7 +345,6 @@ const getInvoice = (req, res, next) => {
       next(error); // Trả về lỗi
     });
 };
-
 
 module.exports = {
   getIndex,

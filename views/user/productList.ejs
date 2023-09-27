@@ -3,6 +3,13 @@
 <body>
     <%- include('../includes/nav.ejs') %>
     <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm py-4">
+        <% if(outOfStock) { %>
+            <div class="d-flex align-items-center py-2">
+                <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+                    <%= outOfStock %>
+                </div>
+            </div>
+        <% } %>
         <div class="container py-2">
             <% if (!items.length > 0) { %>
                 <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
@@ -23,7 +30,10 @@
                             </div>
                             <div class="d-flex flex-column align-items-center justify-content-center p-3">
                                 <h1 class="ref-original-price fs-4">$<%= item.price %></h1>
-                                <h2 class="ref-product-quantity fs-6"><b>Sold: </b><%= item.soldQuantity %></h2>
+                                <div class="d-flex flex-row">
+                                    <h2 class="ref-product-quantity fs-6 mx-4"><b>Sold: </b><%= item.soldQuantity %></h2>
+                                    <h2 class="ref-product-quantity fs-6 mx-4"><b>Store: </b><%= item.quantity %></h2>
+                                </div>
                                 <p class="ref-description"><%= item.description %></p>
                             </div>
                             <div class="card__actions-dan">

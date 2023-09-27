@@ -5,9 +5,9 @@
     <%- include("../includes/nav.ejs")%>
     <div data-aos="fade" data-aos-delay="400" class="container-fluid border border-3 border-dark-subtle bg-dark-subtle">
         <div class="row">
-            <div class="col-lg-4 col-xl-4 border border-end-6 border-light-subtle">
+            <div id="room-chat" class="col-lg-4 col-xl-4 border border-end-6 border-light-subtle d-none d-sm-none d-md-none d-lg-block d-xl-block">
                 <div class="row mb-1">
-                    <div class="col d-flex align-items-lg-center align-items-xl-center justify-content-center border-start border-muted border border-warning-subtle border-2" style="background: rgba(52,58,64,0.2);height: 4rem;"><button class="btn d-block d-sm-block d-md-block d-lg-none d-xl-none border-0 my-auto" type="button" style="width: 2.5rem;height: 2.5rem;"><i class="far fa-arrow-alt-circle-left"></i></button>
+                    <div class="col d-flex align-items-lg-center align-items-xl-center justify-content-center border-start border-muted border border-warning-subtle border-2" style="background: rgba(52,58,64,0.2);height: 4rem;">
                         <h5 class="mr-auto my-auto">Welcome to SHOP CHAT</h5>
                     </div>
                 </div>
@@ -16,39 +16,45 @@
                         <ul class="list-unstyled">
                             <% if (rooms.length > 0) { %>
                                 <% rooms.forEach(room => { %>
-                                    <li id="room-list" style="cursor:pointer;">
+                                    <li class="room-list" id="room-list-<%=room._id.toString()%>" style="cursor:pointer;">
                                         <input type="hidden" value="<%=room._id%>">
                                         <div class="card border-0 mb-1">
                                             <div class="card-body bg-light-subtle border border-1 rounded-2 border-dark-subtle">
-                                                <% if (room.participants[0]._id.toString() !== userId.toString() && room.countUnRead !== 0) { %>
-                                                    <span class="text-nowrap text-truncate text-uppercase text-white float-end p-1 text-center" style="width: 2rem;height: 2rem;border-radius: 15px;background: #00db5f;"><%=room.countUnRead%></span>
-                                                <% } %>
-                                                <h4 class="text-nowrap text-truncate card-title"><%=room.participants[0]._id.toString() === userId.toString() ? room.participants[1].username : room.participants[0].username%></h4>
-                                                <h6 class="text-nowrap text-truncate text-muted card-subtitle mb-2" style="font-size: .7rem;"><%=room.messages[room.messages.length - 1].createdAt.toLocaleString('en-US', {timeZone: 'Asia/Ho_Chi_Minh'})%></h6>
-                                                <h6 class="text-nowrap text-truncate text-muted card-subtitle mb-2"><%=room.messages[room.messages.length - 1].message%></h6>
+                                                <!-- <span class="text-nowrap text-truncate text-uppercase text-white float-end p-1 text-center" style="width: 2rem;height: 2rem;border-radius: 15px;background: #00db5f;"><%=room.countUnRead%></span> -->
+                                                <h4 class="text-nowrap text-truncate card-title</h4>"><%=room.participants[0]._id.toString() === userId.toString() ? room.participants[1].username : room.participants[0].username%></h4>
+                                                <h6 class="text-nowrap text-truncate  card-subtitle mb-2 <%= room.marked ? "text-muted" : "fw-bold text-dark-emphasis" %>" style="font-size: .7rem;"><%=room.messages[room.messages.length - 1].createdAt.toLocaleString('en-US', {timeZone: 'Asia/Ho_Chi_Minh'})%></h6>
+                                                <h6 class="text-nowrap text-truncate text-muted card-subtitle mb-2 <%= room.marked ? "text-muted" : "fw-bold text-dark-emphasis" %>"><%=room.messages[room.messages.length - 1].message%></h6>
                                             </div>
                                         </div>
                                     </li>
                                 <% }) %>
+                            <% } else { %>
+                                <li>
+                                    <div class="card border-0 mb-1 d-flex align-items-center justify-content-center">
+                                        <div class="card-body bg-light-subtle border border-1 rounded-2 border-dark-subtle">
+                                            <h4 class="text-nowrap text-truncate card-title">No room</h4>
+                                        </div>
+                                    </div>
+                                </li>
                             <% } %>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="col d-none d-sm-none d-md-none d-lg-block d-xl-block">
-                <div class="row mb-1" id="userinfo">
-                    <div class="col d-flex justify-content-center align-items-lg-center align-items-xl-center border-start border-muted border border-warning-subtle border-2" style="background: rgba(52,58,64,0.2);height: 4rem;"><button class="btn d-block d-sm-block d-md-block d-lg-none d-xl-none border-0 my-auto" type="button" style="width: 2.5rem;height: 2.5rem;"><i class="far fa-arrow-alt-circle-left"></i></button>
-                        <h5 class="mr-auto my-auto"><%=room.participants[0]._id.toString() === userId.toString() ? room.participants[1].username : room.participants[0].username%></h5><span class="my-auto"><i class="fa fa-user mx-2"></i></span>
+            <% if (rooms.length > 0) { %>
+                <div id="message-chat" class="col d-block d-sm-block d-md-block d-lg-block d-xl-block">
+                    <div class="row mb-1" id="userinfo">
+                        <div class="col d-flex justify-content-center align-items-lg-center align-items-xl-center border-start border-muted border border-warning-subtle border-2" style="background: rgba(52,58,64,0.2);height: 4rem;"><button class="btn d-block d-sm-block d-md-block d-lg-none d-xl-none border-0 my-auto" type="button" style="width: 2.5rem;height: 2.5rem;"><i class="far fa-arrow-alt-circle-left"></i></button>
+                            <h5 class="mr-auto my-auto"><%=room.participants[0]._id.toString() === userId.toString() ? room.participants[1].username : room.participants[0].username%></h5><span class="my-auto"><i class="fa fa-user mx-2"></i></span>
+                        </div>
                     </div>
-                </div>
-                <div class="row px-3 py-2 border-start border-muted" id="content">
-                    <div class="col" id="scroll-bar" style="overflow-x: none;overflow-y: auto;max-height: 30.5rem;height: auto;">
-                        <ul class="list-unstyled" id="messages">
-                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                            <input type="hidden" name="roomId" value="<%=room._id%>">
-                            <input type="hidden" name="receiver" value="<%=room.participants[1]._id%>">
-                            <input type="hidden" name="jwttoken" value="<%=token%>">
-                            <% if (room.messages.length > 0) { %>
+                    <div class="row px-3 py-2 border-start border-muted" id="content">
+                        <div class="col" id="scroll-bar" style="overflow-x: none;overflow-y: auto;max-height: 40.5rem;height: auto;">
+                            <ul class="list-unstyled" id="messages">
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <input type="hidden" name="roomId" value="<%=room._id%>">
+                                <input type="hidden" name="receiver" value="<%=userId.toString() === room.participants[0]._id.toString() ? room.participants[1]._id : room.participants[0]._id%>">
+                                <input type="hidden" name="jwttoken" value="<%=token%>">
                                 <% room.messages.forEach(m => { %>
                                     <% if(userId.toString() === m.sender.toString()) { %>
                                         <li class="d-flex justify-content-end my-2">
@@ -63,7 +69,7 @@
                                             </div>
                                         </li>
                                     <% } else { %>
-                                        <li class="my-2" id="message">
+                                        <li class="my-2">
                                             <div class="card border border-muted bg-light-subtle" style="width: 65%;border-top-left-radius: 0px;border-top-right-radius: 20px;border-bottom-right-radius: 20px;border-bottom-left-radius: 20px;">
                                                 <div class="card-body text-center p-2">
                                                     <% if (m.url) { %>
@@ -76,21 +82,29 @@
                                         </li>
                                     <% } %>
                                 <% }) %>
-                            <% } %>
-                        </ul>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row px-3 py-2" id="inputsend">
+                        <div class="col-9 col-sm-10 col-md-10 col-lg-10 col-xl-10">
+                            <input class="w-100 h-100 border border-3 rounded-3 px-3" name="message" style="resize: none;" type="text" placeholder="Type the message..." />
+                        </div>
+                        <div class="col-3 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-nowrap d-md-flex justify-content-md-end p-0">
+                            <button id="send" class="btn btn-outline-primary border border-3 border-dark-subtle rounded-3 w-auto" type="submit">
+                                <i class="fa-brands fa-telegram fs-1"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="row px-3 py-2" id="inputsend">
-                    <div class="col-9 col-sm-10 col-md-10 col-lg-10 col-xl-10">
-                        <input class="w-100 h-100 border border-3 rounded-3 px-3" name="message" style="resize: none;" type="text" placeholder="Type the message..." />
-                    </div>
-                    <div class="col-3 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-nowrap d-md-flex justify-content-md-end p-0">
-                        <button id="send" class="btn btn-outline-primary border border-3 border-dark-subtle rounded-3 w-auto" type="submit">
-                            <i class="fa-brands fa-telegram fs-1"></i>
-                        </button>
+            <% } else { %>
+                <div class="col d-none d-sm-none d-md-none d-lg-block d-xl-block">
+                    <div class="row mb-1" id="userinfo">
+                        <div class="col d-flex justify-content-center align-items-lg-center align-items-xl-center border-start border-muted border border-warning-subtle border-2" style="background: rgba(52,58,64,0.2);height: 4rem;"><button class="btn d-block d-sm-block d-md-block d-lg-none d-xl-none border-0 my-auto" type="button" style="width: 2.5rem;height: 2.5rem;"><i class="far fa-arrow-alt-circle-left"></i></button>
+                            <h5 class="mr-auto my-auto">NO MESSAGES</h5><span class="my-auto"><i class="fa fa-user mx-2"></i></span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <% } %>
         </div>
     </div>
 <script src="/js/bootstrap.min.js"></script>
@@ -119,10 +133,17 @@
     setHeight();
     // Gọi hàm setHeight khi cửa sổ trình duyệt thay đổi kích thước
     window.addEventListener("resize", setHeight); 
+    window.addEventListener("orientationchange", setHeight);
+    window.addEventListener("load", setHeight);
+    window.addEventListener("DOMContentLoaded", setHeight);
 
     // Kéo xuống cuối cùng khi load trang
-    const scrollBar = document.getElementById("scroll-bar"); // Lấy thẻ scroll-bar
-    scrollBar.scrollTop = scrollBar.scrollHeight; // Đặt scroll-bar xuống cuối cùng
+    function scrollToBottom() {
+        const scrollBar = document.getElementById("scroll-bar"); // Lấy thẻ scroll-bar
+        scrollBar.scrollTop = scrollBar.scrollHeight; // Đặt scroll-bar xuống cuối cùng
+    }
+    scrollToBottom();
+    window.addEventListener("load", scrollToBottom);
 </script>
 
 <!-- SOCKET CLIENT -->
@@ -132,7 +153,7 @@
     const roomId = document.querySelector("input[name='roomId']").value; // Lấy roomId từ input ẩn
     const token = document.querySelector("input[name='jwttoken']").value; // Lấy token từ input ẩn
     const messageTag = document.getElementById("messages"); // Lấy thẻ ul chứa các message
-    fetch("/chat1" + "/" + roomId, { // Gửi request lên server để lấy dữ liệu
+    fetch("/chat" + "/" + roomId, { // Gửi request lên server để lấy dữ liệu
         method: "GET", // Phương thức GET
         headers: { // Các header cần thiết
             "Content-Type": "application/json", // Content-Type là application/json
@@ -150,153 +171,108 @@
     })
     // socket.emit("message", "Hello from client!") // Gửi 1 message lên server
     socket.on("message", (m) => { // Khi nhận được message từ server
-        const lastli = messageTag.lastElementChild;
-        // render message lên màn hình sau khi get messageTag
-        const li = document.createElement("li"); // Tạo một thẻ li mới
-        if(data.userId.toString() === m.chats.sender._id.toString()) { // Nếu người gửi là người đang đăng nhập
-            li.classList.add("d-flex", "justify-content-end", "my-2"); // Thêm class vào thẻ li vừa tạo để hiển thị message bên phải
-        }
-        else { // Nếu người gửi không phải là người đang đăng nhập
-            li.classList.add("my-2"); // Thêm class vào thẻ li vừa tạo để hiển thị message bên trái
-        }
-        const div = document.createElement("div"); // Tạo một thẻ div mới 
-        div.classList.add("card", "border", "border-muted", "bg-light-subtle"); // Thêm class vào thẻ div vừa tạo
-        div.style.width = "65%"; // Đặt chiều rộng của thẻ div vừa tạo
-        if(data.userId.toString() === m.chats.sender._id.toString()) { // Nếu người gửi là người đang đăng nhập
-            div.style.borderTopLeftRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
-            div.style.borderTopRightRadius = "0px"; // Đặt border radius cho thẻ div vừa tạo
-            div.style.borderBottomRightRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
-            div.style.borderBottomLeftRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
-        }
-        else { // Nếu người gửi không phải là người đang đăng nhập
-            div.style.borderTopLeftRadius = "0px";
-            div.style.borderTopRightRadius = "20px";
-            div.style.borderBottomRightRadius = "20px";
-            div.style.borderBottomLeftRadius = "20px";
-        }
-        const div1 = document.createElement("div"); // Tạo một thẻ div mới để chứa nội dung message
-        div1.classList.add("card-body", "text-center", "p-2"); // Thêm class vào thẻ div vừa tạo
-        const img = document.createElement("img"); // Tạo một thẻ img mới để chứa ảnh
-        if(m.url) { // Nếu message có chứa ảnh
-            img.classList.add("img-fluid", "mb-2");
-            img.src = "/" + m.chats.url; // Đặt src cho thẻ img vừa tạo
-            img.style.maxHeight = "30rem"; // Đặt chiều cao tối đa cho thẻ img vừa tạo
-            img.style.height = "auto"; // Đặt chiều cao cho thẻ img vừa tạo
-            img.style.minHeight = "10rem"; // Đặt chiều cao tối thiểu cho thẻ img vừa tạo
-        }
-        const p = document.createElement("p"); // Tạo một thẻ p mới để chứa nội dung message
-        p.classList.add("text-start", "card-text"); // Thêm class vào thẻ p vừa tạo
-        p.style.fontSize = "1rem"; // Đặt font size cho thẻ p vừa tạo
-        p.innerHTML = m.chats.message; // Đặt nội dung cho thẻ p vừa tạo
-        const h6 = document.createElement("h6"); // Tạo một thẻ h6 mới để chứa người gửi và thời gian gửi message
-        h6.classList.add("text-muted", "card-subtitle", "text-end"); // Thêm class vào thẻ h6 vừa tạo
-        h6.style.fontSize = ".75rem"; // Đặt font size cho thẻ h6 vừa tạo
-        h6.innerHTML = (m.chats.sender._id.toString() === m.countUnReadOnRoom.participants[0].toString() ? m.sender : m.receiver) + " " + m.time; // Đặt nội dung cho thẻ h6 vừa tạo
-        if (m.url) { // Nếu message có chứa ảnh
-            div1.appendChild(img); // Thêm thẻ img vào thẻ div1
-        }
-        div1.appendChild(p); // Thêm thẻ p vào thẻ div1
-        div1.appendChild(h6); // Thêm thẻ h6 vào thẻ div1
-        div.appendChild(div1); // Thêm thẻ div1 vào thẻ div
-        li.appendChild(div); // Thêm thẻ div vào thẻ li
-        lastli.insertAdjacentElement("afterend", li); // Thêm thẻ li vào sau thẻ li cuối cùng
+        if (roomId === m.countUnReadOnRoom._id){
+            const lastli = messageTag.lastElementChild;
+            // render message lên màn hình sau khi get messageTag
+            const li = document.createElement("li"); // Tạo một thẻ li mới
+            if(data.userId.toString() === m.chats.sender._id.toString()) { // Nếu người gửi là người đang đăng nhập
+                li.classList.add("d-flex", "justify-content-end", "my-2"); // Thêm class vào thẻ li vừa tạo để hiển thị message bên phải
+            }
+            else { // Nếu người gửi không phải là người đang đăng nhập
+                li.classList.add("my-2"); // Thêm class vào thẻ li vừa tạo để hiển thị message bên trái
+            }
+            const div = document.createElement("div"); // Tạo một thẻ div mới 
+            div.classList.add("card", "border", "border-muted", "bg-light-subtle"); // Thêm class vào thẻ div vừa tạo
+            div.style.width = "65%"; // Đặt chiều rộng của thẻ div vừa tạo
+            if(data.userId.toString() === m.chats.sender._id.toString()) { // Nếu người gửi là người đang đăng nhập
+                div.style.borderTopLeftRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
+                div.style.borderTopRightRadius = "0px"; // Đặt border radius cho thẻ div vừa tạo
+                div.style.borderBottomRightRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
+                div.style.borderBottomLeftRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
+            }
+            else { // Nếu người gửi không phải là người đang đăng nhập
+                div.style.borderTopLeftRadius = "0px";
+                div.style.borderTopRightRadius = "20px";
+                div.style.borderBottomRightRadius = "20px";
+                div.style.borderBottomLeftRadius = "20px";
+            }
+            const div1 = document.createElement("div"); // Tạo một thẻ div mới để chứa nội dung message
+            div1.classList.add("card-body", "text-center", "p-2"); // Thêm class vào thẻ div vừa tạo
+            const img = document.createElement("img"); // Tạo một thẻ img mới để chứa ảnh
+            if(m.url) { // Nếu message có chứa ảnh
+                img.classList.add("img-fluid", "mb-2");
+                img.src = "/" + m.chats.url; // Đặt src cho thẻ img vừa tạo
+                img.style.maxHeight = "30rem"; // Đặt chiều cao tối đa cho thẻ img vừa tạo
+                img.style.height = "auto"; // Đặt chiều cao cho thẻ img vừa tạo
+                img.style.minHeight = "10rem"; // Đặt chiều cao tối thiểu cho thẻ img vừa tạo
+            }
+            const p = document.createElement("p"); // Tạo một thẻ p mới để chứa nội dung message
+            p.classList.add("text-start", "card-text"); // Thêm class vào thẻ p vừa tạo
+            p.style.fontSize = "1rem"; // Đặt font size cho thẻ p vừa tạo
+            p.innerHTML = m.chats.message; // Đặt nội dung cho thẻ p vừa tạo
+            const h6 = document.createElement("h6"); // Tạo một thẻ h6 mới để chứa người gửi và thời gian gửi message
+            h6.classList.add("text-muted", "card-subtitle", "text-end"); // Thêm class vào thẻ h6 vừa tạo
+            h6.style.fontSize = ".75rem"; // Đặt font size cho thẻ h6 vừa tạo
+            h6.innerHTML = m.sender + " " + m.time; // Đặt nội dung cho thẻ h6 vừa tạo
+            if (m.url){ // Nếu message có chứa ảnh
+                div1.appendChild(img); // Thêm thẻ img vào thẻ div1
+            }
+            div1.appendChild(p); // Thêm thẻ p vào thẻ div1
+            div1.appendChild(h6); // Thêm thẻ h6 vào thẻ div1
+            div.appendChild(div1); // Thêm thẻ div1 vào thẻ div
+            li.appendChild(div); // Thêm thẻ div vào thẻ li
+            lastli.insertAdjacentElement("afterend", li); // Thêm thẻ li vào sau thẻ li cuối cùng
+    
+            // Kéo xuống cuối cùng khi có message mới
+            const scrollBar = document.getElementById("scroll-bar"); // Lấy thẻ scroll-bar
+            scrollBar.scrollTop = scrollBar.scrollHeight; // Đặt scroll-bar xuống cuối cùng
 
-        // Kéo xuống cuối cùng khi có message mới
-        const scrollBar = document.getElementById("scroll-bar"); // Lấy thẻ scroll-bar
-        scrollBar.scrollTop = scrollBar.scrollHeight; // Đặt scroll-bar xuống cuối cùng
+        }
+        
+        // Thông báo chỉ trên thiết bị nhận message, không phải thiết bị gửi message
+        if (data.userId !== m.chats.sender._id){
+            if (Notification.permission === "granted") { // Nếu đã được cấp quyền thông báo
+                notify(); // Thông báo
+            }
+            else if (Notification.permission !== "denied") { // Nếu chưa được cấp quyền thông báo
+                Notification.requestPermission().then(permission => { // Yêu cầu cấp quyền thông báo
+                    if (permission === "granted") { // Nếu được cấp quyền thông báo
+                        notify(); // Thông báo
+                    }
+                })
+            }
+        }
     })
+    const notify = () => {
+        const soundPath = "/sound/notification.mp3"
+        const audio = new Audio(soundPath);
+        audio.play();
+    }
 </script>
 
 <!-- SELECT ROOM -->
 <script>
-    // Hàm cập nhật URL của trang web với roomId mới
-    function updateURLParameter(roomId) {
-        // Lấy URL hiện tại
-        let currentURL = window.location.href;
-        let updatedURL
-        if (currentURL.endsWith('/chat')) {
-            // Thêm hoặc cập nhật tham số roomId trong URL
-            updatedURL = currentURL.replace(/\/chat/, '/chat/' + roomId); 
-        } else {
-            // Thêm hoặc cập nhật tham số roomId trong URL
-            updatedURL = currentURL.replace(/\/chat\/[^/]+/, '/chat/' + roomId);
-        } 
-        // Thay đổi URL của trình duyệt mà không làm tải lại trang
-        window.history.pushState({ roomId: roomId }, '', updatedURL); 
-    }
-
-    const rooms = document.querySelectorAll("#room-list"); // Lấy tất cả các phần tử cuộc trò chuyện
-    rooms.forEach(room => {
-        // Đặt sự kiện click cho mỗi phần tử cuộc trò chuyện
-    room.addEventListener("click", () => {
-        const roomId = room.querySelector("input").value; // Lấy roomId từ phần tử cuộc trò chuyện
-        const token = document.querySelector("input[name='jwttoken']").value; // Lấy token từ input ẩn
-        updateURLParameter(roomId); // Cập nhật URL của trang web với roomId mới
-        // Thực hiện cuộc gọi AJAX để tải nội dung cuộc trò chuyện
-        fetch(`/chat1/${roomId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            }
+    const roomList = document.querySelectorAll(".room-list"); // Lấy tất cả các thẻ li chứa room
+    const displayRoom = document.getElementById("room-chat") // Lấy thẻ div chứa room
+    const displayMessage = document.getElementById("message-chat") // Lấy thẻ div chứa message
+    roomList.forEach(room => {
+        room.addEventListener("click", () => {
+            const input = room.querySelector("input[type='hidden']"); // Lấy thẻ input ẩn chứa roomId
+            const roomId = input.value; // Lấy roomId
+            window.location.href = "/chat/" + roomId; // Chuyển hướng đến trang chat của roomId
         })
-            .then(response => response.json())
-            .then(data => {
-                // Cập nhật nội dung cuộc trò chuyện trên trang web
-                updateChatContent(data);
-            })
-            .catch(error => {
-                console.error("Error loading chat content:", error);
-            });
-        });
-    });
-    // Hàm cập nhật nội dung cuộc trò chuyện với dữ liệu từ máy chủ
-    function updateChatContent(chatData) {
-    const messagesList = document.getElementById("messages"); // Lấy phần tử chứa các message
-    // Tạo chuỗi HTML dựa trên dữ liệu chatData
-    let htmlString = "";
-    // Nếu có message
-    if (chatData.room.messages.length > 0) {
-        const csrf = document.querySelector("input[name='_csrf']").value; // CSRF Token
-        const token = document.querySelector("input[name='jwttoken']").value; // JWT Token
-        chatData.room.messages.forEach(m => { // Duyệt qua từng message
-            htmlString += '<input type="hidden" name="_csrf" value="' + csrf + '">'; // CSRF Token
-            htmlString += '<input type="hidden" name="roomId" value="' + chatData.room._id + '">'; // Room ID
-            htmlString += '<input type="hidden" name="receiver" value="' + chatData.room.participants[1]._id + '">'; // Receiver ID
-            htmlString += '<input type="hidden" name="jwttoken" value="' + token + '">'; // JWT Token
-            htmlString += '<li class="'; // Bắt đầu một mục mới
-            if (chatData.userId.toString() === m.sender.toString()) { // Nếu người gửi là người đang đăng nhập
-                htmlString += 'd-flex justify-content-end my-2">'; // Hiển thị message bên phải
-            } else { // Nếu người gửi không phải là người đang đăng nhập
-                htmlString += 'my-2" id="message">'; // Hiển thị message bên trái
-            }
-            // Tạo thẻ div chứa message
-            htmlString += '<div class="card border border-muted bg-light-subtle" style="width: 65%;';
-            if (chatData.userId.toString() === m.sender.toString()) { // Nếu người gửi là người đang đăng nhập
-                htmlString += 'border-top-left-radius: 20px;border-top-right-radius: 0px;border-bottom-right-radius: 20px;border-bottom-left-radius: 20px;">';
-            } else {
-                htmlString += 'border-top-left-radius: 0px;border-top-right-radius: 20px;border-bottom-right-radius: 20px;border-bottom-left-radius: 20px;">';
-            }
-            // Tạo thẻ div chứa nội dung message
-            htmlString += '<div class="card-body text-center p-2">';
-            // Nếu message có chứa ảnh
-            if (m.url) {
-                htmlString += '<img class="img-fluid mb-2" src="/' + m.url + '" style="max-height: 30rem;height: auto;min-height: 10rem;">';
-            }
-            // Tạo thẻ p chứa nội dung message
-            htmlString += '<p class="text-start card-text" style="font-size: 1rem;">' + m.message + '</p>';
-            htmlString += '<h6 class="text-muted card-subtitle text-end" style="font-size: .75rem;">';
-            htmlString += (m.sender.toString() === chatData.room.participants[0]._id.toString() ? chatData.room.participants[0].username : chatData.room.participants[1].username) + ' ' + m.createdAt.toLocaleString('en-US', {timeZone: 'Asia/Ho_Chi_Minh'}) + '</h6>';
-            // Kết thúc thẻ div chứa nội dung message
-            htmlString += '</div></div></li>'; // Kết thúc mục
-        });
-    }
-    // Gán chuỗi HTML đã tạo vào phần tử messagesList
-    messagesList.innerHTML = htmlString;
-    // Kéo xuống cuối cùng khi có message mới
-    const scrollBar = document.getElementById("scroll-bar"); // Lấy thẻ scroll-bar
-    scrollBar.scrollTop = scrollBar.scrollHeight; // Đặt scroll-bar xuống cuối cùng
-}
+    })
+    // Khi click vào button back thì hiển thị lại room chat
+    const back = document.querySelector(".fa-arrow-alt-circle-left");
+    back.addEventListener("click", () => {
+        // Hiển thị lại room chat
+        displayRoom.classList.remove("d-none", "d-sm-none", "d-md-none");
+        displayRoom.classList.add("d-block", "d-sm-block", "d-md-block");
+        // Ẩn message chat
+        displayMessage.classList.remove("d-block", "d-sm-block", "d-md-block");
+        displayMessage.classList.add("d-none", "d-sm-none", "d-md-none");
+    })
+
 </script>
 
 <!-- SEND MESSAGE -->
@@ -318,23 +294,24 @@
         const receiver = document.querySelector("input[name='receiver']").value; // Lấy receiver từ input ẩn
         const csrf = document.querySelector("input[name='_csrf']").value; // Lấy CSRF Token
         const token = document.querySelector("input[name='jwttoken']").value; // Lấy JWT Token
-        // Xoá input
-        input.value = "";
         // Gửi message lên server
-        fetch("/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": csrf,
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({
-                message: message,
-                receiver: receiver
+        if (input.value !== ""){ // Nếu message không rỗng thì mới gửi
+            fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrf,
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    message: message,
+                    receiver: receiver
+                })
             })
-        })
-        .then(res => res.json())
-        .catch(err => console.log(err));
+            .then(res => res.json())
+            .catch(err => console.log(err));
+            input.value = ""; // Xoá input
+        }
     })
 </script>
 </body>

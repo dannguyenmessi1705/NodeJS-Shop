@@ -28,6 +28,9 @@
                                     <input class="form-control form-control-file" type="file" name="image" id="image">
                                 </div>
                                 <div class="mb-3">
+                                    <input id="price" class="form-control border-3 <%=errorType === 'quantity' ? 'border-danger' : ''%>" type="number" name="quantity" placeholder="Quantity" autocomplete="on" value="<%if(editing){%><%=item.quantity%><%}else{%><%=oldInput.quantity%><%}%>"/>
+                                </div>
+                                <div class="mb-3">
                                     <textarea id="description" class="form-control border-3 <%=errorType === 'description' ? 'border-danger' : ''%>" name="description" rows="4" placeholder="Description" autocomplete="on" spellcheck="true" wrap="soft"><%if(editing){%><%=item.description%><%}else{%><%=oldInput.description%><%}%></textarea>
                                 </div>
                                         <!-- UPDATE PRODUCT -->
