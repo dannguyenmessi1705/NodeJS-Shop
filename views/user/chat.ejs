@@ -171,7 +171,7 @@
     })
     // socket.emit("message", "Hello from client!") // Gửi 1 message lên server
     socket.on("message", (m) => { // Khi nhận được message từ server
-        if (roomId === m.countUnReadOnRoom._id){
+        if (roomId === m.countUnReadOnRoom._id){ // Nếu roomId của message nhận được trùng với roomId của trang chat hiện tại thì mới render message lên màn hình
             const lastli = messageTag.lastElementChild;
             // render message lên màn hình sau khi get messageTag
             const li = document.createElement("li"); // Tạo một thẻ li mới
@@ -230,17 +230,19 @@
         }
         
         // Thông báo chỉ trên thiết bị nhận message, không phải thiết bị gửi message
-        if (data.userId !== m.chats.sender._id){
-            if (Notification.permission === "granted") { // Nếu đã được cấp quyền thông báo
-                notify(); // Thông báo
-            }
-            else if (Notification.permission !== "denied") { // Nếu chưa được cấp quyền thông báo
-                Notification.requestPermission().then(permission => { // Yêu cầu cấp quyền thông báo
-                    if (permission === "granted") { // Nếu được cấp quyền thông báo
-                        notify(); // Thông báo
-                    }
-                })
-            }
+        if (data.userId !== m.chats.sender._id && data.userId === m.chats.receiver._id){
+            notify(); // Thông báo
+            // if (Notification.permission === "granted") { // Nếu đã được cấp quyền thông báo
+            // notify(); // Thông báo
+            // }
+            // else if (Notification.permission !== "denied") { // Nếu chưa được cấp quyền thông báo
+            //     Notification.requestPermission().then(permission => { // Yêu cầu cấp quyền thông báo
+            //         if (permission === "granted") { // Nếu được cấp quyền thông báo
+            //             notify(); // Thông báo
+            //         }
+            //     })
+            // }
+            // Xin quyền thông báo trên thiết bị nhận message (mobile hoặc máy tính)
         }
     })
     const notify = () => {
