@@ -4,7 +4,7 @@
     <%- include('../includes/nav.ejs') %>
     <section data-aos="fade-down" data-aos-delay="500" class="position-relative py-4 py-xl-5">
         <% if(error) { %> 
-            <div class="shake animated d-inline-block pb-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+            <div class="alert alert-danger shake animated d-inline-block pb-2 text-center mx-auto fw-bold text-danger">
                 <%= error %>
             </div>
         <% } %>

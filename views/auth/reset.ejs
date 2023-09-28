@@ -5,7 +5,7 @@
    <!-- FLASH MESSAGE -->
    <% if (requestSuccess) { %>
         <div class="d-flex flex-column align-items-center py-2 justify-content-center">
-            <div data-aos="fade-down" data-aos-delay="400" class="d-inline-block p-2 my-4 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
+            <div data-aos="fade-down" data-aos-delay="400" class="alert alert-success d-inline-block p-2 my-4 text-center mx-auto fw-bold text-success">
                 <%= requestSuccess %>
             </div>
             <div data-aos="fade" data-aos-delay="400" class="p-2 my-4">
@@ -15,7 +15,7 @@
     <% } else { %>
             <% if(error) { %> 
                 <div class="d-flex align-items-center py-2 my-4 justify-content-center"></div>
-                    <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+                    <div class="alert alert-danger shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger">
                         <%= error %>
                     </div>
                 </div>

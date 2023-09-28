@@ -7,19 +7,19 @@
    <div class="d-flex align-items-center py-2">
         <!-- FLASH MESSAGE -->
         <% if(error) { %> 
-            <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+            <div class="alert alert-danger shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger">
                 <%= error %>
             </div>
         <% } else if(errorLogin) { %>
-            <div class="shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
+            <div class="alert alert-danger shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger">
                 <%= errorLogin %>
             </div>
         <% } else if(successSignup) { %>
-            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
+            <div data-aos="fade-down" class="alert alert-success d-inline-block p-2 text-center mx-auto fw-bold text-success">
                 <%= successSignup %>
             </div>
         <% } else if (updatePassword) { %>
-            <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-success border rounded border-success bg-success-subtle">
+            <div data-aos="fade-down" class="alert alert-success d-inline-block p-2 text-center mx-auto fw-bold text-success">
                 <%= updatePassword %>
             </div>
         <% } %>
