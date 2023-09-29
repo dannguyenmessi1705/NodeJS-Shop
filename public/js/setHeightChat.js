@@ -4,10 +4,8 @@ function setHeight() {
   var windowHeight = window.innerHeight;
   // Lấy chiều cao của thanh điều hướng
   var navHeight = document.getElementsByTagName("nav")[0].offsetHeight;
-  // Lấy chiều cao của phần head-toast
-  var headToastHeight = document.getElementById("head-toast").offsetHeight;
   // Tính chiều cao của phần nội dung
-  var containerHeight = windowHeight - navHeight - headToastHeight;
+  var containerHeight = windowHeight - navHeight;
   const inputHeight = document.getElementById("inputsend").offsetHeight; // Lấy chiều cao của input
   const userinfo = document.getElementById("userinfo").offsetHeight; // Lấy chiều cao của userinfo
   document.getElementById("content").style.height =
