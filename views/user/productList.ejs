@@ -2,7 +2,7 @@
 </head>
 <body>
     <%- include('../includes/nav.ejs') %>
-    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm py-4">
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm pb-4">
         <% if(outOfStock) { %>
             <div class="d-flex align-items-center py-2">
                 <div data-aos="fade-down" class="d-inline-block p-2 text-center mx-auto fw-bold text-danger border rounded border-danger bg-danger-subtle">
@@ -10,6 +10,12 @@
                 </div>
             </div>
         <% } %>
+        <div class="d-flex align-items-center justify-content-end pt-2 bg-dark-subtle">
+            <form action="/find-product" method="get" class="d-flex align-items-center">
+                <input type="text" name="name" class="form-control" placeholder="Search...">
+                <button type="submit" class="btn btn-primary mx-2"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
         <div class="container py-2">
             <% if (!items.length > 0) { %>
                 <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
@@ -34,7 +40,7 @@
                                     <h2 class="ref-product-quantity fs-6 mx-4"><b>Sold: </b><%= item.soldQuantity %></h2>
                                     <h2 class="ref-product-quantity fs-6 mx-4"><b>Store: </b><%= item.quantity %></h2>
                                 </div>
-                                <p class="ref-description"><%= item.description %></p>
+                                <!-- <p class="ref-description"><%= item.description %></p> -->
                             </div>
                             <div class="card__actions-dan">
                                 <!-- TOKEN CSRF -->

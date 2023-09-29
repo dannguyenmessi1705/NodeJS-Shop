@@ -1,0 +1,51 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+    <%- include('../includes/nav.ejs') %>
+    <section data-aos="fade" data-aos-delay="400" class="bg-dark-subtle shadow-sm pb-4">
+        <div class="container py-2">
+            <% if(products.length <= 0) { %>
+                <div class="container py-2">
+                    <div data-aos="fade-down" data-aos-delay="400" class="row mb-4 mb-lg-5">
+                        <div class="col-md-8 col-xl-6 text-center mx-auto">
+                            <h2 class="fw-bold">Sorry</h2>
+                            <h1 class="text-muted">There are no products you are looking for !!!</h1>
+                        </div>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="d-flex flex-wrap justify-content-around align-items-stretch">
+                    <% products.forEach((product) => { %>
+                        <article class="bg-light-subtle card-dan d-flex flex-column align-items-center justify-content-around text-center my-4 p-1 mx-1 border rounded-3 shadow-lg">
+                            <header class="d-flex flex-column align-items-center justify-content-center p-3">
+                                <h2 class="ref-name fs-2"><%= product.name %></h2>
+                            </header>
+                            <div class="card__image-dan">
+                                <img src="/<%=product.url%>" loading="lazy" alt="A Product">
+                            </div>
+                            <div class="d-flex flex-column align-items-center justify-content-center p-3">
+                                <h1 class="ref-original-price fs-4">$<%= product.price %></h1>
+                                <div class="d-flex flex-row">
+                                    <h2 class="ref-product-quantity fs-6 mx-4"><b>Sold: </b><%= product.soldQuantity %></h2>
+                                    <h2 class="ref-product-quantity fs-6 mx-4"><b>Store: </b><%= product.quantity %></h2>
+                                </div>
+                                <!-- <p class="ref-description"><%= product.description %></p> -->
+                            </div>
+                            <div class="card__actions-dan">
+                                <!-- TOKEN CSRF -->
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <!-- ADD ID FOR PRODUCT -->
+                                <a href="/product/<%= product._id %>" class="btn btn-primary">Detail</a>
+                                <!-- href = product/0.7834371053383911 -->
+                                <!-- POST CART  -->
+                                <%- include('../includes/addCart.ejs', {item: product}) %>
+                                <!-- Thêm object {item: item} để thẻ chỉ xác định duy nhất 1 item trong vòng lặp có nhiều items -->
+                            </div>
+                        </article>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+<%- include('../includes/end.ejs') %>

@@ -346,6 +346,22 @@ const getInvoice = (req, res, next) => {
     });
 };
 
+const getFindProduct = async (req, res, next) => {
+  try {
+    const name = req.query.name;
+    const products = await Product.find({ name: { $regex: name, $options: "i" } });
+    res.render("./user/findProduct", {
+      title: "Find Product",
+      path: "/find-product",
+      products: products,
+    });
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
+};
+
 module.exports = {
   getIndex,
   getProduct,
@@ -356,4 +372,5 @@ module.exports = {
   postOrder,
   getOrder,
   getInvoice,
+  getFindProduct,
 };

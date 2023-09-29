@@ -13,9 +13,15 @@ socket.on("message", (m) => {
   const url = window.location.href;
   if (userId === m.chats.receiver._id && url.includes("/chat") == false) {
     // Nếu userId của người nhận message trùng với userId của người đang đăng nhập thì mới hiển thị message
-    // Khi nhận được message từ server, tạo 1 thẻ sau thẻ body để hiển thị message
+    // Khi nhận được message từ server, tạo 1 thẻ sau thẻ nav để hiển thị message
+    const isNewMessage = document.getElementById("newMessage");
+    if (isNewMessage) {
+      isNewMessage.remove();
+    } // xóa message cũ
     const div = document.createElement("div");
-    div.classList.add("d-flex", "align-items-center", "pt-2");
+    div.classList.add("d-flex", "align-items-center", "pt-2", "bg-dark-subtle");
+    // thêm classid để xóa message sau khi đã đọc
+    div.setAttribute("id", "newMessage");
     const div1 = document.createElement("div");
     div1.setAttribute("data-aos", "fade-down");
     div1.classList.add(

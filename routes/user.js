@@ -35,5 +35,8 @@ route.post(
 // {GET INVOICE} //
 route.get("/order/:orderId", ProtectRoute, userController.getInvoice);
 
+// {GET FIND PRODUCT} //
+route.get("/find-product", userController.getFindProduct);
+
 
 module.exports = route;
