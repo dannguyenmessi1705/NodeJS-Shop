@@ -21,8 +21,8 @@
                         </strong>
                             <div class="reflow-add-to-cart my-2 d-flex flex-row justify-content-center align-items-center">
                                 <!-- POST CHAT -->
-                                <!-- Nếu đây không phải là sản phẩm chính acc này tạo ra thì mới hiện chat -->
-                                <% if (item.userId.toString() !== userId.toString()) { %> 
+                                <!-- Nếu chưa đăng nhập hoặc đây không phải là sản phẩm chính acc này tạo ra thì mới hiện chat -->
+                                <% if (!userId || item.userId.toString() !== userId.toString()) { %> 
                                 <form action="<%if(authenticate){%>/chat<%}else{%>/login<%}%>" method="<%if(authenticate){%>POST<%}else{%>GET<%}%>"> 
                                     <!-- TOKEN CSRF -->
                                     <%if(authenticate){%>
