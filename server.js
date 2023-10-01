@@ -1,6 +1,25 @@
 const express = require("express");
 const app = express();
 
+// Thiết lập các biến môi trường
+require("dotenv").config();
+
+// Dùng helmet để bảo mật ứng dụng Express bằng cách sử dụng các HTTP header
+const helmet = require("helmet");
+app.use(helmet());
+
+// Dùng compression để nén các file trước khi gửi đến client
+const compression = require("compression");
+app.use(compression());
+
+// Dùng morgan để log các request
+const morgan = require("morgan");
+app.use(
+  morgan("combined", {
+    stream: require("fs").createWriteStream("./access.log", { flags: "a" }), // Ghi log vào file access.log (cờ "a" để thêm vào cuối file, nếu không có thì sẽ ghi đè lên file)
+  })
+);
+
 // {BODY PARSER} // (Để lấy dữ liệu từ form) //
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false })); // Sử dụng body-parser để lấy dữ liệu từ form (x-www-form-urlencoded)
@@ -41,7 +60,7 @@ const storeDB = new MongoDBStore({
 // Cấu hình session
 app.use(
   session({
-    secret: "Nguyen Di Dan", // Chuỗi bí mật để mã hoá session
+    secret: process.env.SECRET_KEY_SESSION, // Chuỗi bí mật để mã hoá session
     resave: false, // resave: false => Không lưu lại session nếu không có sự thay đổi (Không cần thiết)
     saveUninitialized: true, // saveUninitialized: true => Lưu session ngay cả khi chưa có sự thay đổi
     // resave vs saveUninitialized: https://stackoverflow.com/questions/40381401/when-use-saveuninitialized-and-resave-in-express-session
@@ -113,7 +132,7 @@ const User = require("./models/users"); // Nhập vào class User lấy từ fil
 mongoose
   .connect(URL)
   .then(() => {
-    const server = app.listen(3000);
+    const server = app.listen(process.env.PORT);
     // {SOCKET.IO} //
     const io = require("./util/socket").init(server); // Khởi tạo socket.io và lưu vào biến io, sẽ được khởi tạo ở file server.js
     console.log("Connected!");

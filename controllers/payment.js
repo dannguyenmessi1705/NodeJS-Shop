@@ -3,8 +3,8 @@ const crypto = require("crypto"); // module để mã hóa dữ liệu
 const CC = require("currency-converter-lt"); // module để chuyển đổi tiền tệ
 const querystring = require("qs"); // module để chuyển đổi object thành chuỗi query
 const config = {
-  vnp_TmnCode: "54FXX7NZ", // Mã website tại VNPAY
-  vnp_HashSecret: "EIFPXFPSHZGYLFHEWJJIBJSESLERCVDW", // Chuỗi bí mật
+  vnp_TmnCode: process.env.TMNCODE_PAYMENT, // Mã website tại VNPAY
+  vnp_HashSecret: process.env.HASH_SECRET_PAYMENT, // Chuỗi bí mật
   vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html", // Đường dẫn thanh toán
   vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction", // Đường dẫn API
   vnp_ReturnUrl: "http://localhost:3000/payment/vnpay_return", // Đường dẫn trả về từ VNPAY

@@ -8,7 +8,7 @@ const ProtectRoute = async (req, res, next) => {
     if (invalidToken.includes(accessToken)) { // Nếu token đã hết hạn hoặc không hợp lệ thì trả về lỗi
       throw new Error("Token Invalid");
     }
-    const decoded1 = jwt.verify(accessToken, "nguyendidan"); // Giải mã token
+    const decoded1 = jwt.verify(accessToken, process.env.SECRET_KEY_JWT); // Giải mã token
     next();
   } catch (error) {
     const typeError = error.message; // Lấy message của error
@@ -17,7 +17,7 @@ const ProtectRoute = async (req, res, next) => {
       try {
         invalidToken.push(req.session.accessToken) // Thêm accessToken cũ vào mảng invalidToken
         let refreshToken = req.session.refreshToken; // Lấy refreshToken từ session
-        const decoded2 = jwt.verify(refreshToken, "nguyendidan"); // Giải mã refreshToken
+        const decoded2 = jwt.verify(refreshToken, process.env.SECRET_KEY_JWT); // Giải mã refreshToken
         const newAccessToken = genJWT.generateAccessToken({
           userId: decoded2.userId,
         }); // Tạo accessToken mới

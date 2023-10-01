@@ -14,8 +14,8 @@ const transporter = nodemailer.createTransport({
   port: 465, // Port của mail server
   secure: true, // Sử dụng SSL
   auth: {
-    user: "didannguyen@5dulieu.com", // mail dùng để gửi
-    pass: "femryegbpgljleyv", // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
+    user: process.env.SECRET_STMP_USER, // mail dùng để gửi
+    pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
   },
 });
 const fs = require("fs"); // Nhập module fs
