@@ -40,7 +40,7 @@ socket.on("message", (m) => {
     }
     const div = document.createElement("div"); // Tạo một thẻ div mới
     div.classList.add("card", "border", "border-muted", "bg-light-subtle"); // Thêm class vào thẻ div vừa tạo
-    div.style.width = "65%"; // Đặt chiều rộng của thẻ div vừa tạo
+    div.style.width = "81%"; // Đặt chiều rộng của thẻ div vừa tạo
     if (data.userId.toString() === m.chats.sender._id.toString()) {
       // Nếu người gửi là người đang đăng nhập
       div.style.borderTopLeftRadius = "20px"; // Đặt border radius cho thẻ div vừa tạo
