@@ -8,6 +8,16 @@ require("dotenv").config();
 const helmet = require("helmet");
 app.use(helmet());
 
+// Thêm Content Security Policy (CSP) để cho phép các tài nguyên nào được load từ đâu (VD: dùng google maps)
+app.use(
+  helmet.contentSecurityPolicy({ // CSP là một HTTP header cho phép bạn kiểm soát các nguồn tài nguyên nào được load trên trang web của bạn
+    directives: { // Các directives cho phép bạn chỉ định các nguồn tài nguyên nào được load trên trang web của bạn
+      defaultSrc: ["'self'"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn
+      frameSrc: ["'self'", 'https://www.google.com/'], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://www.google.com/ (ví dụ: iframe)
+    },
+  })
+);
+
 // Dùng compression để nén các file trước khi gửi đến client
 const compression = require("compression");
 app.use(compression());
