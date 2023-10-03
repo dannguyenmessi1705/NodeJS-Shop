@@ -16,6 +16,7 @@ app.use(
       frameSrc: ["'self'", 'https://www.google.com/'], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://www.google.com/ (ví dụ: iframe)
       formAction: ["'self'", "https://sandbox.vnpayment.vn/"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://sandbox.vnpayment.vn/ (ví dụ: form)
       connectSrc: ["'self'", "https://sandbox.vnpayment.vn/"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://sandbox.vnpayment.vn/ (ví dụ: fetch, xhr, websocket)
+      scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers
     },
   })
 );
