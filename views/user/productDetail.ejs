@@ -22,14 +22,14 @@
                             <div class="reflow-add-to-cart my-2 d-flex flex-row justify-content-center align-items-center">
                                 <!-- POST CHAT -->
                                 <!-- Nếu chưa đăng nhập hoặc đây không phải là sản phẩm chính acc này tạo ra thì mới hiện chat -->
-                                <% if (!userId || item.userId.toString() !== userId.toString()) { %> 
+                                <% if (!userID || item.userId.toString() !== userID.toString()) { %> 
                                 <form action="<%if(authenticate){%>/chat<%}else{%>/login<%}%>" method="<%if(authenticate){%>POST<%}else{%>GET<%}%>"> 
                                     <!-- TOKEN CSRF -->
                                     <%if(authenticate){%>
                                         <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                         <input type="hidden" name="id" value="<%= item._id %>" > 
                                         <input type="hidden" name="url" value="<%= item.url %>" > 
-                                        <input type="hidden" name="sender" value="<%= userId %>" > 
+                                        <input type="hidden" name="sender" value="<%= userID %>" > 
                                         <input type="hidden" name="receiver" value="<%= item.userId %>" > 
                                     <%}%>
                                         <button class="btn btn-primary mx-1" type="submit">Chat</button>
