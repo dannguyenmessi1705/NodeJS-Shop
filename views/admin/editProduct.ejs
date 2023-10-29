@@ -4,8 +4,10 @@
     <%- include('../includes/nav.ejs') %>
     <section data-aos="fade-down" data-aos-delay="500" class="position-relative py-4 py-xl-5">
         <% if(error) { %> 
-            <div class="alert alert-danger shake animated d-inline-block pb-2 text-center mx-auto fw-bold text-danger">
-                <%= error %>
+            <div class="d-flex align-items-center">
+                <div class="alert alert-danger shake animated d-inline-block pb-2 text-center mx-auto fw-bold text-danger">
+                    <%= error %>
+                </div>
             </div>
         <% } %>
         <!-- Nếu editing = true => Edit, ngược lại là ADD -->
