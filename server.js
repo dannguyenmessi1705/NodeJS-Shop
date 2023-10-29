@@ -10,10 +10,12 @@ app.use(helmet());
 
 // Thêm Content Security Policy (CSP) để cho phép các tài nguyên nào được load từ đâu (VD: dùng google maps)
 app.use(
-  helmet.contentSecurityPolicy({ // CSP là một HTTP header cho phép bạn kiểm soát các nguồn tài nguyên nào được load trên trang web của bạn
-    directives: { // Các directives cho phép bạn chỉ định các nguồn tài nguyên nào được load trên trang web của bạn
+  helmet.contentSecurityPolicy({
+    // CSP là một HTTP header cho phép bạn kiểm soát các nguồn tài nguyên nào được load trên trang web của bạn
+    directives: {
+      // Các directives cho phép bạn chỉ định các nguồn tài nguyên nào được load trên trang web của bạn
       defaultSrc: ["'self'"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn
-      frameSrc: ["'self'", 'https://www.google.com/'], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://www.google.com/ (ví dụ: iframe)
+      frameSrc: ["'self'", "https://www.google.com/"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://www.google.com/ (ví dụ: iframe)
       formAction: ["'self'", "https://sandbox.vnpayment.vn/"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://sandbox.vnpayment.vn/ (ví dụ: form)
       connectSrc: ["'self'", "https://sandbox.vnpayment.vn/"], // Chỉ cho phép load các nguồn tài nguyên từ chính domain của bạn và từ https://sandbox.vnpayment.vn/ (ví dụ: fetch, xhr, websocket)
       scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers
@@ -128,7 +130,7 @@ app.use(
     // Định nghĩa các thuộc tính của multer
     storage: fileStorage, // Lưu file vào storage đã định nghĩa ở trên
     fileFilter: fileFilter, // Chỉ cho phép upload các loại file đã định nghĩa ở trên
-  }).single("image") // Chỉ cho phép upload 1 file duy nhất có name="image"
+  }).single("image") // // Chỉ cho phép upload 1 file duy nhất có name="image" ở formData
 );
 app.use("/images", express.static(path.join(rootDir, "images"))); // Định nghĩa đường dẫn tĩnh để truy cập vào folder images (để hiển thị hình ảnh đã upload) - Nếu không có dòng này thì hình ảnh sẽ không hiển thị được
 
