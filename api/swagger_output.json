@@ -307,6 +307,10 @@
                     "type": "string",
                     "format": "binary"
                   },
+                  "quantity": {
+                    "type": "number",
+                    "example": "10"
+                  },
                   "description": {
                     "type": "string",
                     "example": "A smartphone from Apple"
@@ -316,6 +320,7 @@
                   "name",
                   "price",
                   "image",
+                  "quantity",
                   "description"
                 ]
               }
@@ -487,6 +492,10 @@
                     "type": "string",
                     "format": "binary"
                   },
+                  "quantity": {
+                    "type": "number",
+                    "example": "10"
+                  },
                   "description": {
                     "type": "string",
                     "example": "A smartphone from Apple"
@@ -495,6 +504,7 @@
                 "required": [
                   "name",
                   "price",
+                  "quantity",
                   "description"
                 ]
               }
@@ -712,9 +722,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1116,7 +1123,7 @@
       "SignUp": {
         "type": "object",
         "properties": {
-          "name": {
+          "username": {
             "type": "string",
             "example": "anv"
           },
@@ -1134,7 +1141,7 @@
           }
         },
         "required": [
-          "name",
+          "username",
           "email",
           "password",
           "re_password"
@@ -1193,6 +1200,10 @@
             "type": "string",
             "example": "file.jpg"
           },
+          "quantity": {
+            "type": "number",
+            "example": 10
+          },
           "description": {
             "type": "string",
             "example": "A smartphone from Apple"
@@ -1202,6 +1213,7 @@
           "name",
           "price",
           "url",
+          "quantity",
           "description"
         ],
         "xml": {

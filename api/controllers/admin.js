@@ -34,6 +34,10 @@ const postProduct = async (req, res, next) => {
                 "type": "string",
                 "format": "binary"
               },
+              "quantity": {
+                "type": "number",
+                "example": "10"
+              },
               "description": {
                 "type": "string",
                 "example": "A smartphone from Apple"
@@ -43,6 +47,7 @@ const postProduct = async (req, res, next) => {
               "name",
               "price",
               "image",
+              "quantity",
               "description"
             ]
           }
@@ -248,6 +253,10 @@ const postEditProduct = async (req, res, next) => {
                 "type": "string",
                 "format": "binary"
               },
+              "quantity": {
+                "type": "number",
+                "example": "10"
+              },
               "description": {
                 "type": "string",
                 "example": "A smartphone from Apple"
@@ -256,6 +265,7 @@ const postEditProduct = async (req, res, next) => {
             "required": [
               "name",
               "price",
+              "quantity",
               "description"
             ]
           }
