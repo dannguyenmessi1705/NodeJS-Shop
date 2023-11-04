@@ -11,13 +11,21 @@ route.get("/", userController.getIndex);
 
 route.get("/products", userController.getAllProduct);
 
+// {GET FIND PRODUCT} //
+route.get("/find-product", userController.getFindProduct);
+
 // {ADD PRODUCT ID} //
 route.get("/products/:productID", userController.getDetail); // :productID là dynamic route, nó sẽ được thay thế bằng id của sản phẩm,
 // vì là dynamic route nên tên route product/:productID bắt buộc phải đặt ở sau các route cố định của product/... khác, để cho đỡ hiểu nhầm với các route cố định
 
 // {CART} //
 route.get("/cart", ProtectRoute, userController.getCart);
-route.patch("/cart/:productID", ProtectRoute, verifyCSRFToken, userController.postCart);
+route.patch(
+  "/cart/:productID",
+  ProtectRoute,
+  verifyCSRFToken,
+  userController.postCart
+);
 route.patch(
   "/delete-cart/:productID",
   ProtectRoute,

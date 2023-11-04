@@ -38,6 +38,10 @@
       "description": "API for User in the system"
     },
     {
+      "name": "Chat",
+      "description": "API for Chat in the system"
+    },
+    {
       "name": "Payment",
       "description": "API for Payment in the system"
     }
@@ -48,6 +52,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Get CSRF token",
         "description": "Endpoint to get CSRF token.",
         "responses": {
           "200": {
@@ -61,6 +66,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Login",
         "description": "Endpoint to login.",
         "responses": {
           "200": {
@@ -87,7 +93,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/SignIn"
               }
@@ -101,6 +107,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Logout",
         "description": "Endpoint to logout.",
         "responses": {
           "200": {
@@ -126,6 +133,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Signup",
         "description": "Endpoint to signup.",
         "responses": {
           "201": {
@@ -146,7 +154,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/SignUp"
               }
@@ -160,7 +168,8 @@
         "tags": [
           "Auth"
         ],
-        "description": "Endpoint to reset password.",
+        "summary": "Get token to reset password",
+        "description": "Endpoint to get token reset password.",
         "responses": {
           "201": {
             "description": "Created"
@@ -183,7 +192,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/Reset"
               }
@@ -197,6 +206,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Get userID to update password",
         "description": "Endpoint to get userID update password.",
         "parameters": [
           {
@@ -227,6 +237,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Update password",
         "description": "Endpoint to update password.",
         "responses": {
           "201": {
@@ -250,7 +261,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/UpdatePassword"
               }
@@ -264,6 +275,7 @@
         "tags": [
           "Admin"
         ],
+        "summary": "Create product",
         "description": "Endpoint to create a new product",
         "responses": {
           "200": {
@@ -307,10 +319,6 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "quantity": {
-                    "type": "number",
-                    "example": "10"
-                  },
                   "description": {
                     "type": "string",
                     "example": "A smartphone from Apple"
@@ -320,7 +328,6 @@
                   "name",
                   "price",
                   "image",
-                  "quantity",
                   "description"
                 ]
               }
@@ -334,6 +341,7 @@
         "tags": [
           "Admin"
         ],
+        "summary": "Get products by page",
         "description": "Endpoint to get products",
         "parameters": [
           {
@@ -368,61 +376,11 @@
       }
     },
     "/admin/edit-product/{productID}": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "Endpoint to get edit product",
-        "parameters": [
-          {
-            "name": "productID",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Product ID"
-          },
-          {
-            "name": "edit",
-            "in": "query",
-            "description": "Edit product",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "308": {
-            "description": "Permanent Redirect"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearAuth": []
-          }
-        ]
-      },
       "put": {
         "tags": [
           "Admin"
         ],
+        "summary": "Update product",
         "description": "Endpoint to update product",
         "parameters": [
           {
@@ -492,10 +450,6 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "quantity": {
-                    "type": "number",
-                    "example": "10"
-                  },
                   "description": {
                     "type": "string",
                     "example": "A smartphone from Apple"
@@ -504,7 +458,6 @@
                 "required": [
                   "name",
                   "price",
-                  "quantity",
                   "description"
                 ]
               }
@@ -518,6 +471,7 @@
         "tags": [
           "Admin"
         ],
+        "summary": "Delete product",
         "description": "Endpoint to delete product",
         "parameters": [
           {
@@ -599,6 +553,30 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/find-product": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to find product",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -831,12 +809,135 @@
         ]
       }
     },
+    "/chat": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get list chat room",
+        "description": "Endpoint to get list chat room",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "description": "Endpoint to create chat message",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "description": "Id of product, can be null",
+                    "type": "string",
+                    "required": false
+                  },
+                  "url": {
+                    "description": "Url of product, can be null",
+                    "type": "string",
+                    "required": false
+                  },
+                  "message": {
+                    "description": "Message of chat",
+                    "type": "string",
+                    "required": true
+                  },
+                  "receiver": {
+                    "description": "Id of receiver",
+                    "type": "string",
+                    "required": true
+                  }
+                },
+                "required": [
+                  "message",
+                  "receiver"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/{roomID}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get all messages in room chat",
+        "description": "Endpoint to get room chat",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of room"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "bearAuth": []
+          }
+        ]
+      }
+    },
     "/payment/{userID}": {
       "post": {
         "tags": [
           "Payment"
         ],
-        "description": "Endpoint direct to VNPAY payment website",
+        "summary": "Get payment URL",
+        "description": "Endpoint to get URL VNPAY payment website",
         "parameters": [
           {
             "name": "userID",
@@ -873,15 +974,21 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "amount": {
-                    "example": "any"
+                    "description": "Amount of money",
+                    "type": "number",
+                    "required": true
                   }
-                }
+                },
+                "required": [
+                  "amount"
+                ]
               }
             }
           }
@@ -893,21 +1000,13 @@
         "tags": [
           "Payment"
         ],
-        "description": "Endpoint return from VNPAY payment website",
+        "summary": "Get payment result",
+        "description": "Endpoint return result payment from VNPAY payment website",
         "parameters": [
           {
-            "name": "vnp_SecureHash",
+            "name": "vnp_Params",
             "in": "query",
-            "description": "Secure Hash from VNPAY",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "vnp_ResponseCode",
-            "in": "query",
-            "description": "Response Code from VNPAY",
+            "description": "The parameter is after ? in URL",
             "required": true,
             "schema": {
               "type": "string"
@@ -1123,7 +1222,7 @@
       "SignUp": {
         "type": "object",
         "properties": {
-          "username": {
+          "name": {
             "type": "string",
             "example": "anv"
           },
@@ -1141,7 +1240,7 @@
           }
         },
         "required": [
-          "username",
+          "name",
           "email",
           "password",
           "re_password"
@@ -1200,10 +1299,6 @@
             "type": "string",
             "example": "file.jpg"
           },
-          "quantity": {
-            "type": "number",
-            "example": 10
-          },
           "description": {
             "type": "string",
             "example": "A smartphone from Apple"
@@ -1213,7 +1308,6 @@
           "name",
           "price",
           "url",
-          "quantity",
           "description"
         ],
         "xml": {

@@ -13,7 +13,8 @@ const config = {
 // {PAYMENT} // Thu nhập thông tin từ client và chuyển hướng đến API trang thanh toán
 const getPayment = (req, res, next) => {
   /* #swagger.tags = ['Payment']
-      #swagger.description = 'Endpoint direct to VNPAY payment website' 
+      #swagger.summary = 'Get payment URL'
+      #swagger.description = 'Endpoint to get URL VNPAY payment website' 
       #swagger.security = [{
         "csrfToken": [],
         "bearAuth": []
@@ -24,11 +25,23 @@ const getPayment = (req, res, next) => {
           required: true,
           type: 'string'
       }
-      #swagger.parameters['amount'] = {
-          in: 'body',
-          description: 'Amount of money',
-          required: true,
-          type: 'number'
+      #swagger.requestBody = {
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                amount: {
+                  description: "Amount of money",
+                  type: "number",
+                  required: true,
+                },
+              },
+              required: ["amount"]
+            }
+          }
+        }
       }
     */
 
@@ -89,26 +102,24 @@ const getPayment = (req, res, next) => {
     let signed = hmac.update(new Buffer.from(signData, "utf-8")).digest("hex"); // Mã hóa dữ liệu
     vnp_Params["vnp_SecureHash"] = signed; // Thêm tham số mã hóa vào object
     vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false }); // Chuyển đổi object thành chuỗi query (không encode) - Để chuẩn bị chuyển hướng đến trang thanh toán
-    res.redirect(vnpUrl); // Chuyển hướng đến trang thanh toán
+    res.status(200).json({
+      message: "Request success to payment VNPAY URL",
+      url: vnpUrl,
+    }); // Chuyển hướng đến trang thanh toán
   });
 };
 
 // CHUYỂN HƯỚNG TỚI TRANG TRẢ VỀ KẾT QUẢ THANH TOÁN //
 const VNPayReturn = async (req, res, next) => {
   /* #swagger.tags = ['Payment']
-     #swagger.description = 'Endpoint return from VNPAY payment website'
+     #swagger.summary = 'Get payment result'
+     #swagger.description = 'Endpoint return result payment from VNPAY payment website'
      #swagger.security = [{
       "bearAuth": []
     }]
-      #swagger.parameters['vnp_SecureHash'] = {
+      #swagger.parameters["vnp_Params"] = {
           in: 'query',
-          description: 'Secure Hash from VNPAY',
-          required: true,
-          type: 'string'
-      }
-      #swagger.parameters['vnp_ResponseCode'] = {
-          in: 'query',
-          description: 'Response Code from VNPAY',
+          description: 'The parameter is after ? in URL',
           required: true,
           type: 'string'
       }

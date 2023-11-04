@@ -14,6 +14,7 @@ const itemOfOrder = 10;
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Get products by pagination'
      #swagger.description = 'Endpoint to get products follow pagination'
      #swagger.parameters['page'] = { description: 'Page number', type: 'integer' }
   */
@@ -53,6 +54,7 @@ const getIndex = async (req, res, next) => {
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getAllProduct = async (req, res, next) => {
   /* #swagger.tags = ['User']
+      #swagger.sumary = 'Get all products'
       #swagger.description = 'Endpoint to get all products'
   */
   try {
@@ -74,6 +76,7 @@ const getAllProduct = async (req, res, next) => {
 // {GET PRODUCT DETAIL BY MONGOOSE} //
 const getDetail = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Get product detail by ID of product' 
      #swagger.description = 'Endpoint to get product detail'
      #swagger.parameters['productID'] = { description: 'Product ID', type: 'string' }
   */
@@ -97,6 +100,7 @@ const getDetail = async (req, res, next) => {
 // {POST CART USER BY MONGOOSE} //
 const postCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Add product to cart'
      #swagger.description = 'Endpoint to add product to cart'
      #swagger.security = [{
        "csrfToken": [],
@@ -129,6 +133,7 @@ const postCart = async (req, res, next) => {
 // {GET CART USER BY MONGOOSE} //
 const getCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Get cart'
      #swagger.description = 'Endpoint to get cart'
      #swagger.security = [{
       "bearAuth": []
@@ -161,6 +166,7 @@ const getCart = async (req, res, next) => {
 // {DELETE CART USER BY MONGOOSE} //
 const deleteCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Delete product in cart'
      #swagger.description = 'Endpoint to delete product in cart'
      #swagger.security = [{
         "csrfToken": [],
@@ -190,6 +196,7 @@ const deleteCart = async (req, res, next) => {
 // {POST ORDER BY USER IN MONGOOSE}
 const postOrder = async (req, res, next) => {
   /* #swagger.tags = ['User']
+    #swagger.sumary = 'Add order'
     #swagger.description = 'Endpoint to add order'
     #swagger.security = [{
       "csrfToken": [],
@@ -241,6 +248,7 @@ const postOrder = async (req, res, next) => {
 // {GET ORDER BY USER IN MONGOOSE} //
 const getOrder = async (req, res, next) => {
   /* #swagger.tags = ['User']
+     #swagger.sumary = 'Get order'
      #swagger.description = 'Endpoint to get order'
      #swagger.security = [{
       "bearAuth": []
@@ -268,6 +276,7 @@ const getOrder = async (req, res, next) => {
 // {GET INVOICE} // http:.../order/orderID
 const getInvoice = async (req, res, next) => {
   /* #swagger.tags = ['User']
+      #swagger.sumary = 'Get invoice'
      #swagger.description = 'Endpoint to get invoice'
      #swagger.security = [{
       "bearAuth": []
@@ -288,12 +297,6 @@ const getInvoice = async (req, res, next) => {
     const fontPath = path.join(rootDir, "public", "font", "fontvn.ttf"); // Thêm font utf-8 unicode vào để hiển thị dấu
     const nameInvoice = "Invoice-" + orderId + ".pdf"; // Tạo tên file invoice
     const dateOrder = order.date; // Thêm ngày order hàng
-    res.setHeader("Content-Type", "application/pdf"); // Set header cho file pdf là application/pdf để trình duyệt hiểu đây là file pdf
-    res.setHeader(
-      // Set header cho file pdf
-      "Content-Disposition", // Content-Disposition là thuộc tính của header, nó cho phép chúng ta đặt tên cho file pdf khi download về máy
-      "inline; filename='" + nameInvoice + "'" // inline: hiển thị file pdf trên trình duyệt, filename: đặt tên cho file pdf
-    );
     const pdfDoc = new pdfkit(); // Tạo file pdf mới bằng pdfkit
     pdfDoc.pipe(
       // Pipe file pdf mới vào res để trình duyệt hiểu đây là file pdf
@@ -352,9 +355,42 @@ const getInvoice = async (req, res, next) => {
       });
     });
     pdfDoc.end(); // Kết thúc file pdf
+    res
+      .status(200)
+      .json({
+        message: "Get invoice successfully",
+        url: `${req.protocol}://${req.get("host")}/order/${order._id}`,
+      });
     // {DOWNLOAD THE INVOICE} //
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getFindProduct = async (req, res, next) => {
+  /* 
+    #swagger.tags = ['User']
+     #swagger.sumary = 'Find product'
+     #swagger.description = 'Endpoint to find product'
+     #swagger.parameters['name'] = { 
+      in: 'query',
+      description: 'Product name', 
+      type: 'string',
+      required: true 
+    }
+  */
+  try {
+    const name = req.query.name;
+    const products = await Product.find({ name: { $regex: name, $options: "i" } });
+    res.status(200).json({
+      title: "Find Product",
+      path: "/find-product",
+      products: products,
+    });
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
   }
 };
 
@@ -368,4 +404,5 @@ module.exports = {
   postOrder,
   getOrder,
   getInvoice,
+  getFindProduct
 };

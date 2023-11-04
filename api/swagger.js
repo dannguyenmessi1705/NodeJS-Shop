@@ -4,6 +4,7 @@ const endpointsFiles = [
   "./api/routes/auth.js",
   "./api/routes/admin.js",
   "./api/routes/user.js",
+  "./api/routes/chat.js",
   "./api/routes/payment.js",
 ]; // Tạo file orders.js
 // Mặc định các đường dẫn tới file này phải trỏ từ thư mục gốc của project
@@ -14,11 +15,11 @@ const doc = {
     title: "API for SHOP Website",
     description:
       "This is a REST API application made by ZDiDane for SHOP Website. \n\nIf you want to use this API, please get csrfToken first, then add csrfToken to header of request. \n\nIf you want to use API for Admin, please add bearAuth to header of request.",
-    contact: {
-      name: "ZDiDane",
-      email: "didannguyen17@gmail.com",
-      url: "https://didan.id.vn",
-    },
+      "contact": {
+        "name": "ZDiDane",
+        "email": "didannguyen17@gmail.com",
+        "url": "https://didan.id.vn",
+      },
   },
   servers: [
     {
@@ -48,6 +49,10 @@ const doc = {
       description: "API for User in the system",
     },
     {
+      name: "Chat",
+      description: "API for Chat in the system",
+    },
+    {
       name: "Payment",
       description: "API for Payment in the system",
     },
@@ -63,11 +68,11 @@ const doc = {
       bearAuth: {
         type: "http",
         scheme: "bearer",
-      },
+      }
     }, // Thêm các securitySchemes để có quyền truy cập vào các API
     schemas: {
       SignUp: {
-        $username: "anv",
+        $name: "anv",
         $email: "anv@gmail.com",
         $password: "123456",
         $re_password: "123456",
@@ -83,7 +88,6 @@ const doc = {
         $name: "Iphone 12",
         $price: 1000,
         $url: "file.jpg",
-        $quantity: 10,
         $description: "A smartphone from Apple",
       },
     },
@@ -93,7 +97,7 @@ const options = {
   multipart: true,
 };
 
-SwaggerAutogen(outputFile, endpointsFiles, doc, options);
+SwaggerAutogen(outputFile, endpointsFiles, doc, options)
 // .then(() => {
 //   require("../server.js"); // Đặt file chạy server ở đây (chạy sswagger.js trước rồi mới chạy server.js) => thay cả trong package.json
 // }); // Tạo file swagger_output.json từ file orders.js

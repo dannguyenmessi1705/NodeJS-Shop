@@ -28,6 +28,7 @@ const bcrypt = require("bcryptjs");
 // {CSRF TOKEN} // Lấy token từ server và gửi về client (có token mới cho phép gửi request post, put, delete lên server)
 const getCsrfToken = (req, res, next) => {
   /* #swagger.tags = ['Auth']
+     #swagger.summary = 'Get CSRF token'
      #swagger.description = 'Endpoint to get CSRF token.' */
   res.json({ csrfToken: res.locals.csrfToken }); // Trả về token vừa tạo ở middleware
 };
@@ -36,6 +37,7 @@ const getCsrfToken = (req, res, next) => {
 // {SESSION + COOKIES} // Đối với Session, phải tạo Session trước khi tạo Cookie
 const postAuth = async (req, res, next) => {
   /* #swagger.tags = ['Auth'] 
+    #swagger.summary = 'Login'
     #swagger.description = 'Endpoint to login.'
     #swagger.security = [{
       "csrfToken": []
@@ -43,7 +45,7 @@ const postAuth = async (req, res, next) => {
     #swagger.requestBody = {
       required: true,
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: {
             $ref: "#/definitions/SignIn"
           }
@@ -108,6 +110,7 @@ const postLogout = async (req, res, next) => {
       "csrfToken": [],
       "bearAuth": []
     }]
+    #swagger.summary = 'Logout'
     #swagger.description = 'Endpoint to logout.' */
   try {
     req.session.destroy(() => {
@@ -121,6 +124,7 @@ const postLogout = async (req, res, next) => {
 // SIGNUP
 const postSignup = async (req, res, next) => {
   /* #swagger.tags = ['Auth']
+    #swagger.summary = 'Signup'
     #swagger.description = 'Endpoint to signup.'
     #swagger.security = [{
       "csrfToken": []
@@ -128,7 +132,7 @@ const postSignup = async (req, res, next) => {
     #swagger.requestBody = {
       required: true,
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: {
             $ref: "#/definitions/SignUp"
           }
@@ -196,14 +200,15 @@ const postSignup = async (req, res, next) => {
 // {RESET PASSWORD} //
 const postReset = async (req, res, next) => {
   /* #swagger.tags = ['Auth']
-     #swagger.description = 'Endpoint to reset password.'
+     #swagger.summary = 'Get token to reset password'
+     #swagger.description = 'Endpoint to get token reset password.'
      #swagger.security = [{
        "csrfToken": []
     }]
      #swagger.requestBody = {
       required: true,
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: {
             $ref: "#/definitions/Reset"
           }
@@ -267,6 +272,7 @@ const postReset = async (req, res, next) => {
 // {UPDATE PASSWORD} //
 const getUpdatePassword = async (req, res, next) => {
   /* #swagger.tags = ['Auth']
+     #swagger.summary = 'Get userID to update password'
      #swagger.description = 'Endpoint to get userID update password.'  
      #swagger.parameters['tokenReset'] = {
         in: 'path',
@@ -298,6 +304,7 @@ const getUpdatePassword = async (req, res, next) => {
 
 const postUpdatePassword = async (req, res, next) => {
   /* #swagger.tags = ['Auth']
+     #swagger.summary = 'Update password'
      #swagger.description = 'Endpoint to update password.'
      #swagger.security = [{
       "csrfToken": []
@@ -305,7 +312,7 @@ const postUpdatePassword = async (req, res, next) => {
      #swagger.requestBody = {
       required: true,
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: {
             $ref: "#/definitions/UpdatePassword"
           }

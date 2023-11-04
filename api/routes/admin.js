@@ -26,13 +26,6 @@ route.post(
 // #swagger.tags = ['Admin']
 route.get("/admin/products", ProtectRoute, adminController.getProduct);
 
-// {ADD EDIT PRODUCT} //
-// url = "http://.../edit-poduct/id"
-route.get(
-  "/admin/edit-product/:productID",
-  ProtectRoute,
-  adminController.getEditProduct
-);
 
 // {UPDATE PRODUCT}
 // {VALIDATION INPUT} //
