@@ -14,7 +14,7 @@ const itemOfOrder = 10;
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Get products by pagination'
+     #swagger.summary = 'Get products by pagination'
      #swagger.description = 'Endpoint to get products follow pagination'
      #swagger.parameters['page'] = { description: 'Page number', type: 'integer' }
   */
@@ -54,7 +54,7 @@ const getIndex = async (req, res, next) => {
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getAllProduct = async (req, res, next) => {
   /* #swagger.tags = ['User']
-      #swagger.sumary = 'Get all products'
+      #swagger.summary = 'Get all products'
       #swagger.description = 'Endpoint to get all products'
   */
   try {
@@ -76,7 +76,7 @@ const getAllProduct = async (req, res, next) => {
 // {GET PRODUCT DETAIL BY MONGOOSE} //
 const getDetail = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Get product detail by ID of product' 
+     #swagger.summary = 'Get product detail by ID of product' 
      #swagger.description = 'Endpoint to get product detail'
      #swagger.parameters['productID'] = { description: 'Product ID', type: 'string' }
   */
@@ -100,7 +100,7 @@ const getDetail = async (req, res, next) => {
 // {POST CART USER BY MONGOOSE} //
 const postCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Add product to cart'
+     #swagger.summary = 'Add product to cart'
      #swagger.description = 'Endpoint to add product to cart'
      #swagger.security = [{
        "csrfToken": [],
@@ -133,7 +133,7 @@ const postCart = async (req, res, next) => {
 // {GET CART USER BY MONGOOSE} //
 const getCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Get cart'
+     #swagger.summary = 'Get cart'
      #swagger.description = 'Endpoint to get cart'
      #swagger.security = [{
       "bearAuth": []
@@ -166,7 +166,7 @@ const getCart = async (req, res, next) => {
 // {DELETE CART USER BY MONGOOSE} //
 const deleteCart = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Delete product in cart'
+     #swagger.summary = 'Delete product in cart'
      #swagger.description = 'Endpoint to delete product in cart'
      #swagger.security = [{
         "csrfToken": [],
@@ -196,7 +196,7 @@ const deleteCart = async (req, res, next) => {
 // {POST ORDER BY USER IN MONGOOSE}
 const postOrder = async (req, res, next) => {
   /* #swagger.tags = ['User']
-    #swagger.sumary = 'Add order'
+    #swagger.summary = 'Add order'
     #swagger.description = 'Endpoint to add order'
     #swagger.security = [{
       "csrfToken": [],
@@ -248,7 +248,7 @@ const postOrder = async (req, res, next) => {
 // {GET ORDER BY USER IN MONGOOSE} //
 const getOrder = async (req, res, next) => {
   /* #swagger.tags = ['User']
-     #swagger.sumary = 'Get order'
+     #swagger.summary = 'Get order'
      #swagger.description = 'Endpoint to get order'
      #swagger.security = [{
       "bearAuth": []
@@ -276,7 +276,7 @@ const getOrder = async (req, res, next) => {
 // {GET INVOICE} // http:.../order/orderID
 const getInvoice = async (req, res, next) => {
   /* #swagger.tags = ['User']
-      #swagger.sumary = 'Get invoice'
+      #swagger.summary = 'Get invoice'
      #swagger.description = 'Endpoint to get invoice'
      #swagger.security = [{
       "bearAuth": []

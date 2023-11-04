@@ -43,6 +43,7 @@ const getChat = async (req, res, next) => {
 const postChat = async (req, res, next) => {
   /*
     #swagger.tags = ['Chat']
+    #swagger.summary = 'Create chat message'
     #swagger.description = 'Endpoint to create chat message'
     #swagger.security = [{
       "csrfToken": [],
