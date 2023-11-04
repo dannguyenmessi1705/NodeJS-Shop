@@ -514,6 +514,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get products by pagination",
         "description": "Endpoint to get products follow pagination",
         "parameters": [
           {
@@ -543,6 +544,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get all products",
         "description": "Endpoint to get all products",
         "responses": {
           "200": {
@@ -586,6 +588,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get product detail by ID of product",
         "description": "Endpoint to get product detail",
         "parameters": [
           {
@@ -616,6 +619,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get cart",
         "description": "Endpoint to get cart",
         "responses": {
           "200": {
@@ -643,6 +647,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Add product to cart",
         "description": "Endpoint to add product to cart",
         "parameters": [
           {
@@ -682,6 +687,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Delete product in cart",
         "description": "Endpoint to delete product in cart",
         "parameters": [
           {
@@ -718,6 +724,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get order",
         "description": "Endpoint to get order",
         "responses": {
           "200": {
@@ -745,6 +752,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Add order",
         "description": "Endpoint to add order",
         "responses": {
           "200": {
@@ -773,6 +781,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get invoice",
         "description": "Endpoint to get invoice",
         "parameters": [
           {
@@ -838,6 +847,7 @@
         "tags": [
           "Chat"
         ],
+        "summary": "Create chat message",
         "description": "Endpoint to create chat message",
         "responses": {
           "200": {
