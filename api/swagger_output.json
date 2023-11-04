@@ -564,6 +564,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Find product",
         "description": "Endpoint to find product",
         "parameters": [
           {

@@ -370,7 +370,7 @@ const getInvoice = async (req, res, next) => {
 const getFindProduct = async (req, res, next) => {
   /* 
     #swagger.tags = ['User']
-     #swagger.sumary = 'Find product'
+     #swagger.summary = 'Find product'
      #swagger.description = 'Endpoint to find product'
      #swagger.parameters['name'] = { 
       in: 'query',
