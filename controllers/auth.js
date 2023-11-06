@@ -8,10 +8,9 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer"); // Nhập module nodemailer
 // Tạo transporter để gửi mail
 const transporter = nodemailer.createTransport({
-  service: 'hotmail',
-  host: process.env.SMTP_HOST, // Host của mail server
-  port: 587, // Port của mail server
-  // secure: true, // Sử dụng SSL
+  host: "smtp.gmail.com", // Host của mail server
+  port: 465, // Port của mail server
+  secure: true, // Sử dụng SSL
   auth: {
     user: process.env.SECRET_STMP_USER, // mail dùng để gửi
     pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
@@ -258,27 +257,18 @@ const postReset = (req, res, next) => {
                 subject: "Reset Password", // Tiêu đề mail
                 html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
               }; // Tạo 1 mail
-              transporter
-                .sendMail(data) // Gửi mail
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  // {ERROR MIDDLEWARE} //
-                  const error = new Error(err);
-                  error.httpStatusCode = 500;
-                  next(error);
-                });
-            })
-            .catch((err) => {
-              // {ERROR MIDDLEWARE} //
-              const error = new Error(err);
-              error.httpStatusCode = 500;
-              next(error);
+              transporter.sendMail(data, (err, result) => {
+                if (err) {
+                  condole.log(err)
+                }
+                else {
+                  console.log(result)
+                  req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
+                  return res.redirect("/reset"); // Chuyển hướng sang trang reset password
+                }
+              }) // Gửi mail
             });
         });
-        req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
-        return res.redirect("/reset"); // Chuyển hướng sang trang reset password
       })
       .catch((err) => {
         // {ERROR MIDDLEWARE} //
