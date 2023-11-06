@@ -6,11 +6,23 @@ const genJWT = require("../middleware/jwtGeneration");
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
 const nodemailer = require("nodemailer"); // Nhập module nodemailer
-// Tạo transporter để gửi mail
+// Tạo transporter để gửi mail (GMAIL)
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com", // Host của mail server
+//   port: 465, // Port của mail server
+//   secure: true, // Sử dụng SSL
+//   auth: {
+//     user: process.env.SECRET_STMP_USER, // mail dùng để gửi
+//     pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
+//   },
+// });
+
+// Tạo transporter để gửi mail (Outlook)
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // Host của mail server
-  port: 465, // Port của mail server
-  secure: true, // Sử dụng SSL
+  service: 'hotmail',
+  host: process.env.SMTP_HOST, // Host của mail server
+  port: 587, // Port của mail server
+  // secure: true, // Sử dụng SSL
   auth: {
     user: process.env.SECRET_STMP_USER, // mail dùng để gửi
     pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
@@ -177,7 +189,7 @@ const postSignup = (req, res, next) => {
         transporter
           .sendMail({
             // Tạo 1 mail
-            from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
+            from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
             to: email, // Địa chỉ email của người nhận
             subject: "Signup Successfully", // Tiêu đề mail
             html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
@@ -252,7 +264,7 @@ const postReset = (req, res, next) => {
             .save()
             .then(() => {
               const data = {
-                from: "didannguyen@5dulieu.com", // Địa chỉ email của người gửi
+                from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
                 to: email, // Địa chỉ email của người nhận
                 subject: "Reset Password", // Tiêu đề mail
                 html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
