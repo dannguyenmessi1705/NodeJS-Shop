@@ -10,10 +10,9 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer"); // Nhập module nodemailer
 // Tạo transporter để gửi mail
 const transporter = nodemailer.createTransport({
-  service: 'hotmail',
-  host: process.env.SMTP_HOST, // Host của mail server
-  port: 587, // Port của mail server
-  // secure: true, // Sử dụng SSL
+  host: "smtp.gmail.com", // Host của mail server
+  port: 465, // Port của mail server
+  secure: true, // Sử dụng SSL
   auth: {
     user: process.env.SECRET_STMP_USER, // mail dùng để gửi
     pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail

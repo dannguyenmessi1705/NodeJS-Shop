@@ -259,7 +259,7 @@ const postReset = (req, res, next) => {
               }; // Tạo 1 mail
               transporter.sendMail(data, (err, result) => {
                 if (err) {
-                  condole.log(err)
+                  console.log(err)
                 }
                 else {
                   console.log(result)
