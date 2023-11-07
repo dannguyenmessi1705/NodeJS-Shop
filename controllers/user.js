@@ -64,6 +64,22 @@ const getProduct = (req, res, next) => {
     });
 };
 
+const getTopProduct = async (req, res, next) => {
+  try {
+    const numTopProduct = 10;
+    const products = await Product.find().sort({ soldQuantity: -1 }).limit(numTopProduct);
+    return res.status(200).json({
+      message: "Get top product successfully",
+      products: products,
+    })
+  } catch (err) {
+    if (!err.httpStatusCode) {
+      err.httpStatusCode = 500;
+    }
+    next(err);
+  }
+};
+
 // {GET PRODUCT DETAIL BY MONGOOSE} //
 const getDetail = (req, res, next) => {
   const ID = req.params.productID; // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
@@ -364,6 +380,7 @@ const getFindProduct = async (req, res, next) => {
 module.exports = {
   getIndex,
   getProduct,
+  getTopProduct,
   getDetail,
   postCart,
   getCart,

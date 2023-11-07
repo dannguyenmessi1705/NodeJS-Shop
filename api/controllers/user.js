@@ -73,6 +73,27 @@ const getAllProduct = async (req, res, next) => {
   }
 };
 
+const getTopProduct = async (req, res, next) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Get top product'
+    #swagger.description = 'Endpoint to get top product'
+  */
+  try {
+    const numTopProduct = 10;
+    const products = await Product.find().sort({ soldQuantity: -1 }).limit(numTopProduct);
+    return res.status(200).json({
+      message: "Get top product successfully",
+      products: products,
+    })
+  } catch (err) {
+    if (!err.httpStatusCode) {
+      err.httpStatusCode = 500;
+    }
+    next(err);
+  }
+};
+
 // {GET PRODUCT DETAIL BY MONGOOSE} //
 const getDetail = async (req, res, next) => {
   /* #swagger.tags = ['User']
@@ -397,6 +418,7 @@ const getFindProduct = async (req, res, next) => {
 module.exports = {
   getIndex,
   getAllProduct,
+  getTopProduct,
   getDetail,
   postCart,
   getCart,

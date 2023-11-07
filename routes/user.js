@@ -9,6 +9,8 @@ route.get("/", userController.getIndex);
 
 route.get("/product", userController.getProduct);
 
+route.get("/top-products", userController.getTopProduct);
+
 // {ADD PRODUCT ID} //
 route.get("/product/:productID", userController.getDetail); // :productID là dynamic route, nó sẽ được thay thế bằng id của sản phẩm,
 // vì là dynamic route nên tên route product/:productID bắt buộc phải đặt ở sau các route cố định của product/... khác, để cho đỡ hiểu nhầm với các route cố định

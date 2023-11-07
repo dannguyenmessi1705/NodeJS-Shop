@@ -72,7 +72,7 @@ const doc = {
     }, // Thêm các securitySchemes để có quyền truy cập vào các API
     schemas: {
       SignUp: {
-        $name: "anv",
+        $username: "anv",
         $email: "anv@gmail.com",
         $password: "123456",
         $re_password: "123456",
