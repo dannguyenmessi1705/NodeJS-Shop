@@ -310,16 +310,33 @@ const postUpdatePassword = async (req, res, next) => {
      #swagger.security = [{
       "csrfToken": []
     }]
-     #swagger.requestBody = {
+    #swagger.requestBody = {
       required: true,
       content: {
         "multipart/form-data": {
           schema: {
-            $ref: "#/definitions/UpdatePassword"
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string",
+              },
+              "passwordToken": {
+                "type": "string",
+              },
+              "password": {
+                "type": "string",
+              }
+            },
+            "required": [
+              "userId",
+              "passwordToken",
+              "password"
+            ]
           }
         }
       }
-     } */
+    }
+  */
   const ID = req.body.userId; // Lấy giá trị userId từ form
   const token = req.body.passwordToken; // Lấy giá trị passwordToken từ form
   const password = req.body.password; // Lấy giá trị password từ form

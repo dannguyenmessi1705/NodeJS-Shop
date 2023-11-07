@@ -263,7 +263,23 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/UpdatePassword"
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "passwordToken": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "passwordToken",
+                  "password"
+                ]
               }
             }
           }
@@ -555,6 +571,20 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/top-products": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get top product",
+        "description": "Endpoint to get top product",
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1233,7 +1263,7 @@
       "SignUp": {
         "type": "object",
         "properties": {
-          "name": {
+          "username": {
             "type": "string",
             "example": "anv"
           },
@@ -1251,7 +1281,7 @@
           }
         },
         "required": [
-          "name",
+          "username",
           "email",
           "password",
           "re_password"

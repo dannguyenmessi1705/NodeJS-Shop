@@ -11,6 +11,8 @@ route.get("/", userController.getIndex);
 
 route.get("/products", userController.getAllProduct);
 
+route.get("/top-products", userController.getTopProduct);
+
 // {GET FIND PRODUCT} //
 route.get("/find-product", userController.getFindProduct);
 
