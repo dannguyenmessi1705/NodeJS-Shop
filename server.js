@@ -144,16 +144,21 @@ app.set("views", "./views");
 // {RUN SERVER + Add user to req (Phân quyền) + SOCKET.IO} //
 const mongoose = require("mongoose"); // Nhập module mongoose
 const User = require("./models/users"); // Nhập vào class User lấy từ file users.js
-const fs = require('fs')
-const https = require('https')
-const cert = fs.readFileSync('server.cert')
-const key = fs.readFileSync('server.key')
+
+
+// Chứng chỉ SSL
+const fs = require("fs");
+const https = require("https");
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 mongoose
   .connect(URL)
   .then(() => {
-    // const server = https.createServer({cert: cert, key: key}, app).listen(process.env.PORT);
-    const server = app.listen(process.env.PORT)
+    const server = https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(process.env.PORT); // Chạy server với chứng chỉ SSL (https)
+    // const server = app.listen(process.env.PORT);
     // {SOCKET.IO} //
     const io = require("./util/socket").init(server); // Khởi tạo socket.io và lưu vào biến io, sẽ được khởi tạo ở file server.js
     console.log("Connected!");
