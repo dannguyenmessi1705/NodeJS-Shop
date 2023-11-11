@@ -7,18 +7,8 @@ const genJWT = require("../middleware/jwtGeneration"); // Nhập module jwtGener
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
-const nodemailer = require("nodemailer"); // Nhập module nodemailer
-// Tạo transporter để gửi mail
-const transporter = nodemailer.createTransport({
-  service: "hotmail",
-  host: process.env.SMTP_HOST, // Host của mail server
-  port: 587, // Port của mail server
-  // secure: true, // Sử dụng SSL
-  auth: {
-    user: process.env.SECRET_STMP_USER, // mail dùng để gửi
-    pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
-  },
-});
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY)
 const fs = require("fs"); // Nhập module fs
 const rootPath = require("../../util/path"); // Nhập đường dẫn tuyệt đối của thư mục gốc
 const path = require("path"); // Nhập module path
@@ -175,20 +165,13 @@ const postSignup = async (req, res, next) => {
     // {SEND MAIL} //
     const pathImg = path.join(rootPath, "public", "img", "signup.png"); // Đường dẫn đến file hình ảnh
     // Dùng transporter vừa tạo để gửi mail
-    transporter
-      .sendMail({
+    sgMail
+      .send({
         // Tạo 1 mail
-        from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
+        from: process.env.SECRET_SENDGRID_MAIL, // Địa chỉ email của người gửi
         to: email, // Địa chỉ email của người nhận
         subject: "Signup Successfully", // Tiêu đề mail
         html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
-        attachments: [
-          // File đính kèm
-          {
-            filename: "signup.png", // Tên file đính kèm
-            content: fs.createReadStream(pathImg), // Nội dung file đính kèm
-          },
-        ],
       })
       .then((result) =>
         res.status(201).json({ message: "Signup successfully", result: result })
@@ -249,13 +232,13 @@ const postReset = async (req, res, next) => {
         const http = req.protocol + "://" + req.get("host"); // Lấy đường dẫn trang mặc định (http://localhost:3000/)
         await user.save(); // Lưu user
         const data = {
-          from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
+          from: process.env.SECRET_SENDGRID_MAIL, // Địa chỉ email của người gửi
           to: email, // Địa chỉ email của người nhận
           subject: "Reset Password", // Tiêu đề mail
           html: `<h2>Click this <a href="${http}/api/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
         }; // Tạo 1 mail
-        transporter
-          .sendMail(data) // Gửi mail
+        sgMail
+          .send(data) // Gửi mail
           .then((result) => {
             res.status(201).json({
               message: "Sent email reset password successfully",

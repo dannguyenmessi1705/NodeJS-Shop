@@ -5,29 +5,8 @@ const genJWT = require("../middleware/jwtGeneration");
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
-const nodemailer = require("nodemailer"); // Nhập module nodemailer
-// Tạo transporter để gửi mail (GMAIL)
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com", // Host của mail server
-//   port: 465, // Port của mail server
-//   secure: true, // Sử dụng SSL
-//   auth: {
-//     user: process.env.SECRET_STMP_USER, // mail dùng để gửi
-//     pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
-//   },
-// });
-
-// Tạo transporter để gửi mail (Outlook)
-const transporter = nodemailer.createTransport({
-  service: 'hotmail',
-  host: process.env.SMTP_HOST, // Host của mail server
-  port: 587, // Port của mail server
-  // secure: true, // Sử dụng SSL
-  auth: {
-    user: process.env.SECRET_STMP_USER, // mail dùng để gửi
-    pass: process.env.SECRET_STMP_PASSWORD, // password của mail dùng để gửi (có thể dùng password ứng dụng) (https://myaccount.google.com/apppasswords) thay vì dùng password của mail
-  },
-});
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY)
 const fs = require("fs"); // Nhập module fs
 const rootPath = require("../util/path"); // Nhập đường dẫn tuyệt đối của thư mục gốc
 const path = require("path"); // Nhập module path
@@ -178,30 +157,24 @@ const postSignup = (req, res, next) => {
         },
       });
       return user.save().then(() => {
-        // {FLASH MESSAGE} // Nếu user mới tạo thành công
-        req.flash("successSignup", "Sign up successfully"); // Tạo flash message có tên là "success", giá trị là "Sign up successfully"
-        // Lưu user mới tạo
-        res.redirect("/login"); // Chuyển hướng sang trang đăng nhập
-
         // {SEND MAIL} //
         const pathImg = path.join(rootPath, "public", "img", "signup.png"); // Đường dẫn đến file hình ảnh
         // Dùng transporter vừa tạo để gửi mail
-        transporter
-          .sendMail({
+        sgMail
+          .send({
             // Tạo 1 mail
-            from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
+            from: process.env.SECRET_SENDGRID_MAIL, // Địa chỉ email của người gửi
             to: email, // Địa chỉ email của người nhận
             subject: "Signup Successfully", // Tiêu đề mail
             html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
-            attachments: [
-              // File đính kèm
-              {
-                filename: "signup.png", // Tên file đính kèm
-                content: fs.createReadStream(pathImg), // Nội dung file đính kèm
-              },
-            ],
           })
-          .then((res) => console.log(res)) // Nếu gửi mail thành công
+          .then((result) => {
+            console.log(result)
+            // {FLASH MESSAGE} // Nếu user mới tạo thành công
+            req.flash("successSignup", "Sign up successfully"); // Tạo flash message có tên là "success", giá trị là "Sign up successfully"
+            // Lưu user mới tạo
+            res.redirect("/login"); // Chuyển hướng sang trang đăng nhập
+          }) // Nếu gửi mail thành công
           .catch((err) => {
             // {ERROR MIDDLEWARE} //
             const error = new Error(err);
@@ -263,33 +236,23 @@ const postReset = (req, res, next) => {
           return user // Lưu user
             .save()
             .then(() => {
-              const data = {
-                from: process.env.SECRET_STMP_USER, // Địa chỉ email của người gửi
+              const msg = {
+                from: process.env.SECRET_SENDGRID_MAIL, // Địa chỉ email của người gửi
                 to: email, // Địa chỉ email của người nhận
                 subject: "Reset Password", // Tiêu đề mail
                 html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
               }; // Tạo 1 mail
-              transporter
-                .sendMail(data) // Gửi mail
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  // {ERROR MIDDLEWARE} //
-                  const error = new Error(err);
-                  error.httpStatusCode = 500;
-                  next(error);
-                });
-            })
-            .catch((err) => {
-              // {ERROR MIDDLEWARE} //
-              const error = new Error(err);
-              error.httpStatusCode = 500;
-              next(error);
+              sgMail.send(msg)
+              .then((response) => {
+                console.log(response)
+                req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
+                return res.redirect("/reset"); // Chuyển hướng sang trang reset password
+              }).catch(error => {
+                console.log(error)
+                next(error)
+              })
             });
         });
-        req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
-        return res.redirect("/reset"); // Chuyển hướng sang trang reset password
       })
       .catch((err) => {
         // {ERROR MIDDLEWARE} //

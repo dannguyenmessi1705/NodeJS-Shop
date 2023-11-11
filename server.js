@@ -145,6 +145,7 @@ app.set("views", "./views");
 const mongoose = require("mongoose"); // Nhập module mongoose
 const User = require("./models/users"); // Nhập vào class User lấy từ file users.js
 
+
 // Chứng chỉ SSL
 const fs = require("fs");
 const https = require("https");
@@ -224,7 +225,7 @@ app.use(chatRoute);
 // {SWAGGER API} //
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./api/swagger_output.json");
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 // {ENPOINT API ROUTE FOR CLIENT} //
 const authRouteAPI = require("./api/routes/auth");
@@ -241,11 +242,11 @@ app.use("/api", paymentRouteAPI);
 app.use(errorRoute);
 
 // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
-app.use((err, req, res, next) => {
-  res.status(500).render("500", {
-    title: "Server maintenance",
-    path: "/500",
-    authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
-  });
-});
+// app.use((err, req, res, next) => {
+//   res.status(500).render("500", {
+//     title: "Server maintenance",
+//     path: "/500",
+//     authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
+//   });
+// });
 /// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi
