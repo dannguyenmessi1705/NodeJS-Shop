@@ -67,11 +67,13 @@ const getProduct = (req, res, next) => {
 const getTopProduct = async (req, res, next) => {
   try {
     const numTopProduct = 10;
-    const products = await Product.find().sort({ soldQuantity: -1 }).limit(numTopProduct);
+    const products = await Product.find()
+      .sort({ soldQuantity: -1 })
+      .limit(numTopProduct);
     return res.status(200).json({
       message: "Get top product successfully",
       products: products,
-    })
+    });
   } catch (err) {
     if (!err.httpStatusCode) {
       err.httpStatusCode = 500;
@@ -237,42 +239,39 @@ const postOrder = (req, res, next) => {
 };
 
 // {GET ORDER BY USER IN MONGOOSE} //
-const getOrder = (req, res, next) => {
-  const curPage = req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
-  let numProducts; // Tạo biến để lưu số lượng sản phẩm
-  Order.countDocuments({ "user.userId": req.user._id }) // Đếm số lượng order có userId = userId của user hiện tại
-    .then((numOfProducts) => {
-      numProducts = numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
-      Order.find({ "user.userId": req.user._id }) // Tìm kiếm order có userId = userId của user hiện tại
+const getOrder = async (req, res, next) => {
+  try {
+    const curPage = +req.query.page || 1; // Lấy giá trị page từ URL, nếu không có thì mặc định là 1
+    let numProducts; // Tạo biến để lưu số lượng sản phẩm
+    let orders;
+    if (req.user._id.toString() === process.env.ADMIN_ID) {
+      numProducts = await Order.countDocuments();
+      orders = await Order.find()
         .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
-        .limit(itemOfOrder) // Giới hạn số lượng order trên 1 trang
-        .then((orders) => {
-          // orders = [{ {products: {}, quantity}, user{}}, {}]
-          res.render("./user/order", {
-            title: "Order",
-            path: "/order",
-            orders: orders,
-            lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
-            curPage: curPage, // Trang hiện tại
-            nextPage: curPage + 1, // Trang tiếp theo
-            prevPage: curPage - 1, // Trang trước đó
-            hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
-            hasNextPage: curPage < Math.ceil(numProducts / itemOfOrder), // Kiểm tra xem có trang tiếp theo hay không
-          });
-        })
-        .catch((err) => {
-          // {ERROR MIDDLEWARE} //
-          const error = new Error(err);
-          error.httpStatusCode = 500;
-          next(error);
-        });
-    })
-    .catch((err) => {
-      // {ERROR MIDDLEWARE} //
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      next(error);
+        .limit(itemOfOrder); // Giới hạn số lượng order trên 1 trang
+    } else {
+      numProducts = await Order.countDocuments({ "user.userId": req.user._id });
+      orders = await Order.find({ "user.userId": req.user._id })
+        .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
+        .limit(itemOfOrder); // Giới hạn số lượng order trên 1 trang
+    } // orders = [{ {products: {}, quantity}, user{}}, {}]
+    return res.render("./user/order", {
+      title: "Order",
+      path: "/order",
+      orders: orders,
+      lastPage: Math.ceil(numProducts / itemOfOrder), // Tính số lượng trang
+      curPage: curPage, // Trang hiện tại
+      nextPage: curPage + 1, // Trang tiếp theo
+      prevPage: curPage - 1, // Trang trước đó
+      hasPrevPage: curPage > 1, // Kiểm tra xem có trang trước đó hay không
+      hasNextPage: curPage < Math.ceil(numProducts / itemOfOrder), // Kiểm tra xem có trang tiếp theo hay không
     });
+  } catch (err) {
+    // {ERROR MIDDLEWARE} //
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
 };
 
 // {DOWNLOAD THE INVOICE} //
@@ -282,7 +281,7 @@ const getInvoice = (req, res, next) => {
   Order.findById(orderId) // Tìm order có _id = orderId
     .then((order) => {
       // order = {products: [{product: {}, quantity}], user: {}}
-      if (order.user.userId.toString() !== req.user._id.toString()) {
+      if (order.user.userId.toString() !== req.user._id.toString() && req.user._id.toString() !== process.env.ADMIN_ID) {
         // Kiểm tra xem user hiện tại có phải là người đặt hàng hay không
         return next(new Error("Not Authorized")); // Nếu không phải thì trả về lỗi
       }

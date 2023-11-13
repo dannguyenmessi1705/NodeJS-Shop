@@ -138,18 +138,31 @@ const getProduct = async (req, res, next) => {
   /// {PAGINATION} ///
   const curPage = +req.query.page || 1; // Lấy giá trị của query 'page' từ URL, nếu không có thì mặc định là 1
   let numProducts; // Khai báo biến để lưu số lượng sản phẩm
+  let numOfProducts; 
+  let products;
   try {
     // {AUTHORIZATION} //
-    const numOfProducts = await Product.countDocuments({
-      userId: req.user._id,
-    }); // Đếm số lượng sản phẩm trong database (userId: req.user._id) - Chỉ đếm số lượng sản phẩm của user đang đăng nhập
-    numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
-    // {AUTHORIZATION} //
-    const products = await Product.find({ userId: req.user._id }) // Tìm tất cả sản phẩm trong database (userId: req.user._id) - Chỉ tìm sản phẩm của user đang đăng nhập
-      .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
-      .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
-      .select("name price url description _id soldQuantity quantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
-      .exec(); // Thực thi
+    if (req.user._id.toString() !== process.env.ADMIN_ID) {
+      numOfProducts = await Product.countDocuments({
+        userId: req.user._id,
+      });
+      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
+      // {AUTHORIZATION} //
+      products = await Product.find({ userId: req.user._id }) // Tìm tất cả sản phẩm trong database (userId: req.user._id) - Chỉ tìm sản phẩm của user đang đăng nhập
+        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
+        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
+        .select("name price url description _id soldQuantity quantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+        .exec(); // Thực thi
+    } // Đếm số lượng sản phẩm trong database (userId: req.user._id) - Chỉ đếm số lượng sản phẩm của user đang đăng nhập
+    else {
+      numOfProducts = await Product.countDocuments();
+      numProducts = +numOfProducts; // Lưu số lượng sản phẩm vào biến numProducts
+      products = await Product.find() // Tìm tất cả sản phẩm trong database
+        .skip((curPage - 1) * productOfPage) // Bỏ qua các sản phẩm trước sản phẩm hiện tại (curPage - 1) * productOfPage
+        .limit(productOfPage) // Giới hạn số lượng sản phẩm trên 1 trang
+        .select("name price url description _id soldQuantity quantity") // Chỉ lấy các thuộc tính name, price, url, description, bỏ thuộc tính _id
+        .exec(); // Thực thi
+    } // Đếm số lượng sản phẩm trong database (nếu là admin thì đếm tất cả sản phẩm)
     if (!products) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -271,7 +284,7 @@ const postEditProduct = async (req, res, next) => {
       });
     }
     // {AUTHORIZATION} //
-    if (product.userId.toString() !== req.user._id.toString()) {
+    if (product.userId.toString() !== req.user._id.toString() && req.user._id.toString() !== process.env.ADMIN_ID) {
       // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không
       return res.status(403).json({ message: "Forbidden" });
     }
@@ -325,6 +338,7 @@ const deleteProduct = async (req, res, next) => {
   // Vì không phải load lại trang nên không dùng method POST của form => không thể dùng req.body
   // Xoá sản phẩm trong database thì phải xoá file ảnh trong folder images (tiết kiệm ổ cứng)
   let urlDelete; // Khai báo biến url để lưu đường dẫn của file
+  let result;
   try {
     const product = await Product.findById(ID);
     if (!product) {
@@ -332,7 +346,14 @@ const deleteProduct = async (req, res, next) => {
     }
     urlDelete = product.url; // Lưu đường dẫn của file vào biến urlDelete
     // {AUTHORIZATION} //
-    const result = await Product.deleteOne({ _id: ID, userId: req.user._id }); // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không (userId: req.user._id)
+    if (req.user._id.toString() !== process.env.ADMIN_ID && product.userId.toString() !== req.user._id.toString()) {
+      // Kiểm tra xem user hiện tại có phải là người tạo ra product này hoặc là admin hay không
+      return res.redirect("/"); // Nếu không phải thì redirect về trang chủ
+    }
+    else if (req.user._id.toString() === process.env.ADMIN_ID) {
+      result = await Product.deleteOne({ _id: ID}); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
+    }
+    else result = await Product.deleteOne({ _id: ID, userId: req.user._id}); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
     if (!result) {
       return res.status(403).json({ message: "Forbidden" });
     }

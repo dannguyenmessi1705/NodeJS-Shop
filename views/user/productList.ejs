@@ -49,7 +49,11 @@
                                 <a href="/product/<%= item._id %>" class="btn btn-primary">Detail</a>
                                 <!-- href = product/0.7834371053383911 -->
                                 <!-- POST CART  -->
-                                <%- include('../includes/addCart.ejs', {item: item}) %>
+                                <% if (item.quantity > 0) { %>
+                                    <%- include('../includes/addCart.ejs', {item: item}) %>
+                                <% } else { %>
+                                    <button class="btn btn-danger" disabled>Sold Out</button>
+                                <% } %>
                                 <!-- Thêm object {item: item} để thẻ chỉ xác định duy nhất 1 item trong vòng lặp có nhiều items -->
                             </div>
                         </article>

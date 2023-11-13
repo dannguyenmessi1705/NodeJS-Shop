@@ -276,11 +276,19 @@ const getOrder = async (req, res, next) => {
     }]
   */
   try {
-    const orders = await Order.find({ "user.userId": req.user._id }); // Tìm kiếm order có userId = userId của user hiện tại
-    // orders = [{ {products: {}, quantity}, user{}}, {}]
-    if (!orders) {
-      return res.status(404).json({ message: "Orders not found" });
-    }
+    let numProducts; // Tạo biến để lưu số lượng sản phẩm
+    let orders;
+    if (req.user._id.toString() === process.env.ADMIN_ID) {
+      numProducts = await Order.countDocuments();
+      orders = await Order.find()
+        .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
+        .limit(itemOfOrder); // Giới hạn số lượng order trên 1 trang
+    } else {
+      numProducts = await Order.countDocuments({ "user.userId": req.user._id });
+      orders = await Order.find({ "user.userId": req.user._id })
+        .skip((curPage - 1) * itemOfOrder) // Bỏ qua các order trước order đầu tiên của trang hiện tại
+        .limit(itemOfOrder); // Giới hạn số lượng order trên 1 trang
+    } // orders = [{ {products: {}, quantity}, user{}}, {}]
     res.status(200).json({
       message: "Get order successfully",
       title: "Order",
@@ -311,7 +319,7 @@ const getInvoice = async (req, res, next) => {
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-    if (order.user.userId.toString() !== req.user._id.toString()) {
+    if (order.user.userId.toString() !== req.user._id.toString() && req.user._id.toString() !== process.env.ADMIN_ID) {
       // Kiểm tra xem user hiện tại có phải là người đặt hàng hay không
       return res.status(403).json({ message: "Forbidden" });
     }

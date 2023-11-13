@@ -5,6 +5,6 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/code
+      - D:/messi/Documents/Access:/usr/code/images
     env_file:
       - .env

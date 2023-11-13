@@ -37,7 +37,11 @@
                                 </form>
                                 <% } %>
                                 <!-- POST CART  -->
-                                <%- include('../includes/addCart.ejs', {item: item}) %>
+                                <% if (item.quantity > 0) { %>
+                                    <%- include('../includes/addCart.ejs', {item: item}) %>
+                                <% } else { %>
+                                    <button class="btn btn-danger" disabled>Sold Out</button>
+                                <% } %>
                             </div>
                         <div class="ref-description my-4"><%= item.description %></div>
                     </div>
