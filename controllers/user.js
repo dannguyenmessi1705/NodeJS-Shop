@@ -15,12 +15,14 @@ const itemOfOrder = 10;
 // {GET ALL PRODUCTS BY MONGOOSE} //
 const getIndex = (req, res, next) => {
   const [successLogin] = req.flash("successLogin"); // Lấy giá trị Flash có tên là "successLogin"
+  const [successUpdateProfile] = req.flash("successUpdateProfile"); // Lấy giá trị Flash có tên là "successUpdateProfile"
   res.header("Cache-Control", "no-cache"); // Không lưu cache
   res.render("./user/index", {
     // Render ra dữ liệu, đồng thời trả về các giá trị động cho file index.ejs
     title: "Home",
     path: "/",
     successLogin: successLogin, // Truyền giá trị Flash vào biến successLogin để hiển thị thông báo
+    successUpdateProfile: successUpdateProfile, // Truyền giá trị Flash vào biến successUpdateProfile để hiển thị thông báo
   });
 };
 

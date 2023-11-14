@@ -286,6 +286,97 @@
         }
       }
     },
+    "/profile": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get profile",
+        "description": "Endpoint to get profile.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ]
+      }
+    },
+    "/update-profile": {
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Update profile",
+        "description": "Endpoint to update profile.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "bearAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "new_password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/add-product": {
       "post": {
         "tags": [

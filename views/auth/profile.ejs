@@ -1,0 +1,78 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/Profile-Edit-Form-styles.css">
+    <link rel="stylesheet" href="/css/Profile-Edit-Form.css">
+</head>
+<body>
+   <%- include('../includes/nav.ejs') %>
+   <div class="d-flex align-items-center py-2">
+        <!-- FLASH MESSAGE -->
+        <% if(error) { %> 
+            <div class="alert alert-danger shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger">
+                <%= error %>
+            </div>
+        <% } else if(errorUpdateProfile) { %>
+            <div class="alert alert-danger shake animated d-inline-block p-2 text-center mx-auto fw-bold text-danger">
+                <%= errorUpdateProfile %>
+            </div>
+        <% } %>
+    </div>
+    <div class="container profile profile-view" data-aos="fade-down" id="profile">
+        <div class="row">
+            <div class="col-md-12 alert-col relative">
+                <div class="alert alert-info alert-dismissible absolue center" role="alert">
+                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="alert">
+                    </button><span>Profile save with success</span></div>
+            </div>
+        </div>
+        <form action="/update-profile" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <div class="row profile-row">
+                <div class="col-md-4 relative">
+                    <div class="avatar">
+                        <div class="avatar-bg center my-2">
+                            <% if (user.avatar) { %>
+                                <img src="<%=user.avatar%>" class="avatar-img" alt="avatar" style="max-width: 100%; max-height: 100%;">
+                            <% } else { %>
+                                <img src="/img/profile.png" class="avatar-img" alt="avatar" style="max-width: 100%; max-height: 100%;">
+                            <% } %>
+                        </div>
+                    </div>
+                    <input class="form-control form-control my-2" type="file" name="image">
+                </div>
+                <div class="col-md-8">
+                    <h1>Profile </h1>
+                    <hr>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Username </label>
+                        <input class="form-control <%=errorType === 'username' ? 'border-danger' : ''%>" type="text" autocomplete="off" name="username" placeholder="Required if you want to change username" value="<%=oldInput.username%>">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Email </label>
+                        <input class="form-control <%=errorType === 'email' ? 'border-danger' : ''%>" type="email" autocomplete="off" name="email" placeholder="Required if you want to change email" value="<%=oldInput.email%>">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Password </label>
+                                <input class="form-control <%=errorType === 'password' ? 'border-danger' : ''%>" type="password" name="password" autocomplete="off" required="" placeholder="Required" value="<%=oldInput.password%>">
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">New Password</label>
+                                <input class="form-control <%=errorType === 'new_password' ? 'border-danger' : ''%>" type="password" name="new_password" autocomplete="off" placeholder="Required if you want to change password" value="<%=oldInput.new_password%>">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 content-right">
+                            <button class="btn btn-primary form-btn" type="submit">SAVE</button>
+                        </div>
+                        <div class="ref-links my-2"><i>If you want to delete your account, please contact to email <a href="mailto:cskh-shop@didan.id.vn">cskh-shop@didan.id.vn</a></i></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+<%- include('../includes/end.ejs') %>

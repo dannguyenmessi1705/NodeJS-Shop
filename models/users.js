@@ -14,6 +14,10 @@ const User = new Schema({
     type: SchemaTypes.String,
     required: true,
   },
+  avatar: {
+    type: SchemaTypes.String,
+    required: false,
+  },
   resetPasswordToken: SchemaTypes.String,
   resetPasswordExpires: SchemaTypes.Date,
   cart: {

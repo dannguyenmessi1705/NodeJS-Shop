@@ -12,6 +12,12 @@
                 <%= successLogin %>
             </div>
         </div>
+    <% } else if(successUpdateProfile) { %>
+        <div class="d-flex align-items-center py-2">
+            <div data-aos="fade-down" class="alert alert-success d-inline-block p-2 text-center mx-auto fw-bold text-success">
+                <%= successUpdateProfile %>
+            </div>
+        </div>
     <% } %>
     <section id="carousel" class="bg-dark-subtle">
         <div class="carousel slide" data-bs-ride="carousel" id="carousel-1">
@@ -61,7 +67,6 @@
         </div>
     </section>
     <script src="/js/chartConfig.js"></script>
-    <!-- <script src="b.js"></script> -->
     <script src="/js/topProduct.js" type="module"></script>      
     <script src="/js/Simple-Slider-swiper-bundle.min.js"></script>
     <script src="/js/Simple-Slider.js"></script>

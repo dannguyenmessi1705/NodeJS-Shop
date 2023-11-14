@@ -7,8 +7,8 @@ const genJWT = require("../middleware/jwtGeneration"); // Nhập module jwtGener
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY)
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY);
 const fs = require("fs"); // Nhập module fs
 const rootPath = require("../../util/path"); // Nhập đường dẫn tuyệt đối của thư mục gốc
 const path = require("path"); // Nhập module path
@@ -373,6 +373,138 @@ const postUpdatePassword = async (req, res, next) => {
   }
 };
 
+const getProfile = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.summary = 'Get profile'
+     #swagger.description = 'Endpoint to get profile.'
+     #swagger.security = [{
+      "bearAuth": []
+    }] 
+  */
+  try {
+    const userId = req.session.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    return res.status(200).json({
+      title: "Profile",
+      path: "/profile",
+      user: user,
+    });
+  } catch (err) {
+    // {ERROR MIDDLEWARE} //
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateProfile = async (req, res, next) => {
+  /* #swagger.tags = ['Auth']
+     #swagger.summary = 'Update profile'
+     #swagger.description = 'Endpoint to update profile.'
+     #swagger.security = [{
+      "bearAuth": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "image": {
+                "type": "string",
+                "format": "binary"
+              },
+              "password": {
+                "type": "string",
+                required: true
+              },
+              "new_password": {
+                "type": "string",
+              }
+            },
+            "required": [
+              "password"
+            ]
+          }
+        }
+      }
+    }
+  */
+  try {
+    let password = req.body?.password;
+    const userId = req.session.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    let username = req.body?.username;
+    let email = req.body?.email;
+    let newPassword = req.body?.new_password;
+    const checkPass = bcrypt.compareSync(password, user.password);
+    if (!checkPass) {
+      return res.status(401).json({
+        message: "Password is incorrect",
+      });
+    }
+    const image = req?.file; // Lấy file từ multer
+    let url = undefined; // Khai báo biến url để lưu đường dẫn của file
+    if (image) {
+      // Nếu có file thì lưu đường dẫn của file vào biến url
+      user.avatar = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
+    }
+    if (username) {
+      const findUser = User.findOne({ username: username });
+      if (findUser) {
+        return res.status(422).json({
+          message: "Username is existed!",
+        });
+      }
+      user.username = username ? username : user.username;
+    }
+    if (email) {
+      const findUser = User.findOne({ email: email });
+      if (findUser) {
+        return res.status(422).json({
+          message: "Email is existed!",
+        });
+      }
+      user.email = email ? email : user.email;
+    }
+    if (newPassword) {
+      if (newPassword.length < 5) {
+        return res.status(422).json({
+          message: "Password must be at least 5 characters!",
+        });
+      }
+      const hashPassword = bcrypt.hashSync(newPassword, 12);
+      user.password = hashPassword;
+    }
+    await user.save();
+    req.session.user = user;
+    return res.status(201).json({
+      message: "Update profile successfully",
+      user: user,
+    })
+  } catch (err) {
+    // {ERROR MIDDLEWARE} //
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
+};
+
 module.exports = {
   postAuth,
   postLogout,
@@ -381,4 +513,6 @@ module.exports = {
   getUpdatePassword,
   postUpdatePassword,
   getCsrfToken,
+  getProfile,
+  updateProfile
 };

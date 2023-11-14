@@ -5,8 +5,8 @@ const genJWT = require("../middleware/jwtGeneration");
 // Tạo 1 bit random ngẫu nhiên => phục vụ cho việc tạo token
 const crypto = require("crypto");
 // {SENDING EMAIL AFTER SIGNUP} //
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY)
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SECRET_SENDGRID_KEY);
 const fs = require("fs"); // Nhập module fs
 const rootPath = require("../util/path"); // Nhập đường dẫn tuyệt đối của thư mục gốc
 const path = require("path"); // Nhập module path
@@ -169,7 +169,7 @@ const postSignup = (req, res, next) => {
             html: `<h1>You signup successfully. Welcome to our service</h1>`, // Nội dung mail
           })
           .then((result) => {
-            console.log(result)
+            console.log(result);
             // {FLASH MESSAGE} // Nếu user mới tạo thành công
             req.flash("successSignup", "Sign up successfully"); // Tạo flash message có tên là "success", giá trị là "Sign up successfully"
             // Lưu user mới tạo
@@ -242,15 +242,17 @@ const postReset = (req, res, next) => {
                 subject: "Reset Password", // Tiêu đề mail
                 html: `<h2>Click this <a href="${http}/reset/${token}">link</a> to reset your password</h2>`, // Nội dung mail
               }; // Tạo 1 mail
-              sgMail.send(msg)
-              .then((response) => {
-                console.log(response)
-                req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
-                return res.redirect("/reset"); // Chuyển hướng sang trang reset password
-              }).catch(error => {
-                console.log(error)
-                next(error)
-              })
+              sgMail
+                .send(msg)
+                .then((response) => {
+                  console.log(response);
+                  req.flash("requestSuccess", "Request Success"); // Tạo flash message có tên là "requestSuccess", giá trị là "Request Success"
+                  return res.redirect("/reset"); // Chuyển hướng sang trang reset password
+                })
+                .catch((error) => {
+                  console.log(error);
+                  next(error);
+                });
             });
         });
       })
@@ -363,6 +365,122 @@ const postUpdatePassword = (req, res, next) => {
       next(error);
     });
 };
+
+const getProfile = async (req, res, next) => {
+  try {
+    const [errorUpdateProfile] = req.flash("errorUpdateProfile");
+    if (!req.session.isLogin) {
+      return res.redirect("/login");
+    }
+    const userId = req.session.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).render("404", {
+        title: "Page Not Found",
+        path: "/404",
+      });
+    }
+    return res.status(200).render("./auth/profile", {
+      title: "Profile",
+      path: "/profile",
+      user: user,
+      errorUpdateProfile: errorUpdateProfile,
+      error: false,
+      errorType: undefined, //  ban đầu chưa có giá trị nào lỗi
+      oldInput: {
+        username: "",
+        email: "",
+        password: "",
+      }, // Lưu lại các giá trị vừa nhập (vì ban đầu không có giá trị nào trong trường cả)
+    });
+  } catch (err) {
+    // {ERROR MIDDLEWARE} //
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
+};
+
+const updateProfile = async (req, res, next) => {
+  const errorValidation = validationResult(req);
+  try {
+    if (!req.session.isLogin) {
+      return res.redirect("/login");
+    }
+    let password = req.body?.password;
+    const userId = req.session.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).render("404", {
+        title: "Page Not Found",
+        path: "/404",
+      });
+    }
+    let username = req.body?.username;
+    let email = req.body?.email;
+    let newPassword = req.body?.new_password;
+    const checkPass = bcrypt.compareSync(password, user.password);
+    if (!checkPass) {
+      req.flash("errorUpdateProfile", "Password is incorrect!");
+      return res.redirect("/profile");
+    }
+    if (!errorValidation.isEmpty()) {
+      console.log(errorValidation.array());
+      const [error] = errorValidation.array(); // Lấy phần tử đầu tiên của mảng
+      return res.status(422).render("./auth/profile", {
+        title: "Profile",
+        path: "/profile",
+        user: user,
+        error: error.msg, // Nếu có lỗi thì giá trị sẽ được tìm thấy ở thuộc tính "msg"
+        errorType: error.path, // xác định trường nào  lõi cần sửa
+        oldInput: { username, email, password, new_password }, // Lưu lại các giá trị vừa nhập
+      });
+    }
+    const image = req.file; // Lấy file từ multer
+    let url = undefined; // Khai báo biến url để lưu đường dẫn của file
+    if (image) {
+      // Nếu có file thì lưu đường dẫn của file vào biến url
+      user.avatar = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
+    }
+    if (username) {
+      const findUser = await User.findOne({ username: username });
+      if (findUser) {
+        req.flash("errorUpdateProfile", "Username is existed!");
+        return res.redirect("/profile");
+      }
+      user.username = username ? username : user.username;
+    }
+    if (email) {
+      const findUser = await User.findOne({ email: email });
+      if (findUser) {
+        req.flash("errorUpdateProfile", "Email is existed!");
+        return res.redirect("/profile");
+      }
+      user.email = email ? email : user.email;
+    }
+    if (newPassword) {
+      if (newPassword.length < 5) {
+        req.flash(
+          "errorUpdateProfile",
+          "The password must be at least 5 characters"
+        );
+        return res.redirect("/profile");
+      }
+      const hashPassword = bcrypt.hashSync(newPassword, 12);
+      user.password = hashPassword;
+    }
+    await user.save();
+    req.session.user = user;
+    req.flash("successUpdateProfile", "Update profile successfully!");
+    return res.redirect("/");
+  } catch (err) {
+    // {ERROR MIDDLEWARE} //
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
+};
+
 module.exports = {
   getAuth,
   postAuth,
@@ -373,4 +491,6 @@ module.exports = {
   postReset,
   getUpdatePassword,
   postUpdatePassword,
+  getProfile,
+  updateProfile,
 };

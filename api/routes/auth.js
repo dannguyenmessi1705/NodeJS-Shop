@@ -116,4 +116,8 @@ route.patch(
   getAuth.postUpdatePassword
 );
 
+route.get("/profile", ProtectRoute, getAuth.getProfile);
+
+route.put("/update-profile", ProtectRoute, verifyCSRFToken, getAuth.updateProfile);
+
 module.exports = route;

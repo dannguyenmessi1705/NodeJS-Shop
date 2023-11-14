@@ -95,35 +95,8 @@ app.use(CreateCSRFTOKEN); // Sử dụng middleware để tạo token và truy�
 
 // {MULTER} // (Để lấy dữ liệu file từ form) //
 const multer = require("multer"); // Nhập module multer
-const fileStorage = multer.diskStorage({
-  // Tạo 1 storage để lưu file
-  destination(req, file, callback) {
-    // Định nghĩa đường dẫn lưu file
-    callback(null, "images"); // Lưu file vào folder images
-  },
-  filename(req, file, callback) {
-    // Định nghĩa tên file
-    const date = new Date(); // Lấy ngày giờ hiện tại
-    const formattedDate = date
-      .toISOString()
-      .replace(/:/g, "_")
-      .replace(/\./g, ""); // Định dạng ngày giờ hiện tại (phải chuyển đổi sang dạng string mới đúng cú pháp đặt tên file)
-    callback(null, formattedDate + file.originalname); // Đặt tên file = ngày giờ hiện tại + tên file gốc
-  },
-});
-const fileFilter = (req, file, callback) => {
-  // Định nghĩa loại file được phép upload
-  if (
-    // Nếu file là 1 trong các loại này thì cho phép upload
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    callback(null, true); // true => cho phép upload
-  } else {
-    callback(null, false); // false => không cho phép upload
-  }
-};
+const {fileStorage, fileFilter} = require("./util/uploadFile"); // Nhập các hàm để tạo storage và filter cho multer
+
 app.use(
   // Sử dụng middleware multer
   multer({
@@ -198,6 +171,7 @@ app.use(async (req, res, next) => {
     req.user = new User(user); // Lưu lại user vào request để sử dụng ở các middleware tiếp theo (không cần dùng new User vì user đã là object rồi, có thể dùng các method của mongoose cũng như từ class User luôn )
     res.locals.userID = req.session.user._id.toString(); // Truyền biến user vào locals để sử dụng ở tất cả các route
     res.locals.username = req.session.user.username; // Truyền biến user vào locals để sử dụng ở tất cả các route
+    res.locals.avatar = req.session.user.avatar; // Truyền biến user vào locals để sử dụng ở tất cả các route
     // Tuy nhiên, Ko cần req.user nữa vì dùng session rồi (biến user sẽ lưu vào req.session.user)
     next(); // Tiếp tục chạy các middleware tiếp theo với phân quyền
   } catch (err) {
@@ -242,11 +216,11 @@ app.use("/api", paymentRouteAPI);
 app.use(errorRoute);
 
 // {ERROR MIDDLEWARE} // (Phải đặt ở cuối cùng) // Nếu không có lỗi thì sẽ chạy qua các middleware trước, nếu có lỗi thì sẽ chạy qua middleware này
-app.use((err, req, res, next) => {
-  res.status(500).render("500", {
-    title: "Server maintenance",
-    path: "/500",
-    authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
-  });
-});
+// app.use((err, req, res, next) => {
+//   res.status(500).render("500", {
+//     title: "Server maintenance",
+//     path: "/500",
+//     authenticate: req.session.isLogin, // Vì đây là trang lỗi được ưu tiên thực hiện trước các route khác nên chưa có session, nên phải truyền biến authenticate vào để sử dụng ở header
+//   });
+// });
 /// !!! Lưu ý: Nếu có lỗi thì phải truyền lỗi vào next() để nó chạy qua middleware này, nếu không thì nó sẽ chạy qua các middleware tiếp theo mà không có lỗi

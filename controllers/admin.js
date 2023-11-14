@@ -102,7 +102,7 @@ const getProduct = async (req, res, next) => {
   /// {PAGINATION} ///
   const curPage = +req.query.page || 1; // Lấy giá trị của query 'page' từ URL, nếu không có thì mặc định là 1
   let numProducts; // Khai báo biến để lưu số lượng sản phẩm
-  let numOfProducts; 
+  let numOfProducts;
   let products;
   try {
     // {AUTHORIZATION} //
@@ -163,7 +163,10 @@ const getEditProduct = async (req, res, next) => {
   const ID = req.params.productID; // // Lấy route động :productID bên routes (URL) - VD: http://localhost:3000/product/0.7834371053383911 => ID = 0.7834371053383911
   try {
     const product = await Product.findById(ID);
-    if (product.userId.toString() !== req.user._id.toString() && req.user._id.toString() !== process.env.ADMIN_ID) {
+    if (
+      product.userId.toString() !== req.user._id.toString() &&
+      req.user._id.toString() !== process.env.ADMIN_ID
+    ) {
       // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không
       return res.redirect("/admin/product"); // Nếu không phải thì redirect về trang chủ
     }
@@ -239,7 +242,10 @@ const postEditProduct = async (req, res, next) => {
       });
     }
     // {AUTHORIZATION} //
-    if (product.userId.toString() !== req.user._id.toString() && req.user._id.toString() !== process.env.ADMIN_ID) {
+    if (
+      product.userId.toString() !== req.user._id.toString() &&
+      req.user._id.toString() !== process.env.ADMIN_ID
+    ) {
       // Kiểm tra xem user hiện tại có phải là người tạo ra product này hay không
       return res.redirect("/"); // Nếu không phải thì redirect về trang chủ
     }
@@ -295,14 +301,15 @@ const deleteProduct = async (req, res, next) => {
     }
     urlDelete = product.url; // Lưu đường dẫn của file vào biến urlDelete
     // {AUTHORIZATION} //
-    if (req.user._id.toString() !== process.env.ADMIN_ID && product.userId.toString() !== req.user._id.toString()) {
+    if (
+      req.user._id.toString() !== process.env.ADMIN_ID &&
+      product.userId.toString() !== req.user._id.toString()
+    ) {
       // Kiểm tra xem user hiện tại có phải là người tạo ra product này hoặc là admin hay không
       return res.redirect("/"); // Nếu không phải thì redirect về trang chủ
-    }
-    else if (req.user._id.toString() === process.env.ADMIN_ID) {
-      result = await Product.deleteOne({ _id: ID}); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
-    }
-    else result = await Product.deleteOne({ _id: ID, userId: req.user._id}); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
+    } else if (req.user._id.toString() === process.env.ADMIN_ID) {
+      result = await Product.deleteOne({ _id: ID }); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
+    } else result = await Product.deleteOne({ _id: ID, userId: req.user._id }); // Xoá sản phẩm trong database (userId: req.user._id hoặc admin) - Chỉ xoá sản phẩm của user hoặc admin đang đăng nhập
     if (!result) {
       const err = new Error("Delete failed");
       err.httpStatusCode = 404;

@@ -6,6 +6,7 @@ const route = express.Router();
 const getAuth = require("../controllers/auth");
 const User = require("../models/users");
 const { verifyCSRFToken } = require("../middleware/csrfToken");
+const ProtectRoute = require("../middleware/isAuth");
 
 route.get("/login", getAuth.getAuth);
 
@@ -117,6 +118,24 @@ route.post(
     .trim()
     .isLength({ min: 5 }),
   getAuth.postUpdatePassword
+);
+
+// GET PROFILE
+route.get("/profile", ProtectRoute, getAuth.getProfile);
+
+// UPDATE PROFILE'
+route.post(
+  "/update-profile",
+  ProtectRoute,
+  verifyCSRFToken,
+  [
+    check("password")
+      .trim()
+      .notEmpty()
+      .withMessage("Please don't leave the blank password")
+    // Kiểm tra username đã tồn tại chưa
+  ],
+  getAuth.updateProfile
 );
 
 module.exports = route;
