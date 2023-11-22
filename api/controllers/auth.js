@@ -465,7 +465,7 @@ const updateProfile = async (req, res, next) => {
       user.avatar = image.path; // Lấy đường dẫn của file từ multer (đường dẫn này phải được khai báo dạng tĩnh)
     }
     if (username) {
-      const findUser = User.findOne({ username: username });
+      const findUser = await User.findOne({ username: username });
       if (findUser) {
         return res.status(422).json({
           message: "Username is existed!",
